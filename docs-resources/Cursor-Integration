@@ -1,0 +1,48 @@
+How To Integrate (Cursor)
+Refs: https://venice.ai/blog/how-to-code-with-the-venice-api-in-cursor-a-quick-guide
+
+Morpheus < > Cursor
+
+What is Cursor?
+****SUMMARIZE CURSOR
+
+Prerequisites
+
+Morpheus API Key
+
+Cursor Installed
+
+Morpheus Model Identified
+
+Step by Step
+
+1. Download and Install Cursor through Cursor.com
+
+![image.png](attachment:e0cfb327-543d-4031-b5be-890be07c1214:image.png)
+
+1. Open Cursor and Click the gear icon on the top right for Settings
+
+![image.png](attachment:0e7fbb36-cfbb-4053-8e9c-d4759eec43fb:image.png)
+
+1. Click the “Models” Tab for AI Integrations
+
+![image.png](attachment:f97ecc1e-e579-48ad-a3d6-016232b86108:image.png)
+
+1. Scroll down to the models and click the “+Add Model” button, then input the model name of the model you identified in the Morpheus Marketplace. Then click “+ Add Model”. You will see it populate in the list above
+
+![image.png](attachment:b87b83f1-2d11-4040-ac24-cc6dfaf1711a:image.png)
+
+1. Go to the “OpenAI API Key” section and input the following:
+
+OpenAI API Key: Use your Morpheus API Key
+Override OpenAI Base URL: https://api.mor.org/api/v1
+
+![image.png](attachment:a2c300ba-1479-411f-9723-dce49581831d:image.png)
+
+1. Click “Save” next to the base URL and then click “Verify” next to the API key. Once verified, click on the red radio button to enable the integration. Click “Enable OpenAI API Key” when prompted
+
+![image.png](attachment:4aff44d4-35ee-488d-85d6-9865a0170ebf:image.png)
+
+1. If successful, you will see the radio button turn from red to green indicating success. 
+
+![image.png](attachment:3bd3ce33-54b1-4227-8b70-f0f7a5dd4ec1:image.png)

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 
 const docs = [
@@ -16,6 +16,7 @@ const docs = [
     items: [
       { title: 'Creating an API Key', path: '/docs/creating-api-key' },
       { title: 'Viewing Models', path: '/docs/viewing-models' },
+      { title: 'Using Swagger UI', path: '/docs/using-swagger-ui' },
     ],
   },
   {

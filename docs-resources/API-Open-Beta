@@ -1,0 +1,48 @@
+# API Gateway Open Beta Program
+
+Welcome to the Morpheus API Gateway Open Beta Program. We appreciate you spending the time to help us test, and hope that you are as excited as we are for this new addition to the Morpheus Ecosystem. 
+
+**What is this about? What is the Morpheus Compute Router?**
+
+We’re making it easy for you to use the Morpheus Compute router access LLM inference. The Morpheus Compute router was designed so that users could create “sessions” with LLM providers, essentially renting their compute hardware to send prompts to their hosted model. 
+
+To open a “session”, users have 2 choices:
+
+1. Pay Directly with MOR: Spend MOR tokens to achieve a 1:1 payment ratio for the session. 
+2. Stake MOR: Stake MOR tokens to utilize your daily allowance of compute inference. Staking provides a daily allocation of credits that can be used for opening sessions. Your daily credits are determined by your amount of staked MOR token (credit calculator for testing purposes only currently on [calc.kyletest.com](http://calc.kyletest.com), which will be transitioned). 
+
+Before today, you’ve needed to host your own proxy-router in order to interact with the system, which is burdensome for most application. This new API gateway takes care of those interactions on your behalf, allowing you to access the compute marketplace with just an API key (created through the API portal). The API gateway simplifies session management by providing an automated workflow to create sessions when you need them, identifying the highest rated provider for your model of choice. 
+
+Important note: This Open-beta program is currently utilizing a wallet that contains staked MOR. You will not be connecting your wallet or staking MOR directly. We will be implementing this functionality for the open-beta release in the coming weeks, where you will be able to “sign” rights to the API gateway to stake tokens on your behalf when you initiate a session. 
+
+**What we’re offering**
+
+As part of this program, we will be offering you access to the Morpheus Compute Marketplace at no cost. You will gain access to the API gateway, allowing you to create an API key and pair it with the programs you are currently using with AI (that accept an OpenAI API compatible base url). We have created an API Gateway Portal for a simple user experience, or you can use the “Swagger UI” directly. 
+
+API Gateway Base URL: https://api.mor.org/api/v1
+
+API Gateway “Swagger UI”: https://api.mor.org/docs
+
+API Gateway Portal: https://api-middleware-docs.vercel.app/docs
+
+Postman Collection: https://www.postman.com/bluefin-6568608/morpheus-api/collection/7ll8i2s/api-documentation?action=share&creator=44737384
+
+**What we’re asking**
+
+The “How to use Morpheus API Gateway” doc will separately be provided from this document.
+
+We want you to pressure test the API gateway and provide as much feedback as possible. Create an API and sends prompts through whatever method you currently use. Use your API key and Base URL to connect to coding IDEs like “Cursor”, or use with “Roo Code” or any other VS Code plugins. Connect to browsers like Brave with Brave Leo, or integrate with custom Chat UIs like OpenWebUI. Use the API to power your agents, or plug into any other application you choose. 
+
+With our first stable release we’d like to know what you love, what you hate, what broke, and what you’d like improved. We are asking for you to beat this up and be picky - your feedback will drive the improvements before this goes to the broader market. 
+
+**How to provide feedback**
+
+Use the google doc [here](https://docs.google.com/spreadsheets/d/1Fj_AsxBWVFHhjD5neDeaKBnL64dVJ1S0GJQ9tKjZBz0/edit?usp=sharing) to provide feedback
+
+**Known Bugs**
+
+- Ongoing issues with setting “Stream = False” in “/chat/completions”. This is currently being evaluated and may be resolved before you begin testing. You can refrain from submitting this feedback into the feedback doc.
+- Some default values need to be updated (i.e. Automation default for session duration, Model for /chat/completion, etc).
+- Tool Calling / Function Calling is actively being enabled. We are in the process of testing recent updates before updates are merged into the API Gateway. We recognize this is fundamental to most applications and are working to enable immediately.
+
+We truly appreciate your support for this program. Contact me directly if you have any questions or comments.

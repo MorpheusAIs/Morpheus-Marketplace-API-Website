@@ -65,7 +65,7 @@ export default function AdminPage() {
   const fetchApiKeys = async () => {
     try {
       console.log('Fetching API keys');
-      const response = await apiGet<ApiKey[]>('http://api.mor.org/api/v1/auth/keys', accessToken || '');
+      const response = await apiGet<ApiKey[]>('https://api.mor.org/api/v1/auth/keys', accessToken || '');
 
       if (response.error) {
         throw new Error(response.error);
@@ -97,7 +97,7 @@ export default function AdminPage() {
     try {
       console.log('Fetching automation settings with API key');
       const response = await apiGet<AutomationSettings>(
-        'http://api.mor.org/api/v1/automation/settings', 
+        'https://api.mor.org/api/v1/automation/settings', 
         fullApiKey
       );
 
@@ -127,7 +127,7 @@ export default function AdminPage() {
     try {
       console.log('Creating API key with name:', newKeyName);
       const response = await apiPost<ApiKeyResponse>(
-        'http://api.mor.org/api/v1/auth/keys',
+        'https://api.mor.org/api/v1/auth/keys',
         { name: newKeyName },
         accessToken || ''
       );
@@ -182,7 +182,7 @@ export default function AdminPage() {
     try {
       console.log('Updating automation settings with API key:', { isEnabled, duration });
       const response = await apiPut<AutomationSettings>(
-        'http://api.mor.org/api/v1/automation/settings',
+        'https://api.mor.org/api/v1/automation/settings',
         {
           is_enabled: isEnabled,
           session_duration: duration,
@@ -225,7 +225,7 @@ export default function AdminPage() {
     try {
       console.log('Fetching automation settings with API key');
       const response = await apiGet<AutomationSettings>(
-        'http://api.mor.org/api/v1/automation/settings', 
+        'https://api.mor.org/api/v1/automation/settings', 
         apiKey
       );
 

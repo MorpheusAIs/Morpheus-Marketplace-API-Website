@@ -1,0 +1,280 @@
+Morpheus API Gateway Open Beta - How To Guide (Swagger UI)
+
+The purpose of this document is to provide instructions for how to use the Morpheus API Gateway via the “Swagger UI”. We will also be launching a "playground" and improved front-facing UI to more easily interact with the Morpheus API Gateway in a user friendly fashion [coming soon]. You can also check out the "Integration Guides" section for how to use Morpheus Compute Inference with your preferred programs and tools. 
+
+The Morpheus API Gateway works in mostly the same way as other OpenAI API compatible inference providers. Once you’ve finished your configuration, you will simply have an API Key that can be used with any OpenAI API compatible integration alongside the Morpheus Base URL. You can find more information about staking MOR token and how sessions / pricing works within the “API Gateway Open Beta Program” document. You can follow this guide by interacting within the “Swagger UI”, copy pasting commands into a terminal, or using with Postman. 
+
+You should consider this API gateway configuration in 3 steps:
+
+1. Auth: Account Creation, Login, API Key Generation
+2. Config:  Choose Model, Set Automation or Create Session
+3. Chat: Sent prompts to chat/completions
+
+API Gateway base URL: https://api.mor.org/api/v1
+
+API Gateway “Swagger UI”: https://api.mor.org/docs
+
+
+Steps:
+
+1. Go to https://api.mor.org/docs to access the swagger UI. This is the home where you will be configuring all of your settings. 
+
+![image.png](attachment:7877c58c-601e-4647-a3e3-828196db8683:image.png)
+
+1. Now you will need to register a user. Go to “POST” /api/v1/auth/register and choose your credentials for the gateway. Execute in Swagger or via the cURL request. 
+
+![image.png](attachment:c3467a85-2afc-4342-9835-7335b0f7d615:image.png)
+
+```jsx
+curl -X 'POST' \
+  'https://api.mor.org/api/v1/auth/register' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "email": "user100@example.com",
+  "name": "string",
+  "is_active": true,
+  "password": "stringst"
+}'
+```
+
+Your response will be similar to this:
+
+```jsx
+{
+  "email": "user100@example.com",
+  "name": "string",
+  "is_active": true,
+  "id": 6
+}
+```
+
+1. Now you can “login” to your account to get your authorization token. Go to “POST” /api/v1/auth/login and enter your credentials.
+
+![image.png](attachment:8ccc84e6-1d07-4cd6-bd8c-7514270e67d4:image.png)
+
+```jsx
+curl -X 'POST' \
+  'https://api.mor.org/api/v1/auth/login' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "email": "user100@example.com",
+  "password": "stringst"
+}'
+```
+
+Your response will be similar to this:
+
+```jsx
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDYwNDc2NTMsInN1YiI6IjYiLCJ0eXBlIjoiYWNjZXNzIn0.uG0yuuBseMYyaFbEFjr7boRgWr7wPdFt8laMLMyuZJU",
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY2NTA2NTMsInN1YiI6IjYiLCJ0eXBlIjoicmVmcmVzaCJ9.WdKfk6YNeD9xqrqr9pNm8cO74IcZ90gUr_9hNkb1_FA",
+  "token_type": "bearer"
+}
+```
+
+1. Copy your access token from your response. You will need to authenticate within Swagger or include this access token within your cURL requests. For swagger, click the lock button on the top right and enter the “access_token” key
+
+![image.png](attachment:35c1d07d-9bcf-40de-b346-6623ddd8dce1:image.png)
+
+1. Now that you have an auth key, you can generate your API key. Go to “POST” /api/v1/auth/keys and choose a key name, click execute or use CURL
+
+![image.png](attachment:66944ff7-b1cb-4e9d-8767-ac801452273e:image.png)
+
+```jsx
+curl -X 'POST' \
+  'https://api.mor.org/api/v1/auth/keys' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDYwNDc2NTMsInN1YiI6IjYiLCJ0eXBlIjoiYWNjZXNzIn0.uG0yuuBseMYyaFbEFjr7boRgWr7wPdFt8laMLMyuZJU' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "name": "string"
+}'
+```
+
+Your response will be similar to this:
+
+```jsx
+{
+  "key": "sk-WlM8yQ.46cd2cd37987ad4bb02050bd30e783d52088dd4326202c2f6fce0a53e62c9ec5",
+  "key_prefix": "sk-WlM8yQ",
+  "name": "string"
+}
+```
+
+1. Now you’re ready to check out the models that are available within the compute router. Go to “GET” /api/v1/models and click execute to see the list of models.
+
+![image.png](attachment:4855d06b-b2ef-45f7-b0f5-42b0c69b4280:image.png)
+
+```jsx
+curl -X 'GET' \
+  'https://api.mor.org/api/v1/models/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDYwNDc2NTMsInN1YiI6IjYiLCJ0eXBlIjoiYWNjZXNzIn0.uG0yuuBseMYyaFbEFjr7boRgWr7wPdFt8laMLMyuZJU'
+```
+
+Your response will be similar to this:
+
+```jsx
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "LMR-OpenAI-GPT-4o",
+      "blockchainID": "0x8f9f631f647b318e720ec00e6aaeeaa60ca2c52db9362a292d44f217e66aa04f",
+      "created": 1736545010,
+      "tags": [
+        "LMR"
+      ]
+    },
+    {
+      "id": "LMR-ClaudeAI-Sonnet",
+      "blockchainID": "0x8aa1805da765f677aa175a908ce360eb35023defe8b124a7026d61b8807290f0",
+      "created": 1736545212,
+      "tags": [
+        "LMR"
+      ]
+    },
+------REMOVED MIDDLE FOR SPACE PURPOSES --------
+    {
+      "id": "mistral-31-24b",
+      "blockchainID": "0x8e5c0229ab1dac1753b24e6614ae7c4a4896463ca4929d7601b2b241384d3bbd",
+      "created": 1745330395,
+      "tags": [
+        "Mistral",
+        "Default"
+      ]
+    },
+    {
+      "id": "llama-3.3-70b",
+      "blockchainID": "0xdf474728f624712570170f311a866a6937436c14861568f38593a531b7f45845",
+      "created": 1745518131,
+      "tags": [
+        "llama-3.3-70b"
+      ]
+    },
+    {
+      "id": "llama-3.2-3b",
+      "blockchainID": "0xf84eaf06d8ef0f3d22fe9cfbfeac0fa828cd1b2278ef801f123ac6bc2fc9de25",
+      "created": 1745518543,
+      "tags": [
+        "llama-3.2-3b"
+      ]
+    }
+  ]
+}
+```
+
+1. Choose a model from the list above based on your specific use case, we are choosing "mistral-31-24b". 
+
+1. Now you must choose if you are utilizing the “automation” or will be creating sessions manually. Automation will create a session with the best ranked provider based on your requested model when you send a /chat/completion request. 
+2. We recommend using automation. Go to “PUT” /api/v1/automation/settings to set automated session creation. Click the lock icon and enter your API key and then change is_enabled to true and set session duration. Session duration must be at least 60 seconds, but we recommend longer session times for optimal results. 
+
+![image.png](attachment:6dc9a746-cfca-4dca-b017-a63ef550ea80:image.png)
+
+```jsx
+curl -X 'PUT' \
+  'https://api.mor.org/api/v1/automation/settings' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer sk-WlM8yQ.46cd2cd37987ad4bb02050bd30e783d52088dd4326202c2f6fce0a53e62c9ec5' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "is_enabled": true,
+  "session_duration": 3600
+}'
+```
+
+Your response will be similar to this:
+
+```jsx
+**{
+  "is_enabled": true,
+  "session_duration": 3600,
+  "user_id": 6,
+  "created_at": "2025-04-30T20:51:56.869832",
+  "updated_at": "2025-04-30T20:51:56.869834"
+}**
+```
+
+1. Now that you’re fully configured, go to “POST” /api/v1/chat/completions and enter your model, messages, and any other preferred settings. This follows OpenAI API format, so you can use similar prompts that you have used before with other platforms. 
+
+![image.png](attachment:1b4ba98c-dde3-4023-9d21-34cb96c59ddf:image.png)
+
+```jsx
+curl -X 'POST' \
+  'https://api.mor.org/api/v1/chat/completions' \
+  -H 'accept: application/json' \
+  -H 'Authorization: sk-WlM8yQ.46cd2cd37987ad4bb02050bd30e783d52088dd4326202c2f6fce0a53e62c9ec5' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "model": "mistral-31-24b",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "Hello, how are you?"
+    }
+  ],
+  "temperature": 0.7,
+  "stream": true
+}'
+```
+
+Your response will be similar to this:
+
+```jsx
+data: {"id":"chatcmpl-78b0976dae07298f88846f254401e66a","object":"chat.completion.chunk","created":1746046426,"model":"mistral-31-24b","choices":[{"index":0,"delta":{"role":"assistant"},"finish_reason":null,"content_filter_results":{"hate":{"filtered":false},"self_harm":{"filtered":false},"sexual":{"filtered":false},"violence":{"filtered":false}}}],"system_fingerprint":""}
+
+data: {"id":"chatcmpl-78b0976dae07298f88846f254401e66a","object":"chat.completion.chunk","created":1746046426,"model":"mistral-31-24b","choices":[{"index":0,"delta":{"content":"Hello"},"finish_reason":null,"content_filter_results":{"hate":{"filtered":false},"self_harm":{"filtered":false},"sexual":{"filtered":false},"violence":{"filtered":false}}}],"system_fingerprint":""}
+
+data: {"id":"chatcmpl-78b0976dae07298f88846f254401e66a","object":"chat.completion.chunk","created":1746046426,"model":"mistral-31-24b","choices":[{"index":0,"delta":{"content":"!"},"finish_reason":null,"content_filter_results":{"hate":{"filtered":false},"self_harm":{"filtered":false},"sexual":{"filtered":false},"violence":{"filtered":false}}}],"system_fingerprint":""}
+
+data: {"id":"chatcmpl-78b0976dae07298f88846f254401e66a","object":"chat.completion.chunk","created":1746046426,"model":"mistral-31-24b","choices":[{"index":0,"delta":{"content":" I"},"finish_reason":null,"content_filter_results":{"hate":{"filtered":false},"self_harm":{"filtered":false},"sexual":{"filtered":false},"violence":{"filtered":false}}}],"system_fingerprint":""}
+
+data: {"id":"chatcmpl-78b0976dae07298f88846f254401e66a","object":"chat.completion.chunk","created":1746046426,"model":"mistral-31-24b","choices":[{"index":0,"delta":{"content":"'m"},"finish_reason":null,"content_filter_results":{"hate":{"filtered":false},"self_harm":{"filtered":false},"sexual":{"filtered":false},"violence":{"filtered":false}}}],"system_fingerprint":""}
+
+data: {"id":"chatcmpl-78b0976dae07298f88846f254401e66a","object":"chat.completion.chunk","created":1746046426,"model":"mistral-31-24b","choices":[{"index":0,"delta":{"content":" here"},"finish_reason":null,"content_filter_results":{"hate":{"filtered":false},"self_harm":{"filtered":false},"sexual":{"filtered":false},"violence":{"filtered":false}}}],"system_fingerprint":""}
+
+data: {"id":"chatcmpl-78b0976dae07298f88846f254401e66a","object":"chat.completion.chunk","created":1746046426,"model":"mistral-31-24b","choices":[{"index":0,"delta":{"content":" and"},"finish_reason":null,"content_filter_results":{"hate":{"filtered":false},"self_harm":{"filtered":false},"sexual":{"filtered":false},"violence":{"filtered":false}}}],"system_fingerprint":""}
+
+data: {"id":"chatcmpl-78b0976dae07298f88846f254401e66a","object":"chat.completion.chunk","created":1746046426,"model":"mistral-31-24b","choices":[{"index":0,"delta":{"content":" ready"},"finish_reason":null,"content_filter_results":{"hate":{"filtered":false},"self_harm":{"filtered":false},"sexual":{"filtered":false},"violence":{"filtered":false}}}],"system_fingerprint":""}
+
+data: {"id":"chatcmpl-78b0976dae07298f88846f254401e66a","object":"chat.completion.chunk","created":1746046426,"model":"mistral-31-24b","choices":[{"index":0,"delta":{"content":" to"},"finish_reason":null,"content_filter_results":{"hate":{"filtered":false},"self_harm":{"filtered":false},"sexual":{"filtered":false},"violence":{"filtered":false}}}],"system_fingerprint":""}
+
+data: {"id":"chatcmpl-78b0976dae07298f88846f254401e66a","object":"chat.completion.chunk","created":1746046426,"model":"mistral-31-24b","choices":[{"index":0,"delta":{"content":" assist"},"finish_reason":null,"content_filter_results":{"hate":{"filtered":false},"self_harm":{"filtered":false},"sexual":{"filtered":false},"violence":{"filtered":false}}}],"system_fingerprint":""}
+
+data: {"id":"chatcmpl-78b0976dae07298f88846f254401e66a","object":"chat.completion.chunk","created":1746046426,"model":"mistral-31-24b","choices":[{"index":0,"delta":{"content":" you"},"finish_reason":null,"content_filter_results":{"hate":{"filtered":false},"self_harm":{"filtered":false},"sexual":{"filtered":false},"violence":{"filtered":false}}}],"system_fingerprint":""}
+
+data: {"id":"chatcmpl-78b0976dae07298f88846f254401e66a","object":"chat.completion.chunk","created":1746046426,"model":"mistral-31-24b","choices":[{"index":0,"delta":{"content":"."},"finish_reason":null,"content_filter_results":{"hate":{"filtered":false},"self_harm":{"filtered":false},"sexual":{"filtered":false},"violence":{"filtered":false}}}],"system_fingerprint":""}
+
+data: {"id":"chatcmpl-78b0976dae07298f88846f254401e66a","object":"chat.completion.chunk","created":1746046426,"model":"mistral-31-24b","choices":[{"index":0,"delta":{"content":" How"},"finish_reason":null,"content_filter_results":{"hate":{"filtered":false},"self_harm":{"filtered":false},"sexual":{"filtered":false},"violence":{"filtered":false}}}],"system_fingerprint":""}
+
+data: {"id":"chatcmpl-78b0976dae07298f88846f254401e66a","object":"chat.completion.chunk","created":1746046426,"model":"mistral-31-24b","choices":[{"index":0,"delta":{"content":" can"},"finish_reason":null,"content_filter_results":{"hate":{"filtered":false},"self_harm":{"filtered":false},"sexual":{"filtered":false},"violence":{"filtered":false}}}],"system_fingerprint":""}
+
+data: {"id":"chatcmpl-78b0976dae07298f88846f254401e66a","object":"chat.completion.chunk","created":1746046426,"model":"mistral-31-24b","choices":[{"index":0,"delta":{"content":" I"},"finish_reason":null,"content_filter_results":{"hate":{"filtered":false},"self_harm":{"filtered":false},"sexual":{"filtered":false},"violence":{"filtered":false}}}],"system_fingerprint":""}
+
+data: {"id":"chatcmpl-78b0976dae07298f88846f254401e66a","object":"chat.completion.chunk","created":1746046426,"model":"mistral-31-24b","choices":[{"index":0,"delta":{"content":" help"},"finish_reason":null,"content_filter_results":{"hate":{"filtered":false},"self_harm":{"filtered":false},"sexual":{"filtered":false},"violence":{"filtered":false}}}],"system_fingerprint":""}
+
+data: {"id":"chatcmpl-78b0976dae07298f88846f254401e66a","object":"chat.completion.chunk","created":1746046426,"model":"mistral-31-24b","choices":[{"index":0,"delta":{"content":" you"},"finish_reason":null,"content_filter_results":{"hate":{"filtered":false},"self_harm":{"filtered":false},"sexual":{"filtered":false},"violence":{"filtered":false}}}],"system_fingerprint":""}
+
+data: {"id":"chatcmpl-78b0976dae07298f88846f254401e66a","object":"chat.completion.chunk","created":1746046426,"model":"mistral-31-24b","choices":[{"index":0,"delta":{"content":" today"},"finish_reason":null,"content_filter_results":{"hate":{"filtered":false},"self_harm":{"filtered":false},"sexual":{"filtered":false},"violence":{"filtered":false}}}],"system_fingerprint":""}
+
+data: {"id":"chatcmpl-78b0976dae07298f88846f254401e66a","object":"chat.completion.chunk","created":1746046426,"model":"mistral-31-24b","choices":[{"index":0,"delta":{"content":"?"},"finish_reason":null,"content_filter_results":{"hate":{"filtered":false},"self_harm":{"filtered":false},"sexual":{"filtered":false},"violence":{"filtered":false}}}],"system_fingerprint":""}
+
+data: {"id":"chatcmpl-78b0976dae07298f88846f254401e66a","object":"chat.completion.chunk","created":1746046426,"model":"mistral-31-24b","choices":[{"index":0,"delta":{},"finish_reason":"stop","content_filter_results":{"hate":{"filtered":false},"self_harm":{"filtered":false},"sexual":{"filtered":false},"violence":{"filtered":false}}}],"system_fingerprint":""}
+
+```
+
+Thats it, you made your first chat request and received a response! Congratulations on sourcing inference through the Morpheus Compute Marketplace via the Morpheus API Gateway. 
+
+We look forward to seeing the amazing integrations that you plug into via the Morpheus API. Remember to use the following settings with an OpenAI API Compatible integration:
+
+API Gateway “Swagger UI”: https://api.mor.org/docs
+
+API Gateway base URL: https://api.mor.org/api/v1
+
+API_KEY: [Identified above in step 5]
