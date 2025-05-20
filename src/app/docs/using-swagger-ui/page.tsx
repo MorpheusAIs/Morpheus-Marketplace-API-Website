@@ -4,6 +4,20 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+const YouTubeEmbed = ({ videoId }: { videoId: string }) => {
+  return (
+    <div className="relative w-full pt-[56.25%] rounded-lg overflow-hidden bg-gray-800 mb-6">
+      <iframe
+        className="absolute top-0 left-0 w-full h-full"
+        src={`https://www.youtube.com/embed/${videoId}`}
+        title="How to Use Swagger UI Tutorial"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+      />
+    </div>
+  );
+};
+
 export default function UsingSwaggerUI() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 text-white">
@@ -19,6 +33,8 @@ export default function UsingSwaggerUI() {
       <h1 className="text-3xl font-bold text-white mb-6">
         Morpheus API Gateway Open Beta - How To Use Swagger UI
       </h1>
+      
+      <YouTubeEmbed videoId="sIPjEwCFVsc" />
       
       <p className="text-lg mb-6">
         The purpose of this document is to provide instructions for how to use the Morpheus API Gateway via the "Swagger UI". 
