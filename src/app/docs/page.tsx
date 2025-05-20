@@ -22,7 +22,7 @@ const docs = [
   {
     title: 'Integration Guides',
     items: [
-      { title: 'Cursor', path: '/docs/integration-cursor' },
+      { title: 'Cursor', path: '/docs/cursor-integration' },
       { title: 'Brave Leo', path: '/docs/integration-brave-leo' },
       { title: 'Open Web-UI', path: '/docs/integration-open-web-ui' },
       { title: 'Eliza', path: '/docs/integration-eliza' },

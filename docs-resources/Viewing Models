@@ -1,0 +1,103 @@
+Morpheus API Gateway - How to Explore the available Models
+
+The purpose of this document is to provide instructions for how to view the available active models within the Morpheus Compute Marketplace via the "Swagger UI". We will be launching a "playground" and improved front-facing UI to more easily interact with the Morpheus API Gateway in a user friendly fashion [coming soon].
+
+First go to api.mor.org/docs
+
+[homepage.png]
+
+Then go down to the models /api/v1/models endpoint. This is how you view the available models. This endpoint uses automated functionality to identify models with active "bids" from providers, signifying that they are actively available for use. 
+
+[models.png]
+
+curl -X 'GET' \
+  'https://api.mor.org/api/v1/models/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer sk-2ardOd.8c2d111e430398e0ccaae07343ce163d9720cf2bc9231438c972e1f4de87136c'
+
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "dolphin-2.9.2-qwen2-72b",
+      "blockchainID": "0xaa433d66ffa4e471684ba44c5c0cc6368bb92bda19ddd3350358b601231f0a15",
+      "created": 1747024642,
+      "tags": [
+        "string"
+      ]
+    },
+    {
+      "id": "qwen-2.5-vl",
+      "blockchainID": "0x04cacb272c387bd9840bfe1d33c294e505bf1d3ee3c6ace2b2a1159f891f16f9",
+      "created": 1747024610,
+      "tags": [
+        "string"
+      ]
+    },....more....
+
+The /api/v1/models/allmodels endpoint is also available for purposes of identifying models no longer being hosted, or for historical purposes. 
+
+[allmodels.png]
+
+curl -X 'GET' \
+  'https://api.mor.org/api/v1/models/allmodels' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer sk-2ardOd.8c2d111e430398e0ccaae07343ce163d9720cf2bc9231438c972e1f4de87136c'
+
+
+Notice that the models response contains a few pieces of information:
+    ID: This is the "name" of the model. This can be used directly within the chat/completions endpoint in the "model" section
+    blockchainID: This is the 0x... blockchain ID for the model, which exists on-chain within the Morpheus Compute Node
+    Tags: These tags are input by providers to help identify key use cases or specific attributes of the model
+
+When calling a chat/completion request, you can simply use the ID (name) or the blockchain ID, as follows
+
+[chat.png]
+
+curl -X 'POST' \
+  'https://api.mor.org/api/v1/chat/completions' \
+  -H 'accept: application/json' \
+  -H 'Authorization: sk-MDRT7b.90f9d2c131be151bf407455617ff1a62148d2c6f30c73feda4bc87f0ad0ea9a6' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "model": "qwen-2.5-vl",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "Hello, how are you?"
+    }
+  ],
+  "stream": false
+}'
+
+{
+  "id": "chatcmpl-ee90c8c567f07a6426e6373125078f70",
+  "object": "chat.completion",
+  "created": 1747695418,
+  "model": "mistral-31-24b",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Hello! I'm functioning as intended, thank you. How can I assist you today?"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 498,
+    "completion_tokens": 19,
+    "total_tokens": 517
+  },
+  "system_fingerprint": ""
+}
+
+Now you can begin using the Morpheus Compute Node through the API Gateway! For integrations, use the following information:
+
+Base URL: https://api.mor.org/api/v1
+API Key: [Identified above]
