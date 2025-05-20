@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8">
       <h1 className="text-4xl font-bold mb-8">API Open Beta Docs</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Link href="/admin" className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
           <h2 className="text-2xl font-semibold mb-2 text-black">Admin</h2>
           <p className="text-gray-600">Manage your API keys and automation settings</p>
@@ -17,6 +17,10 @@ export default function Home() {
         <Link href="/test" className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
           <h2 className="text-2xl font-semibold mb-2 text-black">Testing</h2>
           <p className="text-gray-600">Test API functionality</p>
+        </Link>
+        <Link href="/chat" className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+          <h2 className="text-2xl font-semibold mb-2 text-black">Chat</h2>
+          <p className="text-gray-600">Interactive chat with model selection</p>
         </Link>
       </div>
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">

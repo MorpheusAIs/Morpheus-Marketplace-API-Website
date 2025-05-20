@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#prepfiles
+AWS_RDS.md
+Database_Plan.md
+README-CHAT-DB.md
