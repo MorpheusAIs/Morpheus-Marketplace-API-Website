@@ -21,6 +21,11 @@
 
 body {
   background: var(--background);
+  background-image: url('/images/942b261a-ecc5-420d-9d4b-4b2ae73cab6d.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }

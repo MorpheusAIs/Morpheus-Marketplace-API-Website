@@ -105,12 +105,12 @@ export default function TestPage() {
   return (
     <main className="min-h-screen p-8 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">API Test Interface</h1>
+        <h1 className="text-3xl font-bold text-white">API Test Interface</h1>
         <div className="flex gap-4">
-          <Link href="/login" className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+          <Link href="/login" className="px-4 py-2 bg-[#0f2c1e] hover:bg-[#143824] text-white rounded-md transition-colors">
             Login
           </Link>
-          <Link href="/" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+          <Link href="/" className="px-4 py-2 bg-[#0f2c1e] hover:bg-[#143824] text-white rounded-md transition-colors">
             Home
           </Link>
         </div>
@@ -118,7 +118,7 @@ export default function TestPage() {
       
       <form onSubmit={handleSubmit} className="mb-8">
         <div className="mb-4">
-          <label htmlFor="apiKey" className="block text-sm font-medium mb-1 text-gray-700">
+          <label htmlFor="apiKey" className="block text-sm font-medium mb-1 text-white">
             API Key
           </label>
           <input
@@ -132,7 +132,7 @@ export default function TestPage() {
           {authError && (
             <div className="mt-2 text-red-500">
               Authentication failed. Please provide a valid API key or&nbsp;
-              <Link href="/login" className="text-blue-500 hover:underline">
+              <Link href="/login" className="text-[#57a87a] hover:text-[#79c99a]">
                 log in to get one
               </Link>.
             </div>
@@ -140,7 +140,7 @@ export default function TestPage() {
         </div>
         
         <div className="mb-4">
-          <label htmlFor="prompt" className="block text-sm font-medium mb-1 text-gray-700">
+          <label htmlFor="prompt" className="block text-sm font-medium mb-1 text-white">
             User Prompt
           </label>
           <textarea
@@ -155,19 +155,19 @@ export default function TestPage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+          className="px-4 py-2 bg-[#0f2c1e] text-white rounded-md hover:bg-[#143824] disabled:bg-[#183a29] disabled:opacity-70 transition-colors"
         >
           {isLoading ? 'Sending...' : 'Send Request'}
         </button>
       </form>
       
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-2 text-gray-800">CURL Request</h2>
-        <div className="bg-gray-100 p-4 rounded-md">
-          <pre className="whitespace-pre-wrap break-words text-sm text-gray-800">{curlCommand}</pre>
+        <h2 className="text-xl font-semibold mb-2 text-white">CURL Request</h2>
+        <div className="bg-[#0a1f14] p-4 rounded-md border-2 border-[#2d4c39]">
+          <pre className="whitespace-pre-wrap break-words text-sm text-white">{curlCommand}</pre>
           <button
             onClick={() => navigator.clipboard.writeText(curlCommand)}
-            className="mt-2 px-3 py-1 bg-gray-200 text-sm rounded-md hover:bg-gray-300 text-gray-800"
+            className="mt-2 px-3 py-1 bg-[#183a29] text-sm rounded-md hover:bg-[#2d4c39] text-white transition-colors"
           >
             Copy to Clipboard
           </button>
@@ -176,18 +176,18 @@ export default function TestPage() {
       
       {serverResponse && (
         <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-2 text-gray-800">Server Response</h2>
-          <div className="bg-gray-100 p-4 rounded-md">
-            <pre className="whitespace-pre-wrap break-words text-sm text-gray-800">{serverResponse}</pre>
+          <h2 className="text-xl font-semibold mb-2 text-white">Server Response</h2>
+          <div className="bg-[#0a1f14] p-4 rounded-md border-2 border-[#2d4c39]">
+            <pre className="whitespace-pre-wrap break-words text-sm text-white">{serverResponse}</pre>
           </div>
         </div>
       )}
       
       {response && (
         <div>
-          <h2 className="text-xl font-semibold mb-2 text-gray-800">Response Content</h2>
-          <div className="bg-gray-100 p-4 rounded-md">
-            <pre className="whitespace-pre-wrap break-words text-gray-800">{response}</pre>
+          <h2 className="text-xl font-semibold mb-2 text-white">Response Content</h2>
+          <div className="bg-[#0a1f14] p-4 rounded-md border-2 border-[#2d4c39]">
+            <pre className="whitespace-pre-wrap break-words text-white">{response}</pre>
           </div>
         </div>
       )}
