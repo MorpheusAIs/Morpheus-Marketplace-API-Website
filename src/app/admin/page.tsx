@@ -33,6 +33,9 @@ export default function AdminPage() {
   const router = useRouter();
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [automationSettings, setAutomationSettings] = useState<AutomationSettings | null>(null);
+  const [localSessionDuration, setLocalSessionDuration] = useState<number>(0);
+  const [localIsEnabled, setLocalIsEnabled] = useState<boolean>(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
   const [newKeyName, setNewKeyName] = useState('');
   const [selectedApiKeyPrefix, setSelectedApiKeyPrefix] = useState<string>('');
   const [fullApiKey, setFullApiKey] = useState<string>('');
@@ -51,6 +54,15 @@ export default function AdminPage() {
 
     fetchApiKeys();
   }, [isAuthenticated, router]);
+
+  useEffect(() => {
+    if (automationSettings) {
+      const isChanged = 
+        localSessionDuration !== automationSettings.session_duration || 
+        localIsEnabled !== automationSettings.is_enabled;
+      setHasUnsavedChanges(isChanged);
+    }
+  }, [localSessionDuration, localIsEnabled, automationSettings]);
 
   // Clear success message after 5 seconds
   useEffect(() => {
@@ -108,6 +120,8 @@ export default function AdminPage() {
       if (response.data) {
         console.log('Successfully loaded automation settings:', response.data);
         setAutomationSettings(response.data);
+        setLocalSessionDuration(response.data.session_duration);
+        setLocalIsEnabled(response.data.is_enabled);
         setShowKeyInput(false);
         setKeyInputValue('');
       } else {
@@ -173,19 +187,24 @@ export default function AdminPage() {
       });
   };
 
-  const updateAutomationSettings = async (isEnabled: boolean, duration: number) => {
+  const updateAutomationSettings = async () => {
     if (!fullApiKey) {
       setError('No API key provided. Please enter your full API key to update settings.');
       return;
     }
+
+    if (localSessionDuration <= 0) {
+      setError('Session duration must be greater than 0.');
+      return;
+    }
     
     try {
-      console.log('Updating automation settings with API key:', { isEnabled, duration });
+      console.log('Updating automation settings with API key:', { isEnabled: localIsEnabled, duration: localSessionDuration });
       const response = await apiPut<AutomationSettings>(
         'https://api.mor.org/api/v1/automation/settings',
         {
-          is_enabled: isEnabled,
-          session_duration: duration,
+          is_enabled: localIsEnabled,
+          session_duration: localSessionDuration,
         },
         fullApiKey
       );
@@ -196,6 +215,7 @@ export default function AdminPage() {
 
       if (response.data) {
         setAutomationSettings(response.data);
+        setHasUnsavedChanges(false);
         setSuccessMessage('Automation settings updated successfully');
       }
     } catch (err) {
@@ -212,13 +232,19 @@ export default function AdminPage() {
       return;
     }
     
-    if (selectedApiKeyPrefix && !keyInputValue.startsWith(selectedApiKeyPrefix)) {
-      setError(`The key must start with ${selectedApiKeyPrefix}`);
-      return;
+    if (selectedApiKeyPrefix) {
+      // Normalize the input by trimming whitespace
+      const normalizedInput = keyInputValue.trim();
+      
+      // Check if it starts with the required prefix
+      if (!normalizedInput.startsWith(selectedApiKeyPrefix)) {
+        setError(`The key must start with ${selectedApiKeyPrefix}`);
+        return;
+      }
     }
     
     // Set the API key and immediately use it directly
-    const apiKey = keyInputValue;
+    const apiKey = keyInputValue.trim();
     setFullApiKey(apiKey);
     
     // Immediately fetch with the key value instead of using state
@@ -236,6 +262,8 @@ export default function AdminPage() {
       if (response.data) {
         console.log('Successfully loaded automation settings:', response.data);
         setAutomationSettings(response.data);
+        setLocalSessionDuration(response.data.session_duration);
+        setLocalIsEnabled(response.data.is_enabled);
         setShowKeyInput(false);
         setKeyInputValue('');
       } else {
@@ -243,7 +271,8 @@ export default function AdminPage() {
         setError('No automation settings data received');
       }
     } catch (err) {
-      setError('Failed to load automation settings');
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      setError(`Failed to load automation settings: ${errorMessage}. Please verify your API key is correct.`);
       console.error('Error fetching automation settings:', err);
     }
   };
@@ -260,7 +289,7 @@ export default function AdminPage() {
     <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center mb-4 px-4 sm:px-0">
         <h1 className="text-3xl font-bold text-white mb-2">Admin Dashboard</h1>
-        <Link href="/" className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">
+        <Link href="/" className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
           Home
         </Link>
       </div>
@@ -330,11 +359,11 @@ export default function AdminPage() {
                   value={newKeyName}
                   onChange={(e) => setNewKeyName(e.target.value)}
                   placeholder="Enter key name"
-                  className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                 />
                 <button
                   type="submit"
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
                 >
                   Create Key
                 </button>
@@ -347,7 +376,7 @@ export default function AdminPage() {
                   key={key.id}
                   className={`flex items-center justify-between p-4 rounded-md ${
                     selectedApiKeyPrefix === key.key_prefix
-                      ? 'bg-blue-50 border border-blue-200' 
+                      ? 'bg-green-50 border border-green-200' 
                       : 'bg-gray-50'
                   }`}
                 >
@@ -371,8 +400,8 @@ export default function AdminPage() {
                       onClick={() => checkAutomationSettings(key.key_prefix)}
                       className={`px-2 py-1 text-xs rounded hover:bg-opacity-80 ${
                         selectedApiKeyPrefix === key.key_prefix
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200'
+                          ? 'bg-green-500 text-white'
+                          : 'bg-green-100 text-green-800 hover:bg-green-200'
                       }`}
                     >
                       {selectedApiKeyPrefix === key.key_prefix ? 'Selected' : 'Check Automation'}
@@ -395,7 +424,7 @@ export default function AdminPage() {
 
             {selectedApiKeyPrefix ? (
               <>
-                <div className="mb-4 p-3 bg-blue-50 rounded text-sm text-blue-800">
+                <div className="mb-4 p-3 bg-green-50 rounded text-sm text-green-800">
                   Working with API key: {selectedApiKeyPrefix}...
                 </div>
 
@@ -406,7 +435,7 @@ export default function AdminPage() {
                     </p>
                     <button
                       onClick={() => setShowKeyInput(true)}
-                      className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                      className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                     >
                       Enter API Key
                     </button>
@@ -426,18 +455,32 @@ export default function AdminPage() {
                           placeholder={`${selectedApiKeyPrefix}...`}
                           value={keyInputValue}
                           onChange={(e) => setKeyInputValue(e.target.value)}
-                          className="flex-1 min-w-0 block w-full px-3 py-2 rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          onPaste={(e) => {
+                            // Prevent default to handle the paste manually
+                            e.preventDefault();
+                            // Get pasted content and clean it
+                            const pastedText = e.clipboardData.getData('text').trim();
+                            setKeyInputValue(pastedText);
+                          }}
+                          className="flex-1 min-w-0 block w-full px-3 py-2 rounded-md border-gray-300 focus:border-green-500 focus:ring-green-500 sm:text-sm"
+                          autoComplete="off"
+                          spellCheck="false"
                         />
                         <button
                           type="submit"
-                          className="inline-flex items-center px-4 py-2 border border-transparent rounded-r-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          className="inline-flex items-center px-4 py-2 border border-transparent rounded-r-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                         >
                           Submit
                         </button>
                       </div>
-                      <p className="mt-1 text-xs text-gray-500">
-                        Your API key is never stored in the browser and is only used for the current request.
-                      </p>
+                      <div className="mt-2 space-y-1">
+                        <p className="text-xs text-gray-500">
+                          Your API key is never stored in the browser and is only used for the current request.
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Make sure to paste the full key without any extra spaces.
+                        </p>
+                      </div>
                     </div>
                   </form>
                 )}
@@ -452,29 +495,24 @@ export default function AdminPage() {
                         <div className="flex items-center">
                           <span
                             className={`mr-2 px-2 py-1 text-xs rounded-full ${
-                              automationSettings.is_enabled
+                              localIsEnabled
                                 ? 'bg-green-100 text-green-800'
                                 : 'bg-gray-100 text-gray-800'
                             }`}
                           >
-                            {automationSettings.is_enabled ? 'Enabled' : 'Disabled'}
+                            {localIsEnabled ? 'Enabled' : 'Disabled'}
                           </span>
                           <button
-                            onClick={() =>
-                              updateAutomationSettings(
-                                !automationSettings.is_enabled,
-                                automationSettings.session_duration
-                              )
-                            }
-                            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
-                              automationSettings.is_enabled
-                                ? 'bg-indigo-600'
+                            onClick={() => setLocalIsEnabled(!localIsEnabled)}
+                            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+                              localIsEnabled
+                                ? 'bg-green-600'
                                 : 'bg-gray-200'
                             }`}
                           >
                             <span
                               className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                                automationSettings.is_enabled
+                                localIsEnabled
                                   ? 'translate-x-5'
                                   : 'translate-x-0'
                               }`}
@@ -490,20 +528,30 @@ export default function AdminPage() {
                         <div className="mt-1 flex rounded-md shadow-sm">
                           <input
                             type="number"
-                            value={automationSettings.session_duration}
-                            onChange={(e) =>
-                              updateAutomationSettings(
-                                automationSettings.is_enabled,
-                                parseInt(e.target.value)
-                              )
-                            }
+                            value={localSessionDuration}
+                            onChange={(e) => setLocalSessionDuration(parseInt(e.target.value))}
                             min="1"
-                            className="flex-1 min-w-0 block w-full px-3 py-2 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-black bg-white"
+                            className="flex-1 min-w-0 block w-full px-3 py-2 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm text-black bg-white"
                           />
                         </div>
                       </div>
 
-                      <div className="mt-4 text-right">
+                      {hasUnsavedChanges && (
+                        <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded-md">
+                          <p className="text-xs text-yellow-700">
+                            You have unsaved changes. Click "Update Settings" to save.
+                          </p>
+                        </div>
+                      )}
+
+                      <div className="mt-4 flex justify-between">
+                        <button
+                          type="button"
+                          onClick={updateAutomationSettings}
+                          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                        >
+                          Update Settings
+                        </button>
                         <button
                           type="button"
                           onClick={() => {
