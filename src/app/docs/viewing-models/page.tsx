@@ -3,20 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-
-const YouTubeEmbed = ({ videoId }: { videoId: string }) => {
-  return (
-    <div className="relative w-full pt-[56.25%] rounded-lg overflow-hidden bg-[#0a1f14] mb-6">
-      <iframe
-        className="absolute top-0 left-0 w-full h-full"
-        src={`https://www.youtube.com/embed/${videoId}`}
-        title="How to View Available Models Tutorial"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-      />
-    </div>
-  );
-};
+import YouTubeEmbed from '../../components/YouTubeEmbed';
 
 export default function ViewingModels() {
   return (
@@ -34,7 +21,7 @@ export default function ViewingModels() {
         Morpheus API Gateway - How to Explore the Available Models
       </h1>
 
-      <YouTubeEmbed videoId="gpMuim9cxzg" />
+      <YouTubeEmbed videoId="gpMuim9cxzg" title="How to View Available Models Tutorial" />
       
       <p className="text-lg mb-6">
         The purpose of this document is to provide instructions for how to view the available active models within the Morpheus Compute Marketplace via the "Swagger UI". 

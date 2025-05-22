@@ -397,6 +397,7 @@ export default function ChatPage() {
         <button 
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="p-2 rounded-md hover:bg-[#143824] text-white transition-colors"
+          aria-label="Toggle sidebar"
         >
           ☰
         </button>
@@ -412,16 +413,32 @@ export default function ChatPage() {
       </div>
       
       <div className="flex flex-1 overflow-hidden">
+        {/* Overlay for mobile when sidebar is open */}
+        {isSidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+          ></div>
+        )}
+        
         {/* Sidebar */}
-        <div className={`bg-[#0a1f14] text-white ${isSidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300 overflow-hidden flex flex-col`}>
+        <div className={`fixed md:static inset-y-0 left-0 z-30 bg-[#0a1f14] text-white ${isSidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300 overflow-hidden flex flex-col`}>
           <div className="p-4 flex justify-between items-center">
             <h2 className="text-xl font-semibold text-white">Chat History</h2>
-            <button 
-              onClick={startNewChat} 
-              className="px-2 py-1 bg-[#0f2c1e] text-white rounded-md hover:bg-[#143824] text-sm transition-colors"
-            >
-              New Chat
-            </button>
+            <div className="flex space-x-2">
+              <button 
+                onClick={startNewChat} 
+                className="px-2 py-1 bg-[#0f2c1e] text-white rounded-md hover:bg-[#143824] text-sm transition-colors"
+              >
+                New Chat
+              </button>
+              <button 
+                onClick={() => setIsSidebarOpen(false)}
+                className="p-1 text-white hover:text-[#57a87a] md:hidden"
+              >
+                ✕
+              </button>
+            </div>
           </div>
           
           <div className="p-4 border-t border-[#2d4c39]">
@@ -453,7 +470,12 @@ export default function ChatPage() {
                   <li 
                     key={chat.id} 
                     className={`p-3 hover:bg-[#132b1c] cursor-pointer flex justify-between items-center ${activeChatId === chat.id ? 'bg-[#143824]' : ''}`}
-                    onClick={() => loadChat(chat.id)}
+                    onClick={() => {
+                      loadChat(chat.id);
+                      if (window.innerWidth < 768) {
+                        setIsSidebarOpen(false);
+                      }
+                    }}
                   >
                     <div className="truncate">
                       <div className="font-medium truncate text-white">{chat.title}</div>

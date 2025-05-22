@@ -2,20 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-
-const YouTubeEmbed = ({ videoId }: { videoId: string }) => {
-  return (
-    <div className="relative w-full pt-[56.25%] rounded-lg overflow-hidden bg-[#0a1f14] mb-6">
-      <iframe
-        className="absolute top-0 left-0 w-full h-full"
-        src={`https://www.youtube.com/embed/${videoId}`}
-        title="Open Web-UI Integration Tutorial"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-      />
-    </div>
-  );
-};
+import YouTubeEmbed from '../../components/YouTubeEmbed';
 
 export default function OpenWebUIIntegration() {
   return (
@@ -33,7 +20,7 @@ export default function OpenWebUIIntegration() {
         How To Integrate (Open Web-UI)
       </h1>
 
-      <YouTubeEmbed videoId="3cKlKahMHqc" />
+      <YouTubeEmbed videoId="3cKlKahMHqc" title="Open Web-UI Integration Tutorial" />
       
       <h2 className="text-2xl font-semibold text-white mb-4">
         Morpheus ↔ Open Web-UI

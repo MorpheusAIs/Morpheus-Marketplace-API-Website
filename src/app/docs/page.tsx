@@ -11,6 +11,7 @@ const docs = [
     items: [
       { title: 'What is the API Gateway', path: '/docs/what-is-api-gateway' },
       { title: 'How to use the API Gateway', path: '/docs/how-to-use-api-gateway' },
+      { title: 'API Gateway One-Sheeter', path: '/docs/api-gateway-one-sheeter' },
     ],
   },
   {
@@ -33,10 +34,18 @@ const docs = [
 ];
 
 export default function DocsPage() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
     <div className="flex h-screen">
+      {/* Overlay for mobile when sidebar is open */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        ></div>
+      )}
+      
       {/* Sidebar */}
       <div
         className={`${
@@ -44,8 +53,14 @@ export default function DocsPage() {
         } fixed inset-y-0 left-0 z-30 w-64 bg-[#0a1f14] transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0`}
       >
         <div className="h-full overflow-y-auto">
-          <div className="px-4 py-6">
+          <div className="px-4 py-6 flex justify-between items-center">
             <h2 className="text-2xl font-bold text-white">Documentation</h2>
+            <button 
+              onClick={() => setIsSidebarOpen(false)}
+              className="p-2 text-white hover:text-[#57a87a] md:hidden"
+            >
+              ✕
+            </button>
           </div>
           <nav className="px-4">
             {docs.map((section) => (
@@ -59,6 +74,7 @@ export default function DocsPage() {
                       <Link
                         href={item.path}
                         className="block px-4 py-2 text-sm text-gray-200 hover:bg-[#132b1c]/70 hover:text-white rounded-md transition-colors"
+                        onClick={() => setIsSidebarOpen(false)}
                       >
                         {item.title}
                       </Link>
@@ -79,6 +95,7 @@ export default function DocsPage() {
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               className="text-white hover:text-[#57a87a] focus:outline-none"
+              aria-label="Toggle sidebar"
             >
               <svg
                 className="h-6 w-6"

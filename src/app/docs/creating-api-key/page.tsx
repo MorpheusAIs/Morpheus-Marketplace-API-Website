@@ -3,20 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-
-const YouTubeEmbed = ({ videoId }: { videoId: string }) => {
-  return (
-    <div className="relative w-full pt-[56.25%] rounded-lg overflow-hidden bg-[#0a1f14] mb-6">
-      <iframe
-        className="absolute top-0 left-0 w-full h-full"
-        src={`https://www.youtube.com/embed/${videoId}`}
-        title="How to Create an API Key Tutorial"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-      />
-    </div>
-  );
-};
+import YouTubeEmbed from '../../components/YouTubeEmbed';
 
 export default function CreatingAPIKey() {
   return (
@@ -34,7 +21,7 @@ export default function CreatingAPIKey() {
         Morpheus API Gateway - How to Create an API Key
       </h1>
 
-      <YouTubeEmbed videoId="o7e5JoveN6c" />
+      <YouTubeEmbed videoId="o7e5JoveN6c" title="How to Create an API Key Tutorial" />
       
       <p className="text-lg mb-6">
         The purpose of this document is to provide instructions for how to create an API key via the "Swagger UI". 

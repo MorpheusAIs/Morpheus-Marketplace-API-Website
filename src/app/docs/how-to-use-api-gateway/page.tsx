@@ -3,20 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-
-const YouTubeEmbed = ({ videoId }: { videoId: string }) => {
-  return (
-    <div className="relative w-full pt-[56.25%] rounded-lg overflow-hidden bg-[#0a1f14] mb-6">
-      <iframe
-        className="absolute top-0 left-0 w-full h-full"
-        src={`https://www.youtube.com/embed/${videoId}`}
-        title="How to Use API Gateway Tutorial"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-      />
-    </div>
-  );
-};
+import YouTubeEmbed from '../../components/YouTubeEmbed';
 
 export default function HowToUseApiGateway() {
   return (
@@ -34,7 +21,7 @@ export default function HowToUseApiGateway() {
         Morpheus API Gateway
       </h1>
       
-      <YouTubeEmbed videoId="YotBHIAjmXk" />
+      <YouTubeEmbed videoId="YotBHIAjmXk" title="How to Use API Gateway Tutorial" />
       
       <p className="text-lg mb-6">
         Using the Morpheus API is truly simple. The structure of this gateway allows you to access the Morpheus Compute Marketplace just as you would with any other AI Provider (like OpenAI).
