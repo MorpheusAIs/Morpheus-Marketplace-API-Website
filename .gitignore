@@ -46,4 +46,4 @@ Database_Plan.md
 README-CHAT-DB.md
 
 # generated files
-**/generated/
+/src/generated/prisma
