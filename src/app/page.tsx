@@ -45,12 +45,15 @@ export default function Home() {
           </Link>
         </div>
         
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
           <Link href="/login" className="px-6 py-3 bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-md text-center hover:shadow-lg hover:shadow-blue-500/20 transition-all hover:-translate-y-1 font-medium">
             Login
           </Link>
           <Link href="/register" className="px-6 py-3 bg-gradient-to-br from-gray-100 to-gray-300 text-gray-800 rounded-md text-center hover:shadow-lg hover:shadow-gray-500/20 transition-all hover:-translate-y-1 font-medium border border-white/20">
             Register
+          </Link>
+          <Link href="https://api.mor.org/docs" className="px-6 py-3 bg-gradient-to-br from-green-500 to-green-700 text-white rounded-md text-center hover:shadow-lg hover:shadow-green-500/20 transition-all hover:-translate-y-1 font-medium">
+            Swagger UI
           </Link>
         </div>
       </div>

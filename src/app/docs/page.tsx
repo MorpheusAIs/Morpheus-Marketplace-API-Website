@@ -31,6 +31,16 @@ const docs = [
       { title: 'Eliza', path: '/docs/integration-eliza' },
     ],
   },
+  {
+    title: 'Links',
+    items: [
+      { title: 'Swagger UI', path: 'https://api.mor.org/docs' },
+      { title: 'Morpheus Website', path: 'https://mor.org' },
+      { title: 'Twitter', path: 'https://x.com/MorpheusAIs' },
+      { title: 'Discord', path: 'https://discord.gg/morpheusai' },
+      { title: 'Github', path: 'https://github.com/MorpheusAIs/' },
+    ],
+  },
 ];
 
 export default function DocsPage() {
@@ -71,13 +81,24 @@ export default function DocsPage() {
                 <ul className="mt-2 space-y-1">
                   {section.items.map((item) => (
                     <li key={item.path}>
-                      <Link
-                        href={item.path}
-                        className="block px-4 py-2 text-sm text-gray-200 hover:bg-[#132b1c]/70 hover:text-white rounded-md transition-colors"
-                        onClick={() => setIsSidebarOpen(false)}
-                      >
-                        {item.title}
-                      </Link>
+                      {item.path.startsWith('http') ? (
+                        <a
+                          href={item.path}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block px-4 py-2 text-sm text-gray-200 hover:bg-[#132b1c]/70 hover:text-white rounded-md transition-colors"
+                        >
+                          {item.title}
+                        </a>
+                      ) : (
+                        <Link
+                          href={item.path}
+                          className="block px-4 py-2 text-sm text-gray-200 hover:bg-[#132b1c]/70 hover:text-white rounded-md transition-colors"
+                          onClick={() => setIsSidebarOpen(false)}
+                        >
+                          {item.title}
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>
