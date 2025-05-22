@@ -44,6 +44,12 @@ input, textarea, select {
   color: var(--platinum) !important;
 }
 
+/* Remove default focus outline and add custom styling */
+input:focus, textarea:focus, select:focus, button:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px var(--matrix-green), 0 0 0 3px var(--emerald) !important;
+}
+
 /* For white background inputs only */
 .bg-white input, .bg-white textarea, .bg-white select,
 input.bg-white, textarea.bg-white, select.bg-white {

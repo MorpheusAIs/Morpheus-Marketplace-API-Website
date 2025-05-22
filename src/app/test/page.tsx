@@ -103,17 +103,36 @@ export default function TestPage() {
 }'`;
 
   return (
-    <main className="min-h-screen p-8 max-w-4xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-[var(--neon-mint)]">API Test Interface</h1>
+    <main className="min-h-screen p-8 pt-20 max-w-4xl mx-auto" style={{
+      backgroundImage: "url('/images/942b261a-ecc5-420d-9d4b-4b2ae73cab6d.png')",
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      backgroundAttachment: "fixed"
+    }}>
+      {/* Navigation Bar */}
+      <div className="fixed top-0 left-0 right-0 z-40 flex justify-between items-center p-4 border-b border-[var(--emerald)]/30 bg-[var(--matrix-green)]">
+        <div className="text-xl font-bold text-[var(--neon-mint)]">
+          Morpheus API Gateway
+        </div>
         <div className="flex gap-4">
-          <Link href="/login" className="px-4 py-2 bg-[var(--matrix-green)] hover:bg-[var(--eclipse)] text-[var(--platinum)] rounded-md transition-colors">
-            Login
+          <Link href="/chat" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
+            Chat
           </Link>
-          <Link href="/" className="px-4 py-2 bg-[var(--matrix-green)] hover:bg-[var(--eclipse)] text-[var(--platinum)] rounded-md transition-colors">
+          <Link href="/test" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
+            Test
+          </Link>
+          <Link href="/docs" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
+            Docs
+          </Link>
+          <Link href="/" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
             Home
           </Link>
         </div>
+      </div>
+      
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-[var(--neon-mint)]">API Test Interface</h1>
       </div>
       
       <form onSubmit={handleSubmit} className="mb-8">
@@ -126,8 +145,9 @@ export default function TestPage() {
             id="apiKey"
             value={apiKey}
             onChange={(e) => setApiKey(e.target.value)}
-            className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--midnight)] bg-white"
+            className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70 focus:ring-0 focus:border-[var(--emerald)]"
             placeholder="Enter your API key"
+            style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
           />
           {authError && (
             <div className="mt-2 text-red-400">
@@ -147,8 +167,9 @@ export default function TestPage() {
             id="prompt"
             value={userPrompt}
             onChange={(e) => setUserPrompt(e.target.value)}
-            className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md h-32 text-[var(--midnight)] bg-white"
+            className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md h-32 text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70 focus:ring-0 focus:border-[var(--emerald)]"
             placeholder="Enter your prompt"
+            style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
           />
         </div>
         
@@ -167,7 +188,7 @@ export default function TestPage() {
           <pre className="whitespace-pre-wrap break-words text-sm text-[var(--platinum)]">{curlCommand}</pre>
           <button
             onClick={() => navigator.clipboard.writeText(curlCommand)}
-            className="mt-2 px-3 py-1 bg-[var(--eclipse)] text-sm rounded-md hover:bg-[var(--emerald)]/30 text-[var(--platinum)] transition-colors"
+            className="mt-2 px-3 py-1 bg-[var(--eclipse)] text-sm rounded-md hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] transition-colors"
           >
             Copy to Clipboard
           </button>

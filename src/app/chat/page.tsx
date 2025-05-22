@@ -256,12 +256,18 @@ export default function ChatPage() {
 
   // Handle keyboard shortcuts for sending messages
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Send message on Ctrl+Enter or Cmd+Enter
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    // Regular Enter sends the message, unless Shift is pressed
+    if (e.key === 'Enter' && !e.shiftKey && !(e.ctrlKey || e.metaKey)) {
       e.preventDefault();
       if (userPrompt.trim()) {
         handleSubmit(e as unknown as React.FormEvent);
       }
+    }
+    
+    // Ctrl+Enter or Shift+Enter adds a new line
+    if (e.key === 'Enter' && (e.shiftKey || e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      setUserPrompt(prev => prev + '\n');
     }
   };
 
@@ -401,32 +407,38 @@ export default function ChatPage() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col bg-[var(--matrix-green)]">
+    <main className="min-h-screen flex flex-col" style={{
+      backgroundImage: "url('/images/942b261a-ecc5-420d-9d4b-4b2ae73cab6d.png')",
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      backgroundAttachment: "fixed"
+    }}>
       {/* Navigation Bar */}
       <div className="fixed top-0 left-0 right-0 z-40 flex justify-between items-center p-4 border-b border-[var(--emerald)]/30 bg-[var(--matrix-green)]">
         <div className="flex items-center">
           <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="mr-3 p-2 rounded-md hover:bg-[var(--eclipse)] text-[var(--platinum)] transition-colors"
+            className="mr-3 p-1 rounded-md hover:bg-[var(--eclipse)] text-[var(--platinum)] transition-colors flex items-center justify-center"
             aria-label="Toggle sidebar"
           >
-            ☰
+            <span className="text-2xl font-bold leading-none">☰</span>
           </button>
           <div className="text-xl font-bold text-[var(--neon-mint)]">
             Morpheus API Gateway
           </div>
         </div>
         <div className="flex gap-4">
-          <Link href="/chat" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors">
+          <Link href="/chat" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
             Chat
           </Link>
-          <Link href="/test" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors">
+          <Link href="/test" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
             Test
           </Link>
-          <Link href="/docs" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors">
+          <Link href="/docs" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
             Docs
           </Link>
-          <Link href="/" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors">
+          <Link href="/" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
             Home
           </Link>
         </div>
@@ -450,7 +462,7 @@ export default function ChatPage() {
               <div className="flex space-x-2">
                 <button
                   onClick={startNewChat}
-                  className="p-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors"
+                  className="p-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors"
                   aria-label="New Chat"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -531,10 +543,10 @@ export default function ChatPage() {
 
         {/* Main content */}
         <div className="flex-1 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-auto p-4 bg-[var(--matrix-green)]">
+          <div className="flex-1 overflow-auto p-8">
             <div className="max-w-3xl mx-auto">
               {/* API Key input */}
-              <div className="mb-6 bg-[var(--eclipse)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30">
+              <div className="mb-6 bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30">
                 <div className="mb-4">
                   <label htmlFor="apiKey" className="block text-sm font-medium mb-1 text-[var(--platinum)]">
                     API Key
@@ -545,9 +557,9 @@ export default function ChatPage() {
                       id="apiKey"
                       value={apiKey}
                       onChange={(e) => setApiKey(e.target.value)}
-                      className="flex-1 p-2 border border-[var(--neon-mint)]/30 rounded-l-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70"
+                      className="flex-1 p-2 border border-[var(--neon-mint)]/30 rounded-l-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70 focus:ring-0 focus:border-[var(--emerald)]"
                       placeholder="Enter your API key"
-                      style={{color: 'var(--platinum) !important', caretColor: 'var(--platinum)'}}
+                      style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
                     />
                     <button
                       onClick={saveApiKey}
@@ -580,9 +592,9 @@ export default function ChatPage() {
                     id="modelSelect"
                     value={selectedModel}
                     onChange={(e) => setSelectedModel(e.target.value)}
-                    className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70"
+                    className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70 focus:ring-0 focus:border-[var(--emerald)]"
                     disabled={loadingModels}
-                    style={{color: 'var(--platinum) !important', caretColor: 'var(--platinum)'}}
+                    style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
                   >
                     {loadingModels ? (
                       <option value="default">Loading models...</option>
@@ -700,25 +712,30 @@ export default function ChatPage() {
               </div>
               
               {/* Input form */}
-              <form onSubmit={handleSubmit} className="bg-[var(--eclipse)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30 sticky bottom-4">
-                <div className="flex items-start">
-                  <textarea
-                    value={userPrompt}
-                    onChange={(e) => setUserPrompt(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    className="flex-1 p-3 border border-[var(--neon-mint)]/30 rounded-l-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70"
-                    placeholder="Type your message... (Ctrl+Enter to send)"
-                    rows={2}
-                    disabled={isLoading}
-                    style={{color: 'var(--platinum) !important', caretColor: 'var(--platinum)'}}
-                  />
-                  <button
-                    type="submit"
-                    disabled={isLoading || !userPrompt.trim()}
-                    className="px-4 py-3 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-r-md hover:bg-[var(--emerald)] disabled:bg-[var(--eclipse)] disabled:text-[var(--platinum)]/50 transition-colors"
-                  >
-                    {isLoading ? '...' : 'Send'}
-                  </button>
+              <form onSubmit={handleSubmit} className="bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30 sticky bottom-4">
+                <div className="flex flex-col">
+                  <div className="flex items-start">
+                    <textarea
+                      value={userPrompt}
+                      onChange={(e) => setUserPrompt(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      className="flex-1 p-3 border border-[var(--neon-mint)]/30 rounded-l-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70 focus:ring-0 focus:border-[var(--emerald)]"
+                      placeholder="Type your message... (Enter to send)"
+                      rows={2}
+                      disabled={isLoading}
+                      style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
+                    />
+                    <button
+                      type="submit"
+                      disabled={isLoading || !userPrompt.trim()}
+                      className="px-4 py-3 mr-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-r-md hover:bg-[var(--emerald)] disabled:bg-[var(--eclipse)] disabled:text-[var(--platinum)]/50 transition-colors"
+                    >
+                      {isLoading ? '...' : 'Send'}
+                    </button>
+                  </div>
+                  <div className="text-xs text-[var(--platinum)]/60 mt-1 ml-1">
+                    Press Shift+Enter for a new line
+                  </div>
                 </div>
               </form>
             </div>

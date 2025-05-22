@@ -46,13 +46,13 @@ export default function Home() {
         </div>
         
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Link href="/login" className="px-6 py-3 bg-gradient-to-br from-[var(--neon-mint)] to-[var(--emerald)] text-[var(--matrix-green)] rounded-md text-center hover:shadow-lg hover:shadow-[var(--neon-mint)]/20 transition-all hover:-translate-y-1 font-medium">
+          <Link href="/login" className="px-6 py-3 bg-[var(--eclipse)] text-[var(--platinum)] rounded-md text-center hover:shadow-lg hover:shadow-[var(--eclipse)]/20 transition-all hover:-translate-y-1 font-medium border border-[var(--emerald)]/30">
             Login
           </Link>
           <Link href="/register" className="px-6 py-3 bg-[var(--eclipse)] text-[var(--platinum)] rounded-md text-center hover:shadow-lg hover:shadow-[var(--eclipse)]/20 transition-all hover:-translate-y-1 font-medium border border-[var(--emerald)]/30">
             Register
           </Link>
-          <Link href="https://api.mor.org/docs" className="px-6 py-3 bg-gradient-to-br from-[var(--emerald)] to-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md text-center hover:shadow-lg hover:shadow-[var(--neon-mint)]/20 transition-all hover:-translate-y-1 font-medium">
+          <Link href="https://api.mor.org/docs" className="px-6 py-3 bg-[var(--eclipse)] text-[var(--platinum)] rounded-md text-center hover:shadow-lg hover:shadow-[var(--eclipse)]/20 transition-all hover:-translate-y-1 font-medium border border-[var(--emerald)]/30">
             Swagger UI
           </Link>
         </div>

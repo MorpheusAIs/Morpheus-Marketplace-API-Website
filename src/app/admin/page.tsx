@@ -286,30 +286,36 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-[var(--matrix-green)]">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8" style={{
+      backgroundImage: "url('/images/942b261a-ecc5-420d-9d4b-4b2ae73cab6d.png')",
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      backgroundAttachment: "fixed"
+    }}>
       {/* Navigation Bar */}
       <div className="fixed top-0 left-0 right-0 z-40 flex justify-between items-center p-4 border-b border-[var(--emerald)]/30 bg-[var(--matrix-green)]">
         <div className="text-xl font-bold text-[var(--neon-mint)]">
           Morpheus API Gateway
         </div>
         <div className="flex gap-4">
-          <Link href="/chat" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors">
+          <Link href="/chat" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
             Chat
           </Link>
-          <Link href="/test" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors">
+          <Link href="/test" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
             Test
           </Link>
-          <Link href="/docs" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors">
+          <Link href="/docs" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
             Docs
           </Link>
-          <Link href="/" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors">
+          <Link href="/" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
             Home
           </Link>
         </div>
       </div>
 
       {/* Main content with padding for the navbar */}
-      <div className="max-w-7xl mx-auto bg-[var(--eclipse)] rounded-lg shadow-lg p-6 sm:p-8 mt-16">
+      <div className="max-w-7xl mx-auto mt-16">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-[var(--neon-mint)] mb-4">API Gateway Administration</h1>
           <p className="text-[var(--platinum)]/80">
@@ -329,7 +335,7 @@ export default function AdminPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* API Keys Section */}
-          <div className="border border-[var(--emerald)]/30 rounded-lg p-6 bg-[var(--matrix-green)]">
+          <div className="border border-[var(--emerald)]/30 rounded-lg p-6 bg-[var(--midnight)]">
             <h2 className="text-xl font-bold text-[var(--neon-mint)] mb-4">API Keys</h2>
             
             {/* Create New API Key */}
@@ -345,7 +351,7 @@ export default function AdminPage() {
                     id="keyName"
                     value={newKeyName}
                     onChange={(e) => setNewKeyName(e.target.value)}
-                    className="w-full p-2 rounded-md border border-[var(--neon-mint)]/30 bg-[var(--midnight)] text-[var(--platinum)] !text-[var(--platinum)]"
+                    className="w-full p-2 rounded-md border border-[var(--neon-mint)]/30 bg-[var(--midnight)] text-[var(--platinum)] !text-[var(--platinum)] focus:ring-0 focus:border-[var(--emerald)]"
                     placeholder="Enter a name for your API key"
                     required
                     style={{color: 'var(--platinum)'}}
@@ -420,7 +426,7 @@ export default function AdminPage() {
           </div>
 
           {/* Automation Settings Section */}
-          <div className="border border-[var(--emerald)]/30 rounded-lg p-6 bg-[var(--matrix-green)]">
+          <div className="border border-[var(--emerald)]/30 rounded-lg p-6 bg-[var(--midnight)]">
             <h2 className="text-xl font-bold text-[var(--neon-mint)] mb-4">Automation Settings</h2>
             
             {selectedApiKeyPrefix ? (
@@ -456,7 +462,7 @@ export default function AdminPage() {
                             id="fullApiKey"
                             value={keyInputValue}
                             onChange={(e) => setKeyInputValue(e.target.value)}
-                            className="w-full p-2 rounded-md border border-[var(--neon-mint)]/30 bg-[var(--midnight)] text-[var(--platinum)] !text-[var(--platinum)]"
+                            className="w-full p-2 rounded-md border border-[var(--neon-mint)]/30 bg-[var(--midnight)] text-[var(--platinum)] !text-[var(--platinum)] focus:ring-0 focus:border-[var(--emerald)]"
                             placeholder="Enter your full API key"
                             required
                             style={{color: 'var(--platinum)'}}
@@ -492,7 +498,7 @@ export default function AdminPage() {
                         value={localSessionDuration}
                         onChange={(e) => setLocalSessionDuration(Number(e.target.value))}
                         min="1"
-                        className="w-full p-2 rounded-md border border-[var(--neon-mint)]/30 bg-[var(--midnight)] text-[var(--platinum)] !text-[var(--platinum)]"
+                        className="w-full p-2 rounded-md border border-[var(--neon-mint)]/30 bg-[var(--midnight)] text-[var(--platinum)] !text-[var(--platinum)] focus:ring-0 focus:border-[var(--emerald)]"
                         style={{color: 'var(--platinum)'}}
                       />
                       <p className="mt-1 text-sm text-[var(--platinum)]/60">
@@ -506,7 +512,7 @@ export default function AdminPage() {
                         id="isEnabled"
                         checked={localIsEnabled}
                         onChange={(e) => setLocalIsEnabled(e.target.checked)}
-                        className="h-4 w-4 text-[var(--neon-mint)] rounded border-[var(--neon-mint)]/30 focus:ring-[var(--neon-mint)]"
+                        className="h-4 w-4 text-[var(--neon-mint)] rounded border-[var(--neon-mint)]/30 focus:ring-0 focus:ring-offset-0"
                       />
                       <label htmlFor="isEnabled" className="ml-2 block text-sm text-[var(--platinum)]">
                         Enable Automation
