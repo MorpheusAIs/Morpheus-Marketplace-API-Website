@@ -36,6 +36,7 @@ type Model = {
 export default function ChatPage() {
   // API Key state
   const [apiKey, setApiKey] = useState('');
+  const [apiKeySaved, setApiKeySaved] = useState(false);
   
   // Chat state
   const [userPrompt, setUserPrompt] = useState('');
@@ -231,6 +232,14 @@ export default function ChatPage() {
       
       localStorage.setItem('authToken', apiKey);
       
+      // Show confirmation message
+      setApiKeySaved(true);
+      
+      // Hide the confirmation message after 3 seconds
+      setTimeout(() => {
+        setApiKeySaved(false);
+      }, 3000);
+      
       // If API key changed, clear the chat history display
       if (apiKeyChanged) {
         setActiveChatId(null);
@@ -392,22 +401,32 @@ export default function ChatPage() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col bg-black">
-      {/* Make the top bar fixed */}
-      <div className="fixed top-0 left-0 right-0 z-40 flex justify-between items-center p-4 border-b border-[#2d4c39] bg-[#0a1f14]">
-        <button 
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="p-2 rounded-md hover:bg-[#143824] text-white transition-colors"
-          aria-label="Toggle sidebar"
-        >
-          ☰
-        </button>
-        
+    <main className="min-h-screen flex flex-col bg-[var(--matrix-green)]">
+      {/* Navigation Bar */}
+      <div className="fixed top-0 left-0 right-0 z-40 flex justify-between items-center p-4 border-b border-[var(--emerald)]/30 bg-[var(--matrix-green)]">
+        <div className="flex items-center">
+          <button 
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="mr-3 p-2 rounded-md hover:bg-[var(--eclipse)] text-[var(--platinum)] transition-colors"
+            aria-label="Toggle sidebar"
+          >
+            ☰
+          </button>
+          <div className="text-xl font-bold text-[var(--neon-mint)]">
+            Morpheus API Gateway
+          </div>
+        </div>
         <div className="flex gap-4">
-          <Link href="/login" className="px-4 py-2 bg-[#0f2c1e] hover:bg-[#143824] text-white rounded-md transition-colors">
-            Login
+          <Link href="/chat" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors">
+            Chat
           </Link>
-          <Link href="/" className="px-4 py-2 bg-[#0f2c1e] hover:bg-[#143824] text-white rounded-md transition-colors">
+          <Link href="/test" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors">
+            Test
+          </Link>
+          <Link href="/docs" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors">
+            Docs
+          </Link>
+          <Link href="/" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors">
             Home
           </Link>
         </div>
@@ -418,92 +437,106 @@ export default function ChatPage() {
         {/* Overlay for mobile when sidebar is open */}
         {isSidebarOpen && (
           <div 
-            className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
+            className="fixed inset-0 bg-[var(--midnight)] bg-opacity-50 z-20 md:hidden"
             onClick={() => setIsSidebarOpen(false)}
           ></div>
         )}
         
         {/* Adjust sidebar top position to account for fixed header */}
-        <div className={`fixed md:static inset-y-0 left-0 z-30 bg-[#0a1f14] text-white ${isSidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300 overflow-hidden flex flex-col top-16`}>
-          <div className="p-4 flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-white">Chat History</h2>
-            <div className="flex space-x-2">
-              <button 
-                onClick={startNewChat} 
-                className="px-2 py-1 bg-[#0f2c1e] text-white rounded-md hover:bg-[#143824] text-sm transition-colors"
-              >
-                New Chat
-              </button>
-              <button 
-                onClick={() => setIsSidebarOpen(false)}
-                className="p-1 text-white hover:text-[#57a87a] md:hidden"
-              >
-                ✕
-              </button>
+        <div className={`${isSidebarOpen ? 'w-64' : 'w-0'} bg-[var(--matrix-green)] border-r border-[var(--emerald)]/30 flex-shrink-0 transition-all duration-300 overflow-hidden fixed md:static inset-y-0 left-0 z-30 top-16`}>
+          <div className="h-full flex flex-col">
+            <div className="p-4 border-b border-[var(--emerald)]/30 flex justify-between items-center">
+              <h2 className="text-xl font-bold text-[var(--neon-mint)]">Chats</h2>
+              <div className="flex space-x-2">
+                <button
+                  onClick={startNewChat}
+                  className="p-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors"
+                  aria-label="New Chat"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                </button>
+                <button 
+                  onClick={() => setIsSidebarOpen(false)}
+                  className="p-1 text-[var(--platinum)] hover:text-[var(--neon-mint)] md:hidden"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
-          </div>
-          
-          <div className="p-4 border-t border-[#2d4c39]">
-            <div className="flex items-center mb-2">
-              <input
-                type="checkbox"
-                id="saveChatHistory"
-                checked={saveChatHistory}
-                onChange={(e) => setSaveChatHistory(e.target.checked)}
-                className="mr-2"
-              />
-              <label htmlFor="saveChatHistory" className="text-sm text-white">Save Chat History</label>
+            
+            <div className="p-4 border-t border-[var(--emerald)]/30">
+              <div className="flex items-center mb-2">
+                <input
+                  type="checkbox"
+                  id="saveChatHistory"
+                  checked={saveChatHistory}
+                  onChange={(e) => setSaveChatHistory(e.target.checked)}
+                  className="mr-2"
+                />
+                <label htmlFor="saveChatHistory" className="text-sm text-[var(--platinum)]">Save Chat History</label>
+              </div>
+              {saveChatHistory && (
+                <p className="text-xs text-[var(--platinum)]/70">
+                  Your chat history is saved in a database and can only be accessed with your API key.
+                </p>
+              )}
             </div>
-            {saveChatHistory && (
-              <p className="text-xs text-gray-200">
-                Your chat history is saved in a database and can only be accessed with your API key.
-              </p>
-            )}
-          </div>
-          
-          <div className="flex-grow overflow-auto">
-            {loadingChats ? (
-              <div className="p-4 text-white">Loading chats...</div>
-            ) : chats.length === 0 ? (
-              <div className="p-4 text-white">No saved chats</div>
-            ) : (
-              <ul>
-                {chats.map((chat) => (
-                  <li 
-                    key={chat.id} 
-                    className={`p-3 hover:bg-[#132b1c] cursor-pointer flex justify-between items-center ${activeChatId === chat.id ? 'bg-[#143824]' : ''}`}
-                    onClick={() => {
-                      loadChat(chat.id);
-                      if (window.innerWidth < 768) {
-                        setIsSidebarOpen(false);
-                      }
-                    }}
-                  >
-                    <div className="truncate">
-                      <div className="font-medium truncate text-white">{chat.title}</div>
-                      <div className="text-xs text-gray-200">{formatDate(chat.updatedAt)}</div>
-                    </div>
-                    <button 
-                      onClick={(e) => deleteChat(chat.id, e)}
-                      className="text-white hover:text-red-500"
+
+            <div className="flex-1 overflow-y-auto p-2">
+              {loadingChats ? (
+                <div className="flex justify-center py-4">
+                  <div className="text-[var(--platinum)]">Loading chats...</div>
+                </div>
+              ) : chats.length > 0 ? (
+                <ul className="space-y-1">
+                  {chats.map((chat) => (
+                    <li
+                      key={chat.id}
+                      onClick={() => {
+                        loadChat(chat.id);
+                        if (window.innerWidth < 768) {
+                          setIsSidebarOpen(false);
+                        }
+                      }}
+                      className={`p-2 rounded-md cursor-pointer flex justify-between items-center ${
+                        activeChatId === chat.id
+                          ? 'bg-[var(--eclipse)] text-[var(--neon-mint)]'
+                          : 'text-[var(--platinum)] hover:bg-[var(--eclipse)]/50'
+                      }`}
                     >
-                      ×
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
+                      <div className="truncate">
+                        <div className="font-medium truncate">{chat.title || 'Untitled Chat'}</div>
+                        <div className="text-xs text-[var(--platinum)]/70">{formatDate(chat.updatedAt)}</div>
+                      </div>
+                      <button
+                        onClick={(e) => deleteChat(chat.id, e)}
+                        className="ml-2 text-[var(--platinum)]/70 hover:text-red-400 transition-colors"
+                        aria-label="Delete chat"
+                      >
+                        ×
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-[var(--platinum)]/70">No chat history</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Main content */}
         <div className="flex-1 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-auto p-4 bg-black">
+          <div className="flex-1 overflow-auto p-4 bg-[var(--matrix-green)]">
             <div className="max-w-3xl mx-auto">
               {/* API Key input */}
-              <div className="mb-6 bg-[#11271b] p-4 rounded-lg shadow-md border-2 border-[#2d4c39]">
+              <div className="mb-6 bg-[var(--eclipse)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30">
                 <div className="mb-4">
-                  <label htmlFor="apiKey" className="block text-sm font-medium mb-1 text-white">
+                  <label htmlFor="apiKey" className="block text-sm font-medium mb-1 text-[var(--platinum)]">
                     API Key
                   </label>
                   <div className="flex">
@@ -512,20 +545,26 @@ export default function ChatPage() {
                       id="apiKey"
                       value={apiKey}
                       onChange={(e) => setApiKey(e.target.value)}
-                      className="flex-1 p-2 border border-[#2d4c39] rounded-l-md text-black bg-white"
+                      className="flex-1 p-2 border border-[var(--neon-mint)]/30 rounded-l-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70"
                       placeholder="Enter your API key"
+                      style={{color: 'var(--platinum) !important', caretColor: 'var(--platinum)'}}
                     />
                     <button
                       onClick={saveApiKey}
-                      className="px-4 py-2 bg-[#143824] text-white rounded-r-md hover:bg-[#2d4c39] transition-colors"
+                      className="px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-r-md hover:bg-[var(--emerald)] transition-colors"
                     >
                       Save
                     </button>
                   </div>
+                  {apiKeySaved && (
+                    <div className="mt-2 text-[var(--neon-mint)]">
+                      API key saved successfully!
+                    </div>
+                  )}
                   {authError && (
-                    <div className="mt-2 text-red-500">
+                    <div className="mt-2 text-red-400">
                       Authentication failed. Please provide a valid API key or&nbsp;
-                      <Link href="/login" className="text-[#57a87a] hover:text-[#79c99a]">
+                      <Link href="/login" className="text-[var(--platinum)] hover:text-[var(--neon-mint)]">
                         log in to get one
                       </Link>.
                     </div>
@@ -534,15 +573,16 @@ export default function ChatPage() {
                 
                 {/* Model Selection Dropdown */}
                 <div>
-                  <label htmlFor="modelSelect" className="block text-sm font-medium mb-1 text-white">
+                  <label htmlFor="modelSelect" className="block text-sm font-medium mb-1 text-[var(--platinum)]">
                     Model
                   </label>
                   <select
                     id="modelSelect"
                     value={selectedModel}
                     onChange={(e) => setSelectedModel(e.target.value)}
-                    className="w-full p-2 border border-[#2d4c39] rounded-md text-black bg-white"
+                    className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70"
                     disabled={loadingModels}
+                    style={{color: 'var(--platinum) !important', caretColor: 'var(--platinum)'}}
                   >
                     {loadingModels ? (
                       <option value="default">Loading models...</option>
@@ -556,7 +596,7 @@ export default function ChatPage() {
                       ))
                     )}
                   </select>
-                  <div className="text-xs text-gray-300 mt-1">
+                  <div className="text-xs text-[var(--platinum)]/70 mt-1">
                     {loadingModels ? 'Fetching available models...' : 
                      models.length === 0 ? 'No models found, using default' : 
                      `${models.length} model${models.length !== 1 ? 's' : ''} available`}
@@ -567,7 +607,7 @@ export default function ChatPage() {
               {/* Messages */}
               <div className="mb-6 space-y-6">
                 {messages.length === 0 ? (
-                  <div className="text-center text-white my-12">
+                  <div className="text-center text-[var(--platinum)] my-12">
                     <p className="text-xl mb-2">Start a new conversation</p>
                     <p className="text-sm">Or select a previous chat from the sidebar</p>
                   </div>
@@ -582,31 +622,31 @@ export default function ChatPage() {
                             : 'mr-8'
                         }`}
                       >
-                        <div className="font-medium mb-1 text-[#57a87a]">
+                        <div className="font-medium mb-1 text-[var(--neon-mint)]">
                           {message.role === 'user' ? 'You' : 'Assistant'}
                         </div>
                         <div 
                           className={`p-4 rounded-lg ${
                             message.role === 'user' 
-                              ? 'bg-[#0f2c1e] border-2 border-[#2d4c39]' 
-                              : 'bg-[#183a29] shadow-md border-2 border-[#2d4c39]'
+                              ? 'bg-[var(--matrix-green)] border border-[var(--emerald)]/30' 
+                              : 'bg-[var(--eclipse)] shadow-md border border-[var(--emerald)]/30'
                           }`}
                         >
                           {message.role === 'user' ? (
-                            <div className="whitespace-pre-wrap text-white">{message.content}</div>
+                            <div className="whitespace-pre-wrap text-[var(--platinum)]">{message.content}</div>
                           ) : (
-                            <div className="markdown-content text-white">
+                            <div className="markdown-content text-[var(--platinum)]">
                               <ReactMarkdown 
                                 rehypePlugins={[rehypeHighlight]}
                                 remarkPlugins={[remarkGfm]}
                                 components={{
                                   code({node, inline, className, children, ...props}: any) {
                                     return !inline ? (
-                                      <div className="bg-[#0a1f14] p-2 rounded-md my-2 overflow-x-auto border border-[#2d4c39]">
-                                        <code className="text-white" {...props}>{children}</code>
+                                      <div className="bg-[var(--midnight)] p-2 rounded-md my-2 overflow-x-auto border border-[var(--emerald)]/20">
+                                        <code className="text-[var(--platinum)]" {...props}>{children}</code>
                                       </div>
                                     ) : (
-                                      <code className="bg-[#0a1f14] px-1 py-0.5 rounded text-white font-mono text-sm" {...props}>
+                                      <code className="bg-[var(--midnight)] px-1 py-0.5 rounded text-[var(--platinum)] font-mono text-sm" {...props}>
                                         {children}
                                       </code>
                                     );
@@ -629,21 +669,21 @@ export default function ChatPage() {
                                   table({children}) {
                                     return (
                                       <div className="overflow-x-auto mb-3">
-                                        <table className="min-w-full border border-[#2d4c39] rounded-md">{children}</table>
+                                        <table className="min-w-full border border-[var(--emerald)]/30 rounded-md">{children}</table>
                                       </div>
                                     );
                                   },
                                   th({children}) {
-                                    return <th className="border border-[#2d4c39] p-2 bg-[#0a1f14] text-left">{children}</th>;
+                                    return <th className="border border-[var(--emerald)]/30 p-2 bg-[var(--midnight)] text-left">{children}</th>;
                                   },
                                   td({children}) {
-                                    return <td className="border border-[#2d4c39] p-2">{children}</td>;
+                                    return <td className="border border-[var(--emerald)]/30 p-2">{children}</td>;
                                   },
                                   blockquote({children}) {
-                                    return <blockquote className="border-l-4 border-[#57a87a] pl-4 italic my-3">{children}</blockquote>;
+                                    return <blockquote className="border-l-4 border-[var(--emerald)] pl-4 italic my-3">{children}</blockquote>;
                                   },
                                   a({children, href}) {
-                                    return <a href={href} className="text-[#57a87a] hover:text-[#79c99a] underline" target="_blank" rel="noopener noreferrer">{children}</a>;
+                                    return <a href={href} className="text-[var(--platinum)] hover:text-[var(--neon-mint)] underline" target="_blank" rel="noopener noreferrer">{children}</a>;
                                   }
                                 }}
                               >
@@ -660,21 +700,22 @@ export default function ChatPage() {
               </div>
               
               {/* Input form */}
-              <form onSubmit={handleSubmit} className="bg-[#11271b] p-4 rounded-lg shadow-md border-2 border-[#2d4c39] sticky bottom-4">
+              <form onSubmit={handleSubmit} className="bg-[var(--eclipse)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30 sticky bottom-4">
                 <div className="flex items-start">
                   <textarea
                     value={userPrompt}
                     onChange={(e) => setUserPrompt(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    className="flex-1 p-3 border border-[#2d4c39] rounded-l-md text-black bg-white"
+                    className="flex-1 p-3 border border-[var(--neon-mint)]/30 rounded-l-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70"
                     placeholder="Type your message... (Ctrl+Enter to send)"
                     rows={2}
                     disabled={isLoading}
+                    style={{color: 'var(--platinum) !important', caretColor: 'var(--platinum)'}}
                   />
                   <button
                     type="submit"
                     disabled={isLoading || !userPrompt.trim()}
-                    className="px-4 py-3 bg-[#0f2c1e] text-white rounded-r-md hover:bg-[#143824] disabled:bg-[#183a29] disabled:opacity-70 transition-colors"
+                    className="px-4 py-3 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-r-md hover:bg-[var(--emerald)] disabled:bg-[var(--eclipse)] disabled:text-[var(--platinum)]/50 transition-colors"
                   >
                     {isLoading ? '...' : 'Send'}
                   </button>

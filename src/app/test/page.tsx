@@ -105,12 +105,12 @@ export default function TestPage() {
   return (
     <main className="min-h-screen p-8 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-white">API Test Interface</h1>
+        <h1 className="text-3xl font-bold text-[var(--neon-mint)]">API Test Interface</h1>
         <div className="flex gap-4">
-          <Link href="/login" className="px-4 py-2 bg-[#0f2c1e] hover:bg-[#143824] text-white rounded-md transition-colors">
+          <Link href="/login" className="px-4 py-2 bg-[var(--matrix-green)] hover:bg-[var(--eclipse)] text-[var(--platinum)] rounded-md transition-colors">
             Login
           </Link>
-          <Link href="/" className="px-4 py-2 bg-[#0f2c1e] hover:bg-[#143824] text-white rounded-md transition-colors">
+          <Link href="/" className="px-4 py-2 bg-[var(--matrix-green)] hover:bg-[var(--eclipse)] text-[var(--platinum)] rounded-md transition-colors">
             Home
           </Link>
         </div>
@@ -118,7 +118,7 @@ export default function TestPage() {
       
       <form onSubmit={handleSubmit} className="mb-8">
         <div className="mb-4">
-          <label htmlFor="apiKey" className="block text-sm font-medium mb-1 text-white">
+          <label htmlFor="apiKey" className="block text-sm font-medium mb-1 text-[var(--platinum)]">
             API Key
           </label>
           <input
@@ -126,13 +126,13 @@ export default function TestPage() {
             id="apiKey"
             value={apiKey}
             onChange={(e) => setApiKey(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-md text-black bg-white"
+            className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--midnight)] bg-white"
             placeholder="Enter your API key"
           />
           {authError && (
-            <div className="mt-2 text-red-500">
+            <div className="mt-2 text-red-400">
               Authentication failed. Please provide a valid API key or&nbsp;
-              <Link href="/login" className="text-[#57a87a] hover:text-[#79c99a]">
+              <Link href="/login" className="text-[var(--platinum)] hover:text-[var(--neon-mint)]">
                 log in to get one
               </Link>.
             </div>
@@ -140,14 +140,14 @@ export default function TestPage() {
         </div>
         
         <div className="mb-4">
-          <label htmlFor="prompt" className="block text-sm font-medium mb-1 text-white">
+          <label htmlFor="prompt" className="block text-sm font-medium mb-1 text-[var(--platinum)]">
             User Prompt
           </label>
           <textarea
             id="prompt"
             value={userPrompt}
             onChange={(e) => setUserPrompt(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-md h-32 text-black bg-white"
+            className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md h-32 text-[var(--midnight)] bg-white"
             placeholder="Enter your prompt"
           />
         </div>
@@ -155,19 +155,19 @@ export default function TestPage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="px-4 py-2 bg-[#0f2c1e] text-white rounded-md hover:bg-[#143824] disabled:bg-[#183a29] disabled:opacity-70 transition-colors"
+          className="px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md hover:bg-[var(--emerald)] disabled:bg-[var(--eclipse)] disabled:text-[var(--platinum)]/50 transition-colors"
         >
           {isLoading ? 'Sending...' : 'Send Request'}
         </button>
       </form>
       
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-2 text-white">CURL Request</h2>
-        <div className="bg-[#0a1f14] p-4 rounded-md border-2 border-[#2d4c39]">
-          <pre className="whitespace-pre-wrap break-words text-sm text-white">{curlCommand}</pre>
+        <h2 className="text-xl font-semibold mb-2 text-[var(--neon-mint)]">CURL Request</h2>
+        <div className="bg-[var(--matrix-green)] p-4 rounded-md border border-[var(--emerald)]/30">
+          <pre className="whitespace-pre-wrap break-words text-sm text-[var(--platinum)]">{curlCommand}</pre>
           <button
             onClick={() => navigator.clipboard.writeText(curlCommand)}
-            className="mt-2 px-3 py-1 bg-[#183a29] text-sm rounded-md hover:bg-[#2d4c39] text-white transition-colors"
+            className="mt-2 px-3 py-1 bg-[var(--eclipse)] text-sm rounded-md hover:bg-[var(--emerald)]/30 text-[var(--platinum)] transition-colors"
           >
             Copy to Clipboard
           </button>
@@ -176,18 +176,18 @@ export default function TestPage() {
       
       {serverResponse && (
         <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-2 text-white">Server Response</h2>
-          <div className="bg-[#0a1f14] p-4 rounded-md border-2 border-[#2d4c39]">
-            <pre className="whitespace-pre-wrap break-words text-sm text-white">{serverResponse}</pre>
+          <h2 className="text-xl font-semibold mb-2 text-[var(--neon-mint)]">Server Response</h2>
+          <div className="bg-[var(--matrix-green)] p-4 rounded-md border border-[var(--emerald)]/30">
+            <pre className="whitespace-pre-wrap break-words text-sm text-[var(--platinum)]">{serverResponse}</pre>
           </div>
         </div>
       )}
       
       {response && (
         <div>
-          <h2 className="text-xl font-semibold mb-2 text-white">Response Content</h2>
-          <div className="bg-[#0a1f14] p-4 rounded-md border-2 border-[#2d4c39]">
-            <pre className="whitespace-pre-wrap break-words text-white">{response}</pre>
+          <h2 className="text-xl font-semibold mb-2 text-[var(--neon-mint)]">Response Content</h2>
+          <div className="bg-[var(--matrix-green)] p-4 rounded-md border border-[var(--emerald)]/30">
+            <pre className="whitespace-pre-wrap break-words text-[var(--platinum)]">{response}</pre>
           </div>
         </div>
       )}

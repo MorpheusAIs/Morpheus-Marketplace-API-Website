@@ -22,9 +22,9 @@ export default function YouTubeEmbed({ videoId, title = 'YouTube Video' }: YouTu
   if (!isClient) {
     // Server-side or initial render - just show a placeholder
     return (
-      <div className="relative w-full pt-[56.25%] rounded-lg overflow-hidden bg-[#0a1f14] mb-6">
+      <div className="relative w-full pt-[56.25%] rounded-lg overflow-hidden bg-[var(--matrix-green)] mb-6">
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-white text-center">Loading video player...</div>
+          <div className="text-[var(--neon-mint)] text-center">Loading video player...</div>
         </div>
       </div>
     );
@@ -34,7 +34,7 @@ export default function YouTubeEmbed({ videoId, title = 'YouTube Video' }: YouTu
     // Show thumbnail with play button until clicked
     return (
       <div 
-        className="relative w-full pt-[56.25%] rounded-lg overflow-hidden bg-[#0a1f14] mb-6 cursor-pointer"
+        className="relative w-full pt-[56.25%] rounded-lg overflow-hidden bg-[var(--matrix-green)] mb-6 cursor-pointer border border-[var(--neon-mint)]/20"
         onClick={() => setClicked(true)}
         role="button"
         aria-label={`Play ${title} video`}
@@ -46,19 +46,19 @@ export default function YouTubeEmbed({ videoId, title = 'YouTube Video' }: YouTu
             style={{ backgroundImage: `url(${thumbnailUrl})` }}
           >
             {/* Fallback color in case thumbnail fails */}
-            <div className="absolute inset-0 bg-black bg-opacity-30"></div>
+            <div className="absolute inset-0 bg-[var(--midnight)] bg-opacity-30"></div>
           </div>
           
           {/* YouTube-style play button */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center">
-              <div className="w-0 h-0 border-t-8 border-b-8 border-t-transparent border-b-transparent border-l-[16px] border-l-white ml-1"></div>
+            <div className="w-16 h-16 bg-[var(--neon-mint)] rounded-full flex items-center justify-center">
+              <div className="w-0 h-0 border-t-8 border-b-8 border-t-transparent border-b-transparent border-l-[16px] border-l-[var(--matrix-green)] ml-1"></div>
             </div>
           </div>
           
           {/* Video title */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 bg-black bg-opacity-70">
-            <p className="text-white font-medium truncate">{title}</p>
+          <div className="absolute bottom-0 left-0 right-0 p-4 bg-[var(--eclipse)] bg-opacity-80">
+            <p className="text-[var(--platinum)] font-medium truncate">{title}</p>
           </div>
         </div>
       </div>
@@ -67,7 +67,7 @@ export default function YouTubeEmbed({ videoId, title = 'YouTube Video' }: YouTu
   
   // After clicking, show the actual iframe
   return (
-    <div className="relative w-full pt-[56.25%] rounded-lg overflow-hidden bg-[#0a1f14] mb-6">
+    <div className="relative w-full pt-[56.25%] rounded-lg overflow-hidden bg-[var(--matrix-green)] mb-6 border border-[var(--neon-mint)]/20">
       <iframe
         className="absolute top-0 left-0 w-full h-full"
         src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}

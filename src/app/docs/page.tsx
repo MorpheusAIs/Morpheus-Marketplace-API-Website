@@ -47,27 +47,48 @@ export default function DocsPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-[var(--matrix-green)]">
+      {/* Navigation Bar */}
+      <div className="fixed top-0 left-0 right-0 z-40 flex justify-between items-center p-4 border-b border-[var(--emerald)]/30 bg-[var(--matrix-green)]">
+        <div className="text-xl font-bold text-[var(--neon-mint)]">
+          Morpheus API Gateway
+        </div>
+        <div className="flex gap-4">
+          <Link href="/chat" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors">
+            Chat
+          </Link>
+          <Link href="/test" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors">
+            Test
+          </Link>
+          <Link href="/docs" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors">
+            Docs
+          </Link>
+          <Link href="/" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors">
+            Home
+          </Link>
+        </div>
+      </div>
+
       {/* Overlay for mobile when sidebar is open */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
+          className="fixed inset-0 bg-[var(--midnight)] bg-opacity-50 z-20 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         ></div>
       )}
       
-      {/* Sidebar */}
+      {/* Sidebar - adjust top padding to account for nav bar */}
       <div
         className={`${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } fixed inset-y-0 left-0 z-30 w-64 bg-[#0a1f14] transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0`}
+        } fixed inset-y-0 left-0 z-30 w-64 bg-[var(--matrix-green)] transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 pt-16`}
       >
         <div className="h-full overflow-y-auto">
           <div className="px-4 py-6 flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-white">Documentation</h2>
+            <h2 className="text-2xl font-bold text-[var(--neon-mint)]">Documentation</h2>
             <button 
               onClick={() => setIsSidebarOpen(false)}
-              className="p-2 text-white hover:text-[#57a87a] md:hidden"
+              className="p-2 text-[var(--platinum)] hover:text-[var(--neon-mint)] md:hidden"
             >
               ✕
             </button>
@@ -75,7 +96,7 @@ export default function DocsPage() {
           <nav className="px-4">
             {docs.map((section) => (
               <div key={section.title} className="mb-6">
-                <h3 className="text-sm font-semibold text-[#57a87a] uppercase tracking-wider">
+                <h3 className="text-sm font-semibold text-[var(--emerald)] uppercase tracking-wider">
                   {section.title}
                 </h3>
                 <ul className="mt-2 space-y-1">
@@ -86,14 +107,14 @@ export default function DocsPage() {
                           href={item.path}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="block px-4 py-2 text-sm text-gray-200 hover:bg-[#132b1c]/70 hover:text-white rounded-md transition-colors"
+                          className="block px-4 py-2 text-sm text-[var(--platinum)] hover:bg-[var(--eclipse)]/70 hover:text-[var(--neon-mint)] rounded-md transition-colors"
                         >
                           {item.title}
                         </a>
                       ) : (
                         <Link
                           href={item.path}
-                          className="block px-4 py-2 text-sm text-gray-200 hover:bg-[#132b1c]/70 hover:text-white rounded-md transition-colors"
+                          className="block px-4 py-2 text-sm text-[var(--platinum)] hover:bg-[var(--eclipse)]/70 hover:text-[var(--neon-mint)] rounded-md transition-colors"
                           onClick={() => setIsSidebarOpen(false)}
                         >
                           {item.title}
@@ -108,14 +129,14 @@ export default function DocsPage() {
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      {/* Main content - adjust top padding to account for nav bar */}
+      <div className="flex-1 flex flex-col overflow-hidden pt-16">
         {/* Mobile header */}
-        <div className="md:hidden bg-[#0a1f14] shadow-lg">
+        <div className="md:hidden bg-[var(--matrix-green)] shadow-lg">
           <div className="px-4 py-4 flex items-center justify-between">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="text-white hover:text-[#57a87a] focus:outline-none"
+              className="text-[var(--platinum)] hover:text-[var(--neon-mint)] focus:outline-none"
               aria-label="Toggle sidebar"
             >
               <svg
@@ -132,7 +153,7 @@ export default function DocsPage() {
                 />
               </svg>
             </button>
-            <h1 className="text-xl font-semibold text-white">
+            <h1 className="text-xl font-semibold text-[var(--neon-mint)]">
               Documentation
             </h1>
           </div>
@@ -141,14 +162,14 @@ export default function DocsPage() {
         {/* Content area */}
         <main className="flex-1 overflow-y-auto">
           <div className="max-w-4xl mx-auto px-4 py-8">
-            <div className="bg-[#11271b] p-8 rounded-lg shadow-xl border-2 border-[#2d4c39]">
+            <div className="bg-[var(--eclipse)] p-8 rounded-lg shadow-xl border-2 border-[var(--emerald)]/30">
               <div className="mb-8 text-center">
                 {/* Simple text header instead of Image for now */}
-                <div className="text-white text-2xl font-bold mb-4">Morpheus</div>
-                <h1 className="text-3xl font-bold text-white mb-4">
+                <div className="text-[var(--neon-mint)] text-2xl font-bold mb-4">Morpheus</div>
+                <h1 className="text-3xl font-bold text-[var(--platinum)] mb-4">
                   Welcome to the API Gateway Documentation
                 </h1>
-                <p className="text-lg text-gray-200 mb-6">
+                <p className="text-lg text-[var(--platinum)]/80 mb-6">
                   This documentation will help you get started with the API Gateway and
                   integrate it into your applications. Choose a topic from the sidebar
                   to learn more.
@@ -159,27 +180,27 @@ export default function DocsPage() {
                 {docs.map((section) => (
                   <div
                     key={section.title}
-                    className="bg-[#183a29] rounded-lg p-6 shadow-lg border-2 border-[#3d5c49]"
+                    className="bg-[var(--matrix-green)] rounded-lg p-6 shadow-lg border border-[var(--emerald)]/30"
                   >
-                    <h2 className="text-xl font-semibold text-white mb-4">
+                    <h2 className="text-xl font-semibold text-[var(--neon-mint)] mb-4">
                       {section.title}
                     </h2>
                     <ul className="space-y-3">
                       {section.items.map((item) => (
-                        <li key={item.path} className="pl-2 border-l-2 border-[#4d6c59]">
+                        <li key={item.path} className="pl-2 border-l-2 border-[var(--emerald)]/50">
                           {item.path.startsWith('http') ? (
                             <a
                               href={item.path}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-[#57a87a] hover:text-[#79c99a] transition-colors"
+                              className="text-[var(--platinum)] hover:text-[var(--neon-mint)] transition-colors"
                             >
                               {item.title}
                             </a>
                           ) : (
                             <Link
                               href={item.path}
-                              className="text-[#57a87a] hover:text-[#79c99a] transition-colors"
+                              className="text-[var(--platinum)] hover:text-[var(--neon-mint)] transition-colors"
                             >
                               {item.title}
                             </Link>
