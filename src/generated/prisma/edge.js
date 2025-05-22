@@ -151,7 +151,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/kylecohen/Desktop/APIOpenBetaDocs/src/generated/prisma",
+      "value": "/Volumes/moon/validate/OpenBeta-APIGateway-Docs/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -165,7 +165,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/kylecohen/Desktop/APIOpenBetaDocs/prisma/schema.prisma",
+    "sourceFilePath": "/Volumes/moon/validate/OpenBeta-APIGateway-Docs/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -179,7 +179,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": true,
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
