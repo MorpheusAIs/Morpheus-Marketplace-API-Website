@@ -393,7 +393,8 @@ export default function ChatPage() {
 
   return (
     <main className="min-h-screen flex flex-col bg-black">
-      <div className="flex justify-between items-center p-4 border-b border-[#2d4c39] bg-[#0a1f14] w-full">
+      {/* Make the top bar fixed */}
+      <div className="fixed top-0 left-0 right-0 z-40 flex justify-between items-center p-4 border-b border-[#2d4c39] bg-[#0a1f14]">
         <button 
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="p-2 rounded-md hover:bg-[#143824] text-white transition-colors"
@@ -412,7 +413,8 @@ export default function ChatPage() {
         </div>
       </div>
       
-      <div className="flex flex-1 overflow-hidden">
+      {/* Add padding to account for fixed header */}
+      <div className="flex flex-1 overflow-hidden pt-16">
         {/* Overlay for mobile when sidebar is open */}
         {isSidebarOpen && (
           <div 
@@ -421,8 +423,8 @@ export default function ChatPage() {
           ></div>
         )}
         
-        {/* Sidebar */}
-        <div className={`fixed md:static inset-y-0 left-0 z-30 bg-[#0a1f14] text-white ${isSidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300 overflow-hidden flex flex-col`}>
+        {/* Adjust sidebar top position to account for fixed header */}
+        <div className={`fixed md:static inset-y-0 left-0 z-30 bg-[#0a1f14] text-white ${isSidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300 overflow-hidden flex flex-col top-16`}>
           <div className="p-4 flex justify-between items-center">
             <h2 className="text-xl font-semibold text-white">Chat History</h2>
             <div className="flex space-x-2">

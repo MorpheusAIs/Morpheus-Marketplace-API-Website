@@ -167,12 +167,23 @@ export default function DocsPage() {
                     <ul className="space-y-3">
                       {section.items.map((item) => (
                         <li key={item.path} className="pl-2 border-l-2 border-[#4d6c59]">
-                          <Link
-                            href={item.path}
-                            className="text-[#57a87a] hover:text-[#79c99a] transition-colors"
-                          >
-                            {item.title}
-                          </Link>
+                          {item.path.startsWith('http') ? (
+                            <a
+                              href={item.path}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[#57a87a] hover:text-[#79c99a] transition-colors"
+                            >
+                              {item.title}
+                            </a>
+                          ) : (
+                            <Link
+                              href={item.path}
+                              className="text-[#57a87a] hover:text-[#79c99a] transition-colors"
+                            >
+                              {item.title}
+                            </Link>
+                          )}
                         </li>
                       ))}
                     </ul>
