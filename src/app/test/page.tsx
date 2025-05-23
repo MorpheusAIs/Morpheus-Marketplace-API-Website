@@ -4,6 +4,14 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+// Type definition for models
+type Model = {
+  id: string;
+  blockchainId?: string;
+  created?: number;
+  tags?: Array<any>;
+};
+
 export default function TestPage() {
   const [apiKey, setApiKey] = useState('');
   const [userPrompt, setUserPrompt] = useState('');
@@ -11,6 +19,12 @@ export default function TestPage() {
   const [serverResponse, setServerResponse] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [authError, setAuthError] = useState(false);
+  
+  // Model state
+  const [models, setModels] = useState<Model[]>([]);
+  const [selectedModel, setSelectedModel] = useState<string>('default');
+  const [loadingModels, setLoadingModels] = useState(false);
+  
   const router = useRouter();
 
   // Try to get auth token from localStorage on component mount
@@ -25,6 +39,65 @@ export default function TestPage() {
     }
   }, []);
 
+  // Fetch available models on component mount
+  useEffect(() => {
+    fetchAvailableModels();
+  }, []);
+
+  // Fetch available models from the API
+  const fetchAvailableModels = async () => {
+    setLoadingModels(true);
+    try {
+      console.log('Fetching models from API...');
+      
+      const response = await fetch('https://api.mor.org/api/v1/models/', {
+        method: 'GET',
+        headers: {
+          'accept': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API returned status ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Models API response:', data);
+      
+      // Handle the data structure we see in the console
+      if (data.data && Array.isArray(data.data)) {
+        console.log(`Retrieved ${data.data.length} models from data.data array`);
+        const formattedModels = data.data.map((model: any) => ({
+          id: model.id,
+          blockchainId: model.blockchainId,
+          created: model.created
+        }));
+        setModels(formattedModels);
+        
+        // Set the first model as selected if available
+        if (formattedModels.length > 0) {
+          setSelectedModel(formattedModels[0].id);
+        }
+      } else if (Array.isArray(data)) {
+        console.log(`Retrieved ${data.length} models from direct array`);
+        setModels(data);
+        if (data.length > 0) {
+          setSelectedModel(data[0].id);
+        }
+      } else {
+        console.error('Unexpected API response format:', data);
+        // Set a fallback model
+        setModels([{ id: 'default' }]);
+      }
+    } catch (error) {
+      console.error('Error fetching models:', error);
+      // Set a fallback model
+      setModels([{ id: 'default' }]);
+    } finally {
+      setLoadingModels(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -33,7 +106,7 @@ export default function TestPage() {
     try {
       // Create the request body
       const requestBody = {
-        model: "default",
+        model: selectedModel, // Use the selected model instead of "default"
         messages: [
           {
             role: "system",
@@ -88,7 +161,7 @@ export default function TestPage() {
   -H 'Authorization: ${apiKey || '[YOUR_API_KEY]'}' \\
   -H 'Content-Type: application/json' \\
   -d '{
-  "model": "default",
+  "model": "${selectedModel}",
   "messages": [
     {
       "role": "system",
@@ -157,6 +230,38 @@ export default function TestPage() {
               </Link>.
             </div>
           )}
+        </div>
+        
+        {/* Model Selection Dropdown */}
+        <div className="mb-4">
+          <label htmlFor="modelSelect" className="block text-sm font-medium mb-1 text-[var(--platinum)]">
+            Model
+          </label>
+          <select
+            id="modelSelect"
+            value={selectedModel}
+            onChange={(e) => setSelectedModel(e.target.value)}
+            className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70 focus:ring-0 focus:border-[var(--emerald)]"
+            disabled={loadingModels}
+            style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
+          >
+            {loadingModels ? (
+              <option value="default">Loading models...</option>
+            ) : models.length === 0 ? (
+              <option value="default">Default</option>
+            ) : (
+              models.map((model) => (
+                <option key={model.id} value={model.id}>
+                  {model.id}
+                </option>
+              ))
+            )}
+          </select>
+          <div className="text-xs text-[var(--platinum)]/70 mt-1">
+            {loadingModels ? 'Fetching available models...' : 
+             models.length === 0 ? 'No models found, using default' : 
+             `${models.length} model${models.length !== 1 ? 's' : ''} available`}
+          </div>
         </div>
         
         <div className="mb-4">
