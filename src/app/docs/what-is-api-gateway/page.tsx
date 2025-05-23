@@ -6,15 +6,6 @@ import Link from 'next/link';
 export default function WhatIsApiGatewayPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 text-[var(--platinum)]">
-      <div className="flex items-center justify-start space-x-4 mb-6">
-        <Link href="/" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors">
-          Home
-        </Link>
-        <Link href="/docs" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors">
-          Docs
-        </Link>
-      </div>
-      
       <h1 className="text-3xl font-bold text-[var(--neon-mint)] mb-6">
         API Gateway Open Beta Program
       </h1>
