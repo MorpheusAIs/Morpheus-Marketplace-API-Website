@@ -17,15 +17,15 @@ Step by Step
 
 1. Download and Install the Brave browser (version >1.76.52) through brave.com
 
-![image.png](attachment:612030c2-ae9e-4070-901e-fab0153c3e85:image.png)
+[bravehome.png]
 
 1. Open Brave browser and Click the hamburger icon on the top right and then settings
 
-![image.png](attachment:1207225c-866a-407b-8a83-cc143086fb85:image.png)
+[bravesettings.png]
 
 1. On the lefthand side click “Leo”, and then go to the “Bring your own model” section
 
-![image.png](attachment:dd1675d4-b78d-457f-a32e-62dde74ea251:image.png)
+[bravebyom.png]
 
 1. Click “Add new model” and start configuring the model:
     1. Label: MorpheusAI
@@ -35,20 +35,20 @@ Step by Step
     5. API Key: Morpheus API Key
     6. System Prompt: Customize or leave as default
     
-    ![image.png](attachment:081f2491-b93f-464e-ad43-b3b78b420984:image.png)
+    [bravemodels.png]
     
 2. Click add model at the bottom of the screen and go back to the “Bring your own model” section
 
-![image.png](attachment:768ac2a2-cbf2-4ee4-84a9-824d0544e56e:image.png)
+[braveselect.png]
 
 1. Find the “Default model for new conversations” box, and change it to MorpheusAI.
 
-![image.png](attachment:8679db1e-7efc-433c-970f-ab39e4c09306:image.png)
+[bravedefault.png]
 
 1. Go back to the main Leo Assistant page and click the 3 dots next to the “X” on the top bar, and select the MorpheusAI model if not already selected
 
-![image.png](attachment:deaeb8c3-4829-4ec9-b82d-7b522e585dc9:image.png)
+[leoselect.png]
 
 1. Go to a website and enter your prompt to use Brave Leo with Morpheus AI
 
-![image.png](attachment:677d4631-f6b2-4e8e-a9a6-d6894b5464b8:image.png)
+[usebrave.png]

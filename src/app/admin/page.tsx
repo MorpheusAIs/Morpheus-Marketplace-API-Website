@@ -162,8 +162,34 @@ export default function AdminPage() {
         // Clear the form
         setNewKeyName('');
         
-        // Show success message
-        setSuccessMessage('API key created successfully');
+        // Automatically set up automation settings with default values
+        try {
+          console.log('Setting up automation settings for new API key with default values');
+          const automationResponse = await apiPut<AutomationSettings>(
+            'https://api.mor.org/api/v1/automation/settings',
+            {
+              is_enabled: true,
+              session_duration: 86400, // 24 hours in seconds
+            },
+            fullKey
+          );
+
+          if (automationResponse.error) {
+            throw new Error(automationResponse.error);
+          }
+
+          if (automationResponse.data) {
+            console.log('Automation settings set successfully:', automationResponse.data);
+            setAutomationSettings(automationResponse.data);
+            setLocalSessionDuration(automationResponse.data.session_duration);
+            setLocalIsEnabled(automationResponse.data.is_enabled);
+            setHasUnsavedChanges(false);
+            setSuccessMessage('API key created successfully with automation enabled (24 hour sessions)');
+          }
+        } catch (automationErr) {
+          console.warn('Error setting automation settings:', automationErr);
+          setSuccessMessage('API key created successfully, but automation settings could not be set automatically. You can set them manually.');
+        }
         
         // Refresh the API keys list but wait a moment to avoid race conditions
         setTimeout(fetchApiKeys, 1000);
