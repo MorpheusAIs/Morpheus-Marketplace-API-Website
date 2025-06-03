@@ -121,17 +121,31 @@ export default function ChatPage() {
           blockchainId: model.blockchainId,
           created: model.created
         }));
-        setModels(formattedModels);
         
-        // Set the first model as selected if available
-        if (formattedModels.length > 0) {
-          setSelectedModel(formattedModels[0].id);
+        // Sort models alphabetically by ID
+        const sortedModels = formattedModels.sort((a: Model, b: Model) => a.id.localeCompare(b.id));
+        setModels(sortedModels);
+        
+        // Set llama-3.3-70b as default if available, otherwise use the first model
+        const defaultModel = sortedModels.find((model: Model) => model.id === 'llama-3.3-70b');
+        if (defaultModel) {
+          setSelectedModel('llama-3.3-70b');
+        } else if (sortedModels.length > 0) {
+          setSelectedModel(sortedModels[0].id);
         }
       } else if (Array.isArray(data)) {
         console.log(`Retrieved ${data.length} models from direct array`);
-        setModels(data);
-        if (data.length > 0) {
-          setSelectedModel(data[0].id);
+        
+        // Sort models alphabetically by ID
+        const sortedModels = data.sort((a: Model, b: Model) => a.id.localeCompare(b.id));
+        setModels(sortedModels);
+        
+        // Set llama-3.3-70b as default if available, otherwise use the first model
+        const defaultModel = sortedModels.find((model: Model) => model.id === 'llama-3.3-70b');
+        if (defaultModel) {
+          setSelectedModel('llama-3.3-70b');
+        } else if (sortedModels.length > 0) {
+          setSelectedModel(sortedModels[0].id);
         }
       } else {
         console.error('Unexpected API response format:', data);
