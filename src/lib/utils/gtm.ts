@@ -1,6 +1,6 @@
-import { sendGTMEvent } from '@next/third-parties/google';
+import { sendGAEvent, sendGTMEvent } from '@next/third-parties/google';
 
-// Type definitions for GTM events
+// Type definitions for tracking events
 export interface GTMEvent {
   event: string;
   [key: string]: any;
@@ -23,16 +23,25 @@ export const GTM_EVENTS = {
 } as const;
 
 /**
- * Send a custom event to Google Tag Manager
+ * Send a custom event to both Google Tag Manager and Google Analytics
  * @param event - The event object to send
  */
 export const trackEvent = (event: GTMEvent): void => {
-  if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_GTM_ID) {
-    try {
+  if (typeof window === 'undefined') return;
+
+  try {
+    // Send to Google Tag Manager if GTM ID is available
+    if (process.env.NEXT_PUBLIC_GTM_ID) {
       sendGTMEvent(event);
-    } catch (error) {
-      console.warn('Failed to send GTM event:', error);
     }
+
+    // Send to Google Analytics if GA ID is available
+    if (process.env.NEXT_PUBLIC_GA_ID) {
+      const { event: eventName, ...parameters } = event;
+      sendGAEvent('event', eventName, parameters);
+    }
+  } catch (error) {
+    console.warn('Failed to send tracking event:', error);
   }
 };
 

@@ -54,7 +54,7 @@ export const GTMProvider = ({ children }: GTMProviderProps) => {
 };
 
 /**
- * Hook to access GTM tracking functions from any component
+ * Hook to access both Google Analytics and Google Tag Manager tracking functions from any component
  */
 export const useGTM = (): GTMContextType => {
   const context = useContext(GTMContext);

@@ -1,24 +1,133 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Morpheus API Gateway Documentation
+
+This is a [Next.js](https://nextjs.org) project that provides documentation and management interface for the Morpheus API Gateway. The application includes user authentication, API key management, automation settings, and comprehensive documentation.
+
+## Features
+
+- 📚 **Documentation Hub**: Complete guides for API Gateway integration
+- 🔐 **User Authentication**: Secure login and registration system
+- 🔑 **API Key Management**: Create and manage API keys
+- ⚙️ **Automation Settings**: Configure automated behaviors
+- 💬 **Chat Interface**: Test API functionality (coming soon)
+- 📊 **Analytics**: Dual tracking with Google Analytics 4 + Google Tag Manager
+
+## Environment Setup
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+# Database
+DATABASE_URL="your_postgresql_connection_string"
+
+# Google Analytics 4
+NEXT_PUBLIC_GA_ID="G-XXXXXXXXXX"
+
+# Google Tag Manager
+NEXT_PUBLIC_GTM_ID="GTM-XXXXXXX"
+```
 
 ## Getting Started
 
-First, run the development server:
+First, install dependencies:
+
+```bash
+npm install
+```
+
+Set up the database:
+
+```bash
+npm run db:setup
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Dual Analytics Integration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This project includes both Google Analytics 4 and Google Tag Manager for comprehensive tracking:
+
+### Google Analytics 4 (GA4)
+- **Direct analytics tracking** for immediate data collection
+- **Measurement ID**: `G-MSQ0EV24TS`
+- **Real-time reporting** and detailed user analytics
+
+### Google Tag Manager (GTM)
+- **Centralized tag management** for multiple marketing tools
+- **Container ID**: `GTM-MZQW3K5`
+- **Advanced tag configurations** and trigger management
+
+### Key Features:
+- **Dual event sending**: Events are sent to both GA4 and GTM simultaneously
+- **Automatic page view tracking** when users navigate between routes
+- **Custom event tracking** for all major user interactions
+- **Type-safe event system** with predefined event types
+- **Error handling** to prevent tracking failures from affecting UX
+- **Environment variable configuration** for security
+
+### Tracked Events:
+- User authentication events (login, register, logout)
+- API key management tracking (creation, deletion)
+- Automation settings tracking (enable/disable)
+- Documentation page views
+- Chat message interactions
+- Custom button clicks and form submissions
+
+### Testing Analytics:
+
+1. **Network Tab Testing**:
+   - Open browser DevTools → Network tab
+   - Filter by "gtag" to see GA4 requests
+   - Filter by "googletagmanager" to see GTM requests
+
+2. **Real-time Testing**:
+   - Use Google Analytics Real-time reports for GA4 data
+   - Use GTM Preview mode for tag debugging
+
+3. **Browser Extensions**:
+   - Google Analytics Debugger for GA4
+   - Google Tag Assistant for GTM
+
+## Project Structure
+
+```
+src/
+├── app/                    # Next.js app router pages
+├── components/             # Reusable UI components
+│   ├── layout/           # Layout components
+│   ├── providers/        # Context providers (Auth, Analytics)
+│   └── ui/               # Basic UI components
+├── lib/                   # Utility libraries
+│   ├── api/              # API client functions
+│   ├── auth/             # Authentication logic
+│   ├── hooks/            # Custom React hooks
+│   └── utils/            # Utility functions (including Analytics)
+└── generated/            # Generated files (Prisma, etc.)
+```
+
+## Available Scripts
+
+- `npm run dev` - Start development server with Turbopack
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run db:setup` - Set up database
+
+## Tech Stack
+
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript
+- **Database**: PostgreSQL with Prisma ORM
+- **Styling**: Tailwind CSS
+- **Authentication**: NextAuth.js
+- **Analytics**: Google Analytics 4 + Google Tag Manager + Vercel Analytics
+- **UI Components**: Headless UI, Framer Motion
+- **Forms**: React Hook Form with Zod validation
 
 ## Learn More
 
@@ -32,5 +141,7 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+**Important**: Remember to set both `NEXT_PUBLIC_GA_ID` and `NEXT_PUBLIC_GTM_ID` environment variables in your Vercel deployment settings for analytics to work in production.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

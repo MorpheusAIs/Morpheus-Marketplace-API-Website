@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { trackPageView } from '@/lib/utils/gtm';
 
 /**
- * Custom hook to automatically track page views in Google Tag Manager
+ * Custom hook to automatically track page views in both Google Analytics and Google Tag Manager
  * when the user navigates between pages in the Next.js app
  */
 export const useGTMPageView = () => {
