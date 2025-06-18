@@ -3,38 +3,16 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-
-const YouTubeEmbed = ({ videoId }: { videoId: string }) => {
-  return (
-    <div className="relative w-full pt-[56.25%] rounded-lg overflow-hidden bg-[#0a1f14] mb-6">
-      <iframe
-        className="absolute top-0 left-0 w-full h-full"
-        src={`https://www.youtube.com/embed/${videoId}`}
-        title="How to View Available Models Tutorial"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-      />
-    </div>
-  );
-};
+import YouTubeEmbed from '../../components/YouTubeEmbed';
 
 export default function ViewingModels() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 text-white">
-      <div className="flex items-center justify-start space-x-4 mb-6">
-        <Link href="/" className="px-4 py-2 bg-[#0f2c1e] hover:bg-[#143824] rounded-md text-white font-medium transition-colors">
-          Home
-        </Link>
-        <Link href="/docs" className="px-4 py-2 bg-[#0f2c1e] hover:bg-[#143824] rounded-md text-white font-medium transition-colors">
-          Docs
-        </Link>
-      </div>
-      
-      <h1 className="text-3xl font-bold text-white mb-6">
-        Morpheus API Gateway - How to Explore the Available Models
+    <div className="max-w-4xl mx-auto px-4 py-8 text-[var(--platinum)]">
+      <h1 className="text-3xl font-bold text-[var(--platinum)] mb-6">
+        Morpheus API Gateway - How to View Models
       </h1>
 
-      <YouTubeEmbed videoId="gpMuim9cxzg" />
+      <YouTubeEmbed videoId="gpMuim9cxzg" title="How to View Available Models Tutorial" />
       
       <p className="text-lg mb-6">
         The purpose of this document is to provide instructions for how to view the available active models within the Morpheus Compute Marketplace via the "Swagger UI". 
@@ -42,14 +20,14 @@ export default function ViewingModels() {
       </p>
 
       <div className="space-y-12">
-        <div className="bg-[#11271b] p-6 rounded-lg shadow-md border-2 border-[#2d4c39]">
-          <h3 className="text-xl font-medium text-white mb-3">
+        <div className="bg-[var(--eclipse)] p-6 rounded-lg shadow-md border-2 border-[var(--emerald)]/30">
+          <h3 className="text-xl font-medium text-[var(--platinum)] mb-3">
             Step 1: Access Swagger UI
           </h3>
           <p className="text-lg mb-4">
-            First go to <a href="https://api.mor.org/docs" className="text-[#57a87a] hover:underline font-medium" target="_blank" rel="noreferrer">api.mor.org/docs</a>
+            First go to <a href="https://api.mor.org/docs" className="text-[var(--neon-mint)] hover:text-[var(--emerald)] font-medium" target="_blank" rel="noreferrer">api.mor.org/docs</a>
           </p>
-          <div className="relative h-80 w-full border-2 border-[#2d4c39] rounded-lg overflow-hidden mb-4 bg-[#0a1f14]">
+          <div className="relative h-80 w-full border-2 border-[var(--emerald)]/30 rounded-lg overflow-hidden mb-4 bg-[var(--eclipse)]">
             <Image 
               src="/images/models/homepage.png"
               alt="API Gateway Homepage"
@@ -59,15 +37,15 @@ export default function ViewingModels() {
           </div>
         </div>
 
-        <div className="bg-[#11271b] p-6 rounded-lg shadow-md border-2 border-[#2d4c39]">
-          <h3 className="text-xl font-medium text-white mb-3">
+        <div className="bg-[var(--eclipse)] p-6 rounded-lg shadow-md border-2 border-[var(--emerald)]/30">
+          <h3 className="text-xl font-medium text-[var(--platinum)] mb-3">
             Step 2: View Available Models
           </h3>
           <p className="text-lg mb-4">
             Then go down to the models /api/v1/models endpoint. This is how you view the available models. 
             This endpoint uses automated functionality to identify models with active "bids" from providers, signifying that they are actively available for use.
           </p>
-          <div className="relative h-80 w-full border-2 border-[#2d4c39] rounded-lg overflow-hidden mb-4 bg-[#0a1f14]">
+          <div className="relative h-80 w-full border-2 border-[var(--emerald)]/30 rounded-lg overflow-hidden mb-4 bg-[var(--eclipse)]">
             <Image 
               src="/images/models/models.png"
               alt="Models endpoint"
@@ -75,7 +53,7 @@ export default function ViewingModels() {
               style={{ objectFit: 'contain' }}
             />
           </div>
-          <div className="bg-[#0a1f14] text-gray-100 p-4 rounded-lg mb-4 overflow-auto">
+          <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`curl -X 'GET' \\
   'https://api.mor.org/api/v1/models/' \\
@@ -86,7 +64,7 @@ export default function ViewingModels() {
           <p className="text-lg mb-4">
             Your response will be similar to this:
           </p>
-          <div className="bg-[#0a1f14] text-gray-100 p-4 rounded-lg mb-4 overflow-auto">
+          <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`{
   "object": "list",
@@ -113,14 +91,14 @@ export default function ViewingModels() {
           </div>
         </div>
 
-        <div className="bg-[#11271b] p-6 rounded-lg shadow-md border-2 border-[#2d4c39]">
-          <h3 className="text-xl font-medium text-white mb-3">
+        <div className="bg-[var(--eclipse)] p-6 rounded-lg shadow-md border-2 border-[var(--emerald)]/30">
+          <h3 className="text-xl font-medium text-[var(--platinum)] mb-3">
             Step 3: View All Models (Including Historical)
           </h3>
           <p className="text-lg mb-4">
             The /api/v1/models/allmodels endpoint is also available for purposes of identifying models no longer being hosted, or for historical purposes.
           </p>
-          <div className="relative h-80 w-full border-2 border-[#2d4c39] rounded-lg overflow-hidden mb-4 bg-[#0a1f14]">
+          <div className="relative h-80 w-full border-2 border-[var(--emerald)]/30 rounded-lg overflow-hidden mb-4 bg-[var(--eclipse)]">
             <Image 
               src="/images/models/allmodels.png"
               alt="All Models endpoint"
@@ -128,7 +106,7 @@ export default function ViewingModels() {
               style={{ objectFit: 'contain' }}
             />
           </div>
-          <div className="bg-[#0a1f14] text-gray-100 p-4 rounded-lg mb-4 overflow-auto">
+          <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`curl -X 'GET' \\
   'https://api.mor.org/api/v1/models/allmodels' \\
@@ -138,8 +116,8 @@ export default function ViewingModels() {
           </div>
         </div>
 
-        <div className="bg-[#11271b] p-6 rounded-lg shadow-md border-2 border-[#2d4c39]">
-          <h3 className="text-xl font-medium text-white mb-3">
+        <div className="bg-[var(--eclipse)] p-6 rounded-lg shadow-md border-2 border-[var(--emerald)]/30">
+          <h3 className="text-xl font-medium text-[var(--platinum)] mb-3">
             Understanding the Response
           </h3>
           <p className="text-lg mb-4">
@@ -152,14 +130,14 @@ export default function ViewingModels() {
           </ul>
         </div>
 
-        <div className="bg-[#11271b] p-6 rounded-lg shadow-md border-2 border-[#2d4c39]">
-          <h3 className="text-xl font-medium text-white mb-3">
+        <div className="bg-[var(--eclipse)] p-6 rounded-lg shadow-md border-2 border-[var(--emerald)]/30">
+          <h3 className="text-xl font-medium text-[var(--platinum)] mb-3">
             Using Models in Chat Completions
           </h3>
           <p className="text-lg mb-4">
             When calling a chat/completion request, you can simply use the ID (name) or the blockchain ID, as follows:
           </p>
-          <div className="relative h-80 w-full border-2 border-[#2d4c39] rounded-lg overflow-hidden mb-4 bg-[#0a1f14]">
+          <div className="relative h-80 w-full border-2 border-[var(--emerald)]/30 rounded-lg overflow-hidden mb-4 bg-[var(--eclipse)]">
             <Image 
               src="/images/models/chat.png"
               alt="Chat completion example"
@@ -167,7 +145,7 @@ export default function ViewingModels() {
               style={{ objectFit: 'contain' }}
             />
           </div>
-          <div className="bg-[#0a1f14] text-gray-100 p-4 rounded-lg mb-4 overflow-auto">
+          <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`curl -X 'POST' \\
   'https://api.mor.org/api/v1/chat/completions' \\
@@ -193,7 +171,7 @@ export default function ViewingModels() {
           <p className="text-lg mb-4">
             Your response will be similar to this:
           </p>
-          <div className="bg-[#0a1f14] text-gray-100 p-4 rounded-lg mb-4 overflow-auto">
+          <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`{
   "id": "chatcmpl-ee90c8c567f07a6426e6373125078f70",
@@ -221,18 +199,18 @@ export default function ViewingModels() {
           </div>
         </div>
 
-        <div className="bg-[#11271b] p-6 rounded-lg shadow-md border-2 border-[#2d4c39]">
-          <h3 className="text-xl font-medium text-white mb-3">
+        <div className="bg-[var(--eclipse)] p-6 rounded-lg shadow-md border-2 border-[var(--emerald)]/30">
+          <h3 className="text-xl font-medium text-[var(--platinum)] mb-3">
             Ready to Use!
           </h3>
           <p className="text-lg mb-4">
             Now you can begin using the Morpheus Compute Node through the API Gateway! For integrations, use the following information:
           </p>
-          <div className="bg-[#183a29] border-l-4 border-[#3d5c49] p-4 mb-4">
-            <p className="text-white font-medium">
+          <div className="bg-[var(--eclipse)] border-l-4 border-[var(--emerald)]/30 p-4 mb-4">
+            <p className="text-[var(--platinum)] font-medium">
               <strong>Base URL:</strong> https://api.mor.org/api/v1
             </p>
-            <p className="text-white font-medium">
+            <p className="text-[var(--platinum)] font-medium">
               <strong>API Key:</strong> [Your API key]
             </p>
           </div>

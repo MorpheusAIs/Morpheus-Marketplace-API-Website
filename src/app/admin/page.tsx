@@ -162,8 +162,34 @@ export default function AdminPage() {
         // Clear the form
         setNewKeyName('');
         
-        // Show success message
-        setSuccessMessage('API key created successfully');
+        // Automatically set up automation settings with default values
+        try {
+          console.log('Setting up automation settings for new API key with default values');
+          const automationResponse = await apiPut<AutomationSettings>(
+            'https://api.mor.org/api/v1/automation/settings',
+            {
+              is_enabled: true,
+              session_duration: 86400, // 24 hours in seconds
+            },
+            fullKey
+          );
+
+          if (automationResponse.error) {
+            throw new Error(automationResponse.error);
+          }
+
+          if (automationResponse.data) {
+            console.log('Automation settings set successfully:', automationResponse.data);
+            setAutomationSettings(automationResponse.data);
+            setLocalSessionDuration(automationResponse.data.session_duration);
+            setLocalIsEnabled(automationResponse.data.is_enabled);
+            setHasUnsavedChanges(false);
+            setSuccessMessage('API key created successfully with automation enabled (24 hour sessions)');
+          }
+        } catch (automationErr) {
+          console.warn('Error setting automation settings:', automationErr);
+          setSuccessMessage('API key created successfully, but automation settings could not be set automatically. You can set them manually.');
+        }
         
         // Refresh the API keys list but wait a moment to avoid race conditions
         setTimeout(fetchApiKeys, 1000);
@@ -286,292 +312,259 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-      <div className="flex justify-between items-center mb-4 px-4 sm:px-0">
-        <h1 className="text-3xl font-bold text-white mb-2">Admin Dashboard</h1>
-        <Link href="/" className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
-          Home
-        </Link>
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8" style={{
+      backgroundImage: "url('/images/942b261a-ecc5-420d-9d4b-4b2ae73cab6d.png')",
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      backgroundAttachment: "fixed"
+    }}>
+      {/* Navigation Bar */}
+      <div className="fixed top-0 left-0 right-0 z-40 flex justify-between items-center p-4 border-b border-[var(--emerald)]/30 bg-[var(--matrix-green)]">
+        <div className="text-xl font-bold text-[var(--neon-mint)]">
+          Morpheus API Gateway
+        </div>
+        <div className="flex gap-4">
+          <Link href="/chat" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
+            Chat
+          </Link>
+          <Link href="/test" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
+            Test
+          </Link>
+          <Link href="/docs" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
+            Docs
+          </Link>
+          <Link href="/" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
+            Home
+          </Link>
+        </div>
       </div>
 
-      <div className="px-4 py-6 sm:px-0">
-        {error && (
-          <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded flex justify-between">
-            <span>{error}</span>
-            <button 
-              onClick={() => setError('')} 
-              className="ml-2 text-red-700 hover:text-red-900"
-            >
-              ×
-            </button>
-          </div>
-        )}
-
-        {successMessage && (
-          <div className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded flex justify-between">
-            <span>{successMessage}</span>
-            <button 
-              onClick={() => setSuccessMessage(null)} 
-              className="ml-2 text-green-700 hover:text-green-900"
-            >
-              ×
-            </button>
-          </div>
-        )}
-
-        {/* Newly created API key notification */}
-        {newlyCreatedKey && (
-          <div className="mb-6 p-6 bg-yellow-50 border-2 border-yellow-400 rounded-lg">
-            <h3 className="text-lg font-semibold text-yellow-800 mb-3">Your new API key has been created</h3>
-            <p className="text-yellow-700 mb-4">
-              Copy this key now. You won't be able to see it again!
-            </p>
-            <div className="flex items-center mb-4">
-              <input
-                type="text"
-                readOnly
-                value={newlyCreatedKey}
-                className="flex-1 p-3 border border-yellow-400 bg-yellow-100 text-yellow-900 rounded-md font-mono text-sm"
-                onClick={(e) => (e.target as HTMLInputElement).select()}
-              />
-              <button
-                onClick={() => copyToClipboard(newlyCreatedKey)}
-                className="ml-2 px-4 py-3 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
-              >
-                Copy
-              </button>
+      {/* Main content with padding for the navbar */}
+      <div className="max-w-7xl mx-auto mt-16">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold text-[var(--neon-mint)] mb-4">API Gateway Administration</h1>
+          <p className="text-[var(--platinum)]/80">
+            Manage your API keys and automation settings
+          </p>
+          {error && (
+            <div className="mt-4 p-3 bg-red-900/50 border border-red-700 text-red-100 rounded-md">
+              {error}
             </div>
-            <p className="text-yellow-700 mb-2">
-              Use this key when prompted in the automation settings section.
-            </p>
-          </div>
-        )}
+          )}
+          {successMessage && (
+            <div className="mt-4 p-3 bg-[var(--emerald)]/20 border border-[var(--emerald)] text-[var(--emerald)] rounded-md">
+              {successMessage}
+            </div>
+          )}
+        </div>
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* API Keys Section */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">API Keys</h2>
+          <div className="border border-[var(--emerald)]/30 rounded-lg p-6 bg-[var(--midnight)]">
+            <h2 className="text-xl font-bold text-[var(--neon-mint)] mb-4">API Keys</h2>
             
-            <form onSubmit={createApiKey} className="mb-6">
-              <div className="flex gap-4">
-                <input
-                  type="text"
-                  value={newKeyName}
-                  onChange={(e) => setNewKeyName(e.target.value)}
-                  placeholder="Enter key name"
-                  className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                />
+            {/* Create New API Key */}
+            <div className="mb-8 pb-6 border-b border-[var(--emerald)]/30">
+              <h3 className="text-lg font-medium text-[var(--platinum)] mb-3">Create New API Key</h3>
+              <form onSubmit={createApiKey} className="flex flex-col space-y-4">
+                <div>
+                  <label htmlFor="keyName" className="block text-sm font-medium text-[var(--platinum)]/70 mb-1">
+                    Key Name
+                  </label>
+                  <input
+                    type="text"
+                    id="keyName"
+                    value={newKeyName}
+                    onChange={(e) => setNewKeyName(e.target.value)}
+                    className="w-full p-2 rounded-md border border-[var(--neon-mint)]/30 bg-[var(--midnight)] text-[var(--platinum)] !text-[var(--platinum)] focus:ring-0 focus:border-[var(--emerald)]"
+                    placeholder="Enter a name for your API key"
+                    required
+                    style={{color: 'var(--platinum)'}}
+                  />
+                </div>
                 <button
                   type="submit"
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
+                  className="px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] font-medium rounded-md hover:bg-[var(--emerald)] transition-colors"
                 >
-                  Create Key
+                  Create API Key
                 </button>
-              </div>
-            </form>
-
-            <div className="space-y-4">
-              {apiKeys.map((key) => (
-                <div
-                  key={key.id}
-                  className={`flex items-center justify-between p-4 rounded-md ${
-                    selectedApiKeyPrefix === key.key_prefix
-                      ? 'bg-green-50 border border-green-200' 
-                      : 'bg-gray-50'
-                  }`}
-                >
-                  <div>
-                    <p className="font-medium text-gray-900">{key.name}</p>
-                    <p className="text-sm text-gray-500">{key.key_prefix}</p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span
-                      className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        key.is_active
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}
-                    >
-                      {key.is_active ? 'Active' : 'Inactive'}
-                    </span>
-                    
-                    {/* Check automation button */}
+              </form>
+              
+              {newlyCreatedKey && (
+                <div className="mt-4 p-4 bg-[var(--midnight)] border border-[var(--neon-mint)]/30 rounded-md">
+                  <p className="text-sm text-[var(--platinum)]/70 mb-2">
+                    Your new API key (save it securely, it won't be shown again):
+                  </p>
+                  <div className="flex items-center">
+                    <code className="p-2 bg-[var(--midnight)] text-[var(--neon-mint)] font-mono text-sm flex-1 rounded overflow-x-auto">
+                      {newlyCreatedKey}
+                    </code>
                     <button
-                      onClick={() => checkAutomationSettings(key.key_prefix)}
-                      className={`px-2 py-1 text-xs rounded hover:bg-opacity-80 ${
-                        selectedApiKeyPrefix === key.key_prefix
-                          ? 'bg-green-500 text-white'
-                          : 'bg-green-100 text-green-800 hover:bg-green-200'
-                      }`}
+                      onClick={() => copyToClipboard(newlyCreatedKey)}
+                      className="ml-2 p-2 bg-[var(--eclipse)] text-[var(--platinum)] rounded-md hover:bg-[var(--emerald)]/20 transition-colors"
+                      aria-label="Copy API key to clipboard"
                     >
-                      {selectedApiKeyPrefix === key.key_prefix ? 'Selected' : 'Check Automation'}
+                      📋
                     </button>
                   </div>
                 </div>
-              ))}
-              
-              {apiKeys.length === 0 && (
-                <p className="text-gray-500 text-center py-4">No API keys found. Create one to get started.</p>
+              )}
+            </div>
+
+            {/* Existing API Keys */}
+            <div>
+              <h3 className="text-lg font-medium text-[var(--platinum)] mb-3">Your API Keys</h3>
+              {isLoading ? (
+                <p className="text-[var(--platinum)]/70">Loading API keys...</p>
+              ) : apiKeys.length > 0 ? (
+                <ul className="space-y-4">
+                  {apiKeys.map((key) => (
+                    <li key={key.id} className="p-4 bg-[var(--midnight)] border border-[var(--neon-mint)]/30 rounded-md">
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                        <div>
+                          <p className="font-medium text-[var(--platinum)]">{key.name}</p>
+                          <p className="text-sm text-[var(--platinum)]/70">
+                            <span className="font-mono">{key.key_prefix}...</span> • 
+                            Created {new Date(key.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="mt-2 md:mt-0 flex flex-wrap gap-2">
+                          <button
+                            onClick={() => checkAutomationSettings(key.key_prefix)}
+                            className={`px-3 py-1 text-sm rounded-md ${
+                              selectedApiKeyPrefix === key.key_prefix
+                                ? 'bg-[var(--emerald)] text-[var(--matrix-green)]'
+                                : 'bg-[var(--eclipse)] text-[var(--platinum)] hover:bg-[var(--emerald)]/30'
+                            } transition-colors`}
+                          >
+                            {selectedApiKeyPrefix === key.key_prefix ? 'Selected' : 'Select'}
+                          </button>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-[var(--platinum)]/70">No API keys found. Create one above.</p>
               )}
             </div>
           </div>
 
           {/* Automation Settings Section */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Automation Settings
-            </h2>
-
+          <div className="border border-[var(--emerald)]/30 rounded-lg p-6 bg-[var(--midnight)]">
+            <h2 className="text-xl font-bold text-[var(--neon-mint)] mb-4">Automation Settings</h2>
+            
             {selectedApiKeyPrefix ? (
               <>
-                <div className="mb-4 p-3 bg-green-50 rounded text-sm text-green-800">
-                  Working with API key: {selectedApiKeyPrefix}...
+                <div className="mb-4 p-3 bg-[var(--midnight)] border border-[var(--neon-mint)]/30 rounded-md">
+                  <p className="text-sm text-[var(--platinum)]">
+                    Selected API Key: <span className="font-mono">{selectedApiKeyPrefix}...</span>
+                  </p>
                 </div>
 
-                {!automationSettings && !showKeyInput && (
-                  <div className="mb-6">
-                    <p className="text-gray-700 mb-4">
-                      To view or update automation settings, you need to enter your full API key.
-                    </p>
-                    <button
-                      onClick={() => setShowKeyInput(true)}
-                      className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                    >
-                      Enter API Key
-                    </button>
-                  </div>
-                )}
-
-                {showKeyInput && (
-                  <form onSubmit={handleKeyInputSubmit} className="mb-6">
-                    <div className="mb-4">
-                      <label htmlFor="apiKey" className="block text-sm font-medium text-gray-700 mb-1">
-                        Enter your full API key that starts with {selectedApiKeyPrefix}
-                      </label>
-                      <div className="mt-1 flex rounded-md shadow-sm">
-                        <input
-                          type="text"
-                          id="apiKey"
-                          placeholder={`${selectedApiKeyPrefix}...`}
-                          value={keyInputValue}
-                          onChange={(e) => setKeyInputValue(e.target.value)}
-                          onPaste={(e) => {
-                            // Prevent default to handle the paste manually
-                            e.preventDefault();
-                            // Get pasted content and clean it
-                            const pastedText = e.clipboardData.getData('text').trim();
-                            setKeyInputValue(pastedText);
-                          }}
-                          className="flex-1 min-w-0 block w-full px-3 py-2 rounded-md border-gray-300 focus:border-green-500 focus:ring-green-500 sm:text-sm"
-                          autoComplete="off"
-                          spellCheck="false"
-                        />
+                {!automationSettings ? (
+                  <>
+                    {!showKeyInput ? (
+                      <div className="mb-6">
+                        <p className="text-[var(--platinum)]/80 mb-4">
+                          To view or update your automation settings, you need to enter your full API key.
+                        </p>
                         <button
-                          type="submit"
-                          className="inline-flex items-center px-4 py-2 border border-transparent rounded-r-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                          onClick={() => setShowKeyInput(true)}
+                          className="px-4 py-2 bg-[var(--eclipse)] text-[var(--platinum)] font-medium rounded-md hover:bg-[var(--emerald)]/20 transition-colors"
                         >
-                          Submit
+                          Enter API Key
                         </button>
                       </div>
-                      <div className="mt-2 space-y-1">
-                        <p className="text-xs text-gray-500">
-                          Your API key is never stored in the browser and is only used for the current request.
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          Make sure to paste the full key without any extra spaces.
-                        </p>
-                      </div>
-                    </div>
-                  </form>
-                )}
-
-                {automationSettings && (
-                  <>
-                    <div className="space-y-6">
-                      <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium text-gray-700">
-                          Enable Automation
-                        </label>
-                        <div className="flex items-center">
-                          <span
-                            className={`mr-2 px-2 py-1 text-xs rounded-full ${
-                              localIsEnabled
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-gray-100 text-gray-800'
-                            }`}
-                          >
-                            {localIsEnabled ? 'Enabled' : 'Disabled'}
-                          </span>
-                          <button
-                            onClick={() => setLocalIsEnabled(!localIsEnabled)}
-                            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
-                              localIsEnabled
-                                ? 'bg-green-600'
-                                : 'bg-gray-200'
-                            }`}
-                          >
-                            <span
-                              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                                localIsEnabled
-                                  ? 'translate-x-5'
-                                  : 'translate-x-0'
-                              }`}
-                            />
-                          </button>
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="text-sm font-medium text-gray-700 mb-1 block">
-                          Session Duration (seconds)
-                        </label>
-                        <div className="mt-1 flex rounded-md shadow-sm">
+                    ) : (
+                      <form onSubmit={handleKeyInputSubmit} className="mb-6 space-y-4">
+                        <div>
+                          <label htmlFor="fullApiKey" className="block text-sm font-medium text-[var(--platinum)]/70 mb-1">
+                            Enter your full API Key
+                          </label>
                           <input
-                            type="number"
-                            value={localSessionDuration}
-                            onChange={(e) => setLocalSessionDuration(parseInt(e.target.value))}
-                            min="1"
-                            className="flex-1 min-w-0 block w-full px-3 py-2 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm text-black bg-white"
+                            type="password"
+                            id="fullApiKey"
+                            value={keyInputValue}
+                            onChange={(e) => setKeyInputValue(e.target.value)}
+                            className="w-full p-2 rounded-md border border-[var(--neon-mint)]/30 bg-[var(--midnight)] text-[var(--platinum)] !text-[var(--platinum)] focus:ring-0 focus:border-[var(--emerald)]"
+                            placeholder="Enter your full API key"
+                            required
+                            style={{color: 'var(--platinum)'}}
                           />
                         </div>
-                      </div>
-
-                      {hasUnsavedChanges && (
-                        <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded-md">
-                          <p className="text-xs text-yellow-700">
-                            You have unsaved changes. Click "Update Settings" to save.
-                          </p>
+                        <div className="flex space-x-2">
+                          <button
+                            type="submit"
+                            className="px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] font-medium rounded-md hover:bg-[var(--emerald)] transition-colors"
+                          >
+                            Submit
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setShowKeyInput(false)}
+                            className="px-4 py-2 bg-[var(--eclipse)] text-[var(--platinum)] font-medium rounded-md hover:bg-[var(--emerald)]/20 transition-colors"
+                          >
+                            Cancel
+                          </button>
                         </div>
-                      )}
-
-                      <div className="mt-4 flex justify-between">
-                        <button
-                          type="button"
-                          onClick={updateAutomationSettings}
-                          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                        >
-                          Update Settings
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setShowKeyInput(true);
-                            setKeyInputValue('');
-                          }}
-                          className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
-                          Update with Different Key
-                        </button>
-                      </div>
-                    </div>
+                      </form>
+                    )}
                   </>
+                ) : (
+                  <div className="space-y-6">
+                    <div>
+                      <label htmlFor="sessionDuration" className="block text-sm font-medium text-[var(--platinum)]/70 mb-1">
+                        Session Duration (seconds)
+                      </label>
+                      <input
+                        type="number"
+                        id="sessionDuration"
+                        value={localSessionDuration}
+                        onChange={(e) => setLocalSessionDuration(Number(e.target.value))}
+                        min="1"
+                        className="w-full p-2 rounded-md border border-[var(--neon-mint)]/30 bg-[var(--midnight)] text-[var(--platinum)] !text-[var(--platinum)] focus:ring-0 focus:border-[var(--emerald)]"
+                        style={{color: 'var(--platinum)'}}
+                      />
+                      <p className="mt-1 text-sm text-[var(--platinum)]/60">
+                        How long authentication sessions should last. Minimum 1 second.
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id="isEnabled"
+                        checked={localIsEnabled}
+                        onChange={(e) => setLocalIsEnabled(e.target.checked)}
+                        className="h-4 w-4 text-[var(--neon-mint)] rounded border-[var(--neon-mint)]/30 focus:ring-0 focus:ring-offset-0"
+                      />
+                      <label htmlFor="isEnabled" className="ml-2 block text-sm text-[var(--platinum)]">
+                        Enable Automation
+                      </label>
+                    </div>
+                    
+                    <div className="pt-4">
+                      <button
+                        onClick={updateAutomationSettings}
+                        disabled={!hasUnsavedChanges}
+                        className={`px-4 py-2 font-medium rounded-md ${
+                          hasUnsavedChanges
+                            ? 'bg-[var(--neon-mint)] text-[var(--matrix-green)] hover:bg-[var(--emerald)]'
+                            : 'bg-[var(--eclipse)] text-[var(--platinum)]/50 cursor-not-allowed'
+                        } transition-colors`}
+                      >
+                        Save Changes
+                      </button>
+                    </div>
+                  </div>
                 )}
               </>
             ) : (
-              <div className="text-center py-8">
-                <p className="text-gray-600 mb-4">Click "Check Automation" on a key to view settings</p>
-                <p className="text-sm text-gray-500">You'll need your full API key to view and update automation settings</p>
-              </div>
+              <p className="text-[var(--platinum)]/70">
+                Select an API key from the list to view or update automation settings.
+              </p>
             )}
           </div>
         </div>

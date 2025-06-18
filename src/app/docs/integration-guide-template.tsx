@@ -17,8 +17,18 @@ import Link from 'next/link';
  */
 export default function IntegrationGuideTemplate() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 text-gray-800">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">
+    <div className="max-w-4xl mx-auto px-4 py-8 text-[var(--platinum)]">
+      {/* Navigation Bar */}
+      <div className="flex items-center justify-start space-x-4 mb-6">
+        <Link href="/" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors">
+          Home
+        </Link>
+        <Link href="/docs" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--emerald)]/30 text-[var(--platinum)] rounded-md transition-colors">
+          Docs
+        </Link>
+      </div>
+      
+      <h1 className="text-3xl font-bold text-[var(--neon-mint)] mb-6">
         Integration Guide Title
       </h1>
       
@@ -29,21 +39,21 @@ export default function IntegrationGuideTemplate() {
       </p>
       
       {/* Important information box */}
-      <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-        <p className="text-blue-800 font-medium">
+      <div className="bg-[var(--eclipse)] border-l-4 border-[var(--emerald)] p-4 mb-6">
+        <p className="text-[var(--platinum)] font-medium">
           <strong>Important:</strong> Use this box for key information or requirements.
         </p>
       </div>
       
       {/* Main sections */}
-      <h2 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">
+      <h2 className="text-2xl font-semibold text-[var(--neon-mint)] mt-8 mb-4">
         Guide Sections
       </h2>
       
       <div className="space-y-12">
         {/* Section with image placeholder */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-xl font-medium text-gray-900 mb-3">
+        <div className="bg-[var(--matrix-green)] p-6 rounded-lg shadow-sm border border-[var(--emerald)]/30">
+          <h3 className="text-xl font-medium text-[var(--neon-mint)] mb-3">
             Section with Image
           </h3>
           <p className="text-lg mb-4">
@@ -52,7 +62,7 @@ export default function IntegrationGuideTemplate() {
           </p>
           
           {/* Image placeholder - replace with actual images when available */}
-          <div className="relative h-80 w-full border border-gray-300 rounded-lg overflow-hidden mb-4 bg-gray-100">
+          <div className="relative h-80 w-full border border-[var(--emerald)]/30 rounded-lg overflow-hidden mb-4 bg-[var(--eclipse)]">
             {/* Uncomment this section when images are available 
             <Image 
               src="/images/guides/example-image.png"
@@ -60,15 +70,15 @@ export default function IntegrationGuideTemplate() {
               fill
               style={{ objectFit: 'contain' }}
             /> */}
-            <p className="absolute inset-0 flex items-center justify-center text-gray-500 italic">
+            <p className="absolute inset-0 flex items-center justify-center text-[var(--platinum)]/70 italic">
               Image placeholder
             </p>
           </div>
         </div>
         
         {/* Section with code sample */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-xl font-medium text-gray-900 mb-3">
+        <div className="bg-[var(--matrix-green)] p-6 rounded-lg shadow-sm border border-[var(--emerald)]/30">
+          <h3 className="text-xl font-medium text-[var(--neon-mint)] mb-3">
             Section with Code Sample
           </h3>
           <p className="text-lg mb-4">
@@ -77,7 +87,7 @@ export default function IntegrationGuideTemplate() {
           </p>
           
           {/* Code block */}
-          <div className="bg-gray-800 text-gray-100 p-4 rounded-lg mb-4 overflow-auto">
+          <div className="bg-[var(--midnight)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto border border-[var(--emerald)]/20">
             <pre className="text-sm whitespace-pre-wrap">
 {`// Example code block
 function exampleFunction() {
@@ -99,7 +109,7 @@ function exampleFunction() {
           </p>
           
           {/* Example response */}
-          <div className="bg-gray-800 text-gray-100 p-4 rounded-lg mb-4 overflow-auto">
+          <div className="bg-[var(--midnight)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto border border-[var(--emerald)]/20">
             <pre className="text-sm whitespace-pre-wrap">
 {`{
   "result": "success",
@@ -116,8 +126,8 @@ function exampleFunction() {
         </div>
         
         {/* Section with steps */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-xl font-medium text-gray-900 mb-3">
+        <div className="bg-[var(--matrix-green)] p-6 rounded-lg shadow-sm border border-[var(--emerald)]/30">
+          <h3 className="text-xl font-medium text-[var(--neon-mint)] mb-3">
             Section with Steps
           </h3>
           <p className="text-lg mb-4">
@@ -127,32 +137,32 @@ function exampleFunction() {
           
           <ol className="list-decimal list-inside space-y-2 ml-2 mb-6">
             <li className="text-lg">
-              <span className="font-medium">First step:</span> Description of what to do first
+              <span className="font-medium text-[var(--platinum)]">First step:</span> Description of what to do first
             </li>
             <li className="text-lg">
-              <span className="font-medium">Second step:</span> Description of what to do next
+              <span className="font-medium text-[var(--platinum)]">Second step:</span> Description of what to do next
             </li>
             <li className="text-lg">
-              <span className="font-medium">Third step:</span> Description of the final step
+              <span className="font-medium text-[var(--platinum)]">Third step:</span> Description of the final step
             </li>
           </ol>
         </div>
       </div>
       
       {/* Success or completion message */}
-      <div className="bg-green-50 border-l-4 border-green-600 p-6 mt-8 mb-8">
-        <h3 className="text-xl font-medium text-green-900 mb-2">
+      <div className="bg-[var(--eclipse)] border-l-4 border-[var(--neon-mint)] p-6 mt-8 mb-8">
+        <h3 className="text-xl font-medium text-[var(--neon-mint)] mb-2">
           Success Section
         </h3>
-        <p className="text-lg text-green-800">
+        <p className="text-lg text-[var(--platinum)]">
           Use this section to indicate successful completion of the guide or to provide
           a summary of what was accomplished.
         </p>
       </div>
       
       {/* Navigation back to docs */}
-      <div className="mt-8 border-t border-gray-200 pt-6">
-        <Link href="/docs" className="text-indigo-600 hover:text-indigo-900 font-medium">
+      <div className="mt-8 border-t border-[var(--emerald)]/30 pt-6">
+        <Link href="/docs" className="text-[var(--neon-mint)] hover:text-[var(--emerald)] font-medium">
           &larr; Back to Documentation
         </Link>
       </div>

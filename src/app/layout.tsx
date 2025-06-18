@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { AuthProvider } from '@/lib/auth/AuthContext';
+import { Analytics } from "@vercel/analytics/next";
+import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google';
+import { GTMProvider } from '@/components/providers/GTMProvider';
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -15,10 +18,30 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const gaId = process.env.NEXT_PUBLIC_GA_ID;
+  const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
+
   return (
     <html lang="en">
+      {gtmId && <GoogleTagManager gtmId={gtmId} />}
       <body className={inter.className}>
-        <AuthProvider>{children}</AuthProvider>
+        {gtmId && (
+          <noscript>
+            <iframe 
+              src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+              height="0" 
+              width="0" 
+              style={{ display: "none", visibility: "hidden" }}
+            ></iframe>
+          </noscript>
+        )}
+        <AuthProvider>
+          <GTMProvider>
+            {children}
+          </GTMProvider>
+        </AuthProvider>
+        <Analytics />
+        {gaId && <GoogleAnalytics gaId={gaId} />}
       </body>
     </html>
   );

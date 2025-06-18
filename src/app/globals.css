@@ -1,8 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary Colors from Branding Guide */
+  --matrix-green: #03160E;
+  --eclipse: #1C302F;
+  --neon-mint: #00FF85;
+  --emerald: #20DC8E;
+  --midnight: #0C0C0C;
+  --platinum: #EBEBEB;
+  
+  /* Default theme colors */
+  --background: var(--matrix-green);
+  --foreground: var(--platinum);
 }
 
 @theme inline {
@@ -14,8 +23,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: var(--midnight);
+    --foreground: var(--platinum);
   }
 }
 
@@ -30,7 +39,19 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Ensure input text is always black */
-input, textarea {
-  color: #000000 !important;
+/* Input styling */
+input, textarea, select {
+  color: var(--platinum) !important;
+}
+
+/* Remove default focus outline and add custom styling */
+input:focus, textarea:focus, select:focus, button:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px var(--matrix-green), 0 0 0 3px var(--emerald) !important;
+}
+
+/* For white background inputs only */
+.bg-white input, .bg-white textarea, .bg-white select,
+input.bg-white, textarea.bg-white, select.bg-white {
+  color: var(--midnight) !important;
 }
