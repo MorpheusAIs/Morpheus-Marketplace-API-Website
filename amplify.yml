@@ -5,8 +5,16 @@ frontend:
       commands:
         - echo "Starting preBuild phase..."
         - npm ci --legacy-peer-deps
-        - npm install tailwindcss postcss autoprefixer --save-dev
-        - npm install @types/node @types/react @types/react-dom --save-dev
+        - echo "Checking current Tailwind installation:"
+        - npm list tailwindcss
+        - echo "Installing Tailwind CSS explicitly:"
+        - npm install tailwindcss@latest postcss@latest autoprefixer@latest --save-dev
+        - echo "Checking Tailwind installation after explicit install:"
+        - npm list tailwindcss
+        - echo "Checking if tailwind.config.js exists:"
+        - ls -la tailwind.config.js
+        - echo "Checking if postcss.config.js exists:"
+        - ls -la postcss.config.js
         - echo "Dependencies installed successfully"
     build:
       commands:
