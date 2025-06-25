@@ -3,13 +3,16 @@ frontend:
   phases:
     preBuild:
       commands:
-        - node -v
-        - npm -v
-        - npm ci
+        - echo "Starting preBuild phase..."
+        - npm ci --legacy-peer-deps
+        - npm install tailwindcss postcss autoprefixer --save-dev
+        - npm install @types/node @types/react @types/react-dom --save-dev
+        - echo "Dependencies installed successfully"
     build:
       commands:
-        - npx prisma generate
+        - echo "Starting build phase..."
         - npm run build
+        - echo "Build completed successfully"
   artifacts:
     baseDirectory: .next
     files:
@@ -17,8 +20,4 @@ frontend:
   cache:
     paths:
       - node_modules/**/*
-  customHeaders:
-    - pattern: '**/*'
-      headers:
-        - key: 'Cache-Control'
-          value: 'public, max-age=0, must-revalidate'
+      - .next/cache/**/* 
