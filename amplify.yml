@@ -4,7 +4,7 @@ frontend:
     preBuild:
       commands:
         - echo "Starting preBuild phase..."
-        - npm ci --legacy-peer-deps
+        - npm ci --legacy-peer-deps --include=dev
         - echo "Checking current Tailwind installation:"
         - npm list tailwindcss
         - echo "Installing Tailwind CSS explicitly:"
