@@ -6,11 +6,7 @@ frontend:
         - echo "Starting preBuild phase..."
         - npm ci --legacy-peer-deps --include=dev
         - echo "Checking current Tailwind installation:"
-        - npm list tailwindcss
-        - echo "Installing Tailwind CSS explicitly:"
-        - npm install tailwindcss@latest postcss@latest autoprefixer@latest --save-dev
-        - echo "Checking Tailwind installation after explicit install:"
-        - npm list tailwindcss
+        - npm list tailwindcss || true
         - echo "Checking if tailwind.config.js exists:"
         - ls -la tailwind.config.js
         - echo "Checking if postcss.config.js exists:"
