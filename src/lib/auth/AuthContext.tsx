@@ -9,7 +9,7 @@ interface AuthContextType {
   user: AuthUser | null;
   accessToken: string | null;
   isAuthenticated: boolean;
-  signInWithRedirect: () => void;
+  signIn: (options?: { flow: 'signin' | 'signup' }) => void;
   signOut: () => void;
 }
 
@@ -54,9 +54,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => listener();
   }, []);
 
-  const handleSignInWithRedirect = async () => {
+  const handleSignIn = async (options: { flow: 'signin' | 'signup' } = { flow: 'signin' }) => {
     try {
-      await signInWithRedirect();
+      await signInWithRedirect({
+        customState: options.flow,
+      });
     } catch (error) {
       console.error('error signing in with redirect: ', error);
     }
@@ -74,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     accessToken,
     isAuthenticated: !!user && !!accessToken,
-    signInWithRedirect: handleSignInWithRedirect,
+    signIn: handleSignIn,
     signOut: handleSignOut,
   };
 

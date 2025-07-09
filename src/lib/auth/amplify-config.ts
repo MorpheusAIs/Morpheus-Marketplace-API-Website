@@ -21,7 +21,7 @@ export const config = {
         oauth: {
           domain: cognitoDomain,
           scopes: ['email', 'openid', 'profile'],
-          redirectSignIn: [appUrl],
+          redirectSignIn: [appUrl, `${appUrl}signup`],
           redirectSignOut: [appUrl],
           responseType: 'code' as const,
         }
