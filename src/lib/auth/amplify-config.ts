@@ -1,19 +1,31 @@
-import { Amplify } from 'aws-amplify';
+const userPoolClientId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID;
+const cognitoDomain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
+const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
-Amplify.configure({
+if (!userPoolClientId) {
+  throw new Error("NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID is not set in environment variables.");
+}
+if (!cognitoDomain) {
+    throw new Error("NEXT_PUBLIC_COGNITO_DOMAIN is not set in environment variables.");
+}
+if (!appUrl) {
+    throw new Error("NEXT_PUBLIC_APP_URL is not set in environment variables.");
+}
+
+export const config = {
   Auth: {
     Cognito: {
       userPoolId: 'us-east-2_tqCTHoSST',
-      userPoolClientId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || '',
+      userPoolClientId: userPoolClientId,
       loginWith: {
         oauth: {
-          domain: process.env.NEXT_PUBLIC_COGNITO_DOMAIN || '',
+          domain: cognitoDomain,
           scopes: ['email', 'openid', 'profile'],
-          redirectSignIn: [process.env.NEXT_PUBLIC_APP_URL || ''],
-          redirectSignOut: [process.env.NEXT_PUBLIC_APP_URL || ''],
-          responseType: 'code',
+          redirectSignIn: [appUrl],
+          redirectSignOut: [appUrl],
+          responseType: 'code' as const,
         }
       }
     }
   }
-}, { ssr: true }); 
+}; 

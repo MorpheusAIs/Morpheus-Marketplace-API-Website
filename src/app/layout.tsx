@@ -1,7 +1,7 @@
 import './globals.css';
 import '@aws-amplify/ui-react/styles.css';
 import { AuthProvider } from '@/lib/auth/AuthContext';
-import '@/lib/auth/amplify-config'; // Your Amplify configuration
+import ConfigureAmplifyClientSide from '@/components/ConfigureAmplifyClientSide';
 
 export const metadata = {
   title: 'Morpheus - Open Beta API Gateway',
@@ -16,6 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <ConfigureAmplifyClientSide />
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
