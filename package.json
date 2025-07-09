@@ -11,11 +11,14 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@aws-amplify/adapter-nextjs": "^1.6.6",
+    "@aws-amplify/ui-react": "^6.11.2",
     "@headlessui/react": "^2.2.3",
     "@next/third-parties": "^15.3.3",
     "@prisma/client": "^5.5.2",
     "@tanstack/react-query": "^5.76.1",
     "@vercel/analytics": "^1.5.0",
+    "aws-amplify": "^6.15.3",
     "axios": "^1.9.0",
     "framer-motion": "^12.12.1",
     "highlight.js": "^11.11.1",
