@@ -2,13 +2,14 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Hub } from 'aws-amplify/utils';
-import { signIn, signOut, getCurrentUser, fetchAuthSession } from 'aws-amplify/auth';
+import { signInWithRedirect, signOut, getCurrentUser, fetchAuthSession } from 'aws-amplify/auth';
 import type { AuthUser } from 'aws-amplify/auth';
 
 interface AuthContextType {
   user: AuthUser | null;
   accessToken: string | null;
   isAuthenticated: boolean;
+  signInWithRedirect: () => void;
   signOut: () => void;
 }
 
@@ -36,11 +37,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const hubListener = (data: any) => {
       switch (data.payload.event) {
         case 'signedIn':
+        case 'tokenRefresh':
           checkUser();
           break;
         case 'signedOut':
           setUser(null);
           setAccessToken(null);
+          break;
+        case 'signInWithRedirect_failure':
+          console.error('Sign in with redirect failed', data.payload.data);
           break;
       }
     };
@@ -48,6 +53,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const listener = Hub.listen('auth', hubListener);
     return () => listener();
   }, []);
+
+  const handleSignInWithRedirect = async () => {
+    try {
+      await signInWithRedirect();
+    } catch (error) {
+      console.error('error signing in with redirect: ', error);
+    }
+  };
 
   const handleSignOut = async () => {
     try {
@@ -61,6 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     accessToken,
     isAuthenticated: !!user && !!accessToken,
+    signInWithRedirect: handleSignInWithRedirect,
     signOut: handleSignOut,
   };
 
