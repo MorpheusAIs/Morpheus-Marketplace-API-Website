@@ -1,8 +1,13 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useAuth } from '@/lib/auth/AuthContext';
 
 export default function Home() {
+  const { signInWithRedirect } = useAuth();
+
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8">
       <div className="bg-[var(--eclipse)]/80 p-8 rounded-lg max-w-5xl w-full backdrop-blur-md border border-[var(--neon-mint)]/20">
@@ -46,12 +51,12 @@ export default function Home() {
         </div>
         
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Link href="/login" className="px-6 py-3 bg-[var(--eclipse)] text-[var(--platinum)] rounded-md text-center hover:shadow-lg hover:shadow-[var(--eclipse)]/20 transition-all hover:-translate-y-1 font-medium border border-[var(--emerald)]/30">
+          <button onClick={signInWithRedirect} className="px-6 py-3 bg-[var(--eclipse)] text-[var(--platinum)] rounded-md text-center hover:shadow-lg hover:shadow-[var(--eclipse)]/20 transition-all hover:-translate-y-1 font-medium border border-[var(--emerald)]/30">
             Login
-          </Link>
-          <Link href="/register" className="px-6 py-3 bg-[var(--eclipse)] text-[var(--platinum)] rounded-md text-center hover:shadow-lg hover:shadow-[var(--eclipse)]/20 transition-all hover:-translate-y-1 font-medium border border-[var(--emerald)]/30">
+          </button>
+          <button onClick={signInWithRedirect} className="px-6 py-3 bg-[var(--eclipse)] text-[var(--platinum)] rounded-md text-center hover:shadow-lg hover:shadow-[var(--eclipse)]/20 transition-all hover:-translate-y-1 font-medium border border-[var(--emerald)]/30">
             Register
-          </Link>
+          </button>
           <Link href="https://api.mor.org/docs" className="px-6 py-3 bg-[var(--eclipse)] text-[var(--platinum)] rounded-md text-center hover:shadow-lg hover:shadow-[var(--eclipse)]/20 transition-all hover:-translate-y-1 font-medium border border-[var(--emerald)]/30">
             Swagger UI
           </Link>
