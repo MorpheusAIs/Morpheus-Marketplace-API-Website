@@ -34,7 +34,7 @@ Step by Step
 1. Go to the “OpenAI API Key” section and input the following:
 
 OpenAI API Key: Use your Morpheus API Key
-Override OpenAI Base URL: https://api.mor.org/api/v1
+Override OpenAI Base URL: https://api.dev.mor.org/api/v1
 
 [openaikey.png]
 

@@ -113,7 +113,7 @@ export default function HowToUseAPIGateway() {
           </p>
           <div className="bg-[var(--eclipse)] border-l-4 border-[var(--emerald)]/30 p-4 mb-4">
             <p className="text-[var(--platinum)] font-medium">
-              <strong>Base URL:</strong> https://api.mor.org/api/v1
+              <strong>Base URL:</strong> https://api.dev.mor.org/api/v1
             </p>
             <p className="text-[var(--platinum)] font-medium">
               <strong>API Key:</strong> [Your API key]

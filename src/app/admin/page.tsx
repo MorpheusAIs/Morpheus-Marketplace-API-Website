@@ -74,7 +74,7 @@ export default function AdminPage() {
 
   const fetchApiKeys = async () => {
     try {
-      const response = await apiGet<ApiKey[]>('https://api.mor.org/api/v1/auth/keys', accessToken || '');
+      const response = await apiGet<ApiKey[]>('https://api.dev.mor.org/api/v1/auth/keys', accessToken || '');
       if (response.error) throw new Error(response.error);
       if (response.data) {
         setApiKeys(response.data);
@@ -99,7 +99,7 @@ export default function AdminPage() {
     e.preventDefault();
     if (!newKeyName.trim()) return;
     try {
-      const response = await apiPost<ApiKeyResponse>('https://api.mor.org/api/v1/auth/keys', { name: newKeyName }, accessToken || '');
+      const response = await apiPost<ApiKeyResponse>('https://api.dev.mor.org/api/v1/auth/keys', { name: newKeyName }, accessToken || '');
       if (response.error) throw new Error(response.error);
       if (response.data?.key) {
         setNewlyCreatedKey(response.data.key);
@@ -124,7 +124,7 @@ export default function AdminPage() {
       return;
     }
     try {
-      const response = await apiPut<AutomationSettings>('https://api.mor.org/api/v1/automation/settings', { is_enabled: localIsEnabled, session_duration: localSessionDuration }, fullApiKey);
+      const response = await apiPut<AutomationSettings>('https://api.dev.mor.org/api/v1/automation/settings', { is_enabled: localIsEnabled, session_duration: localSessionDuration }, fullApiKey);
       if (response.error) throw new Error(response.error);
       if (response.data) {
         setAutomationSettings(response.data);
@@ -145,7 +145,7 @@ export default function AdminPage() {
     const apiKey = keyInputValue.trim();
     setFullApiKey(apiKey);
     try {
-      const response = await apiGet<AutomationSettings>('https://api.mor.org/api/v1/automation/settings', apiKey);
+      const response = await apiGet<AutomationSettings>('https://api.dev.mor.org/api/v1/automation/settings', apiKey);
       if (response.error) throw new Error(response.error);
       if (response.data) {
         setAutomationSettings(response.data);

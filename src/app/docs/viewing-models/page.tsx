@@ -25,7 +25,7 @@ export default function ViewingModels() {
             Step 1: Access Swagger UI
           </h3>
           <p className="text-lg mb-4">
-            First go to <a href="https://api.mor.org/docs" className="text-[var(--neon-mint)] hover:text-[var(--emerald)] font-medium" target="_blank" rel="noreferrer">api.mor.org/docs</a>
+            First go to <a href="https://api.dev.mor.org/docs" className="text-[var(--neon-mint)] hover:text-[var(--emerald)] font-medium" target="_blank" rel="noreferrer">api.dev.mor.org/docs</a>
           </p>
           <div className="relative h-80 w-full border-2 border-[var(--emerald)]/30 rounded-lg overflow-hidden mb-4 bg-[var(--eclipse)]">
             <Image 
@@ -56,7 +56,7 @@ export default function ViewingModels() {
           <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`curl -X 'GET' \\
-  'https://api.mor.org/api/v1/models/' \\
+  'https://api.dev.mor.org/api/v1/models/' \\
   -H 'accept: application/json' \\
   -H 'Authorization: Bearer sk-2ardOd.8c2d111e430398e0ccaae07343ce163d9720cf2bc9231438c972e1f4de87136c'`}
             </pre>
@@ -109,7 +109,7 @@ export default function ViewingModels() {
           <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`curl -X 'GET' \\
-  'https://api.mor.org/api/v1/models/allmodels' \\
+  'https://api.dev.mor.org/api/v1/models/allmodels' \\
   -H 'accept: application/json' \\
   -H 'Authorization: Bearer sk-2ardOd.8c2d111e430398e0ccaae07343ce163d9720cf2bc9231438c972e1f4de87136c'`}
             </pre>
@@ -148,7 +148,7 @@ export default function ViewingModels() {
           <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`curl -X 'POST' \\
-  'https://api.mor.org/api/v1/chat/completions' \\
+  'https://api.dev.mor.org/api/v1/chat/completions' \\
   -H 'accept: application/json' \\
   -H 'Authorization: sk-MDRT7b.90f9d2c131be151bf407455617ff1a62148d2c6f30c73feda4bc87f0ad0ea9a6' \\
   -H 'Content-Type: application/json' \\
@@ -208,7 +208,7 @@ export default function ViewingModels() {
           </p>
           <div className="bg-[var(--eclipse)] border-l-4 border-[var(--emerald)]/30 p-4 mb-4">
             <p className="text-[var(--platinum)] font-medium">
-              <strong>Base URL:</strong> https://api.mor.org/api/v1
+              <strong>Base URL:</strong> https://api.dev.mor.org/api/v1
             </p>
             <p className="text-[var(--platinum)] font-medium">
               <strong>API Key:</strong> [Your API key]

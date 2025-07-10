@@ -26,8 +26,8 @@ The steps are simple:
 2) Create an API key and enable automation
 3) Chat with your model of choice through the Morpheus Compute Marketplace
 
-API Gateway Base URL: https://api.mor.org/api/v1
-API Gateway “Swagger UI”: https://api.mor.org/docs
+API Gateway Base URL: https://api.dev.mor.org/api/v1
+API Gateway “Swagger UI”: https://api.dev.mor.org/docs
 Postman Collection: https://www.postman.com/bluefin-6568608/morpheus-api/collection/7ll8i2s/api-documentation?action=share&creator=44737384
 
 **What we’re asking**
