@@ -1,23 +1,47 @@
-import './globals.css';
-import '@aws-amplify/ui-react/styles.css';
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import { AuthProvider } from '@/lib/auth/AuthContext';
-import ConfigureAmplifyClientSide from '@/components/ConfigureAmplifyClientSide';
+import { Analytics } from "@vercel/analytics/next";
+import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google';
+import { GTMProvider } from '@/components/providers/GTMProvider';
+import "./globals.css";
 
-export const metadata = {
-  title: 'Morpheus - Open Beta API Gateway',
-  description: 'Access and manage your API usage for Morpheus models.',
+const inter = Inter({ subsets: ["latin"] });
+
+export const metadata: Metadata = {
+  title: "Morpheus API Gateway Documentation",
+  description: "Documentation and management interface for the Morpheus API Gateway",
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
+  const gaId = process.env.NEXT_PUBLIC_GA_ID;
+  const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
+
   return (
     <html lang="en">
-      <body>
-        <ConfigureAmplifyClientSide />
-        <AuthProvider>{children}</AuthProvider>
+      {gtmId && <GoogleTagManager gtmId={gtmId} />}
+      <body className={inter.className}>
+        {gtmId && (
+          <noscript>
+            <iframe 
+              src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+              height="0" 
+              width="0" 
+              style={{ display: "none", visibility: "hidden" }}
+            ></iframe>
+          </noscript>
+        )}
+        <AuthProvider>
+          <GTMProvider>
+            {children}
+          </GTMProvider>
+        </AuthProvider>
+        <Analytics />
+        {gaId && <GoogleAnalytics gaId={gaId} />}
       </body>
     </html>
   );
