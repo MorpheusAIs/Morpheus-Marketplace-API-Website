@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { useRouter } from 'next/navigation';
 import { apiGet, apiPost, apiPut } from '@/lib/api/apiService';
+import { useGTM } from '@/components/providers/GTMProvider';
 import Link from 'next/link';
 
 interface ApiKey {
@@ -31,6 +32,7 @@ interface AutomationSettings {
 export default function AdminPage() {
   const { accessToken, isAuthenticated } = useAuth();
   const router = useRouter();
+  const { trackApiKey } = useGTM();
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [automationSettings, setAutomationSettings] = useState<AutomationSettings | null>(null);
   const [localSessionDuration, setLocalSessionDuration] = useState<number>(0);
@@ -155,6 +157,9 @@ export default function AdminPage() {
         const fullKey = response.data.key;
         console.log('API key created successfully:', response.data.key_prefix);
         setNewlyCreatedKey(fullKey);
+        
+        // Track API key creation event
+        trackApiKey('created', response.data.name);
         
         // Set the selected key prefix for viewing
         setSelectedApiKeyPrefix(response.data.key_prefix);
