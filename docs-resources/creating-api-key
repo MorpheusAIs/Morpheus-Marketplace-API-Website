@@ -2,7 +2,7 @@ Morpheus API Gateway - How to Create an API Key
 
 The purpose of this document is to provide instructions for how to create an API key via the "Swagger UI". We will be launching a "playground" and improved front-facing UI to more easily interact with the Morpheus API Gateway in a user friendly fashion [coming soon].
 
-First go to api.mor.org/docs
+First go to api.dev.mor.org/docs
 
 [homepage.png]
 
@@ -11,7 +11,7 @@ Then "sign up" through the /api/v1/auth/register endpoint. This is how you can c
 [register.png]
 
 curl -X 'POST' \
-  'https://api.mor.org/api/v1/auth/register' \
+  'https://api.dev.mor.org/api/v1/auth/register' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -33,7 +33,7 @@ Next you will "login" through the /api/v1/auth/login endpoint with the credentia
 [login.png]
 
 curl -X 'POST' \
-  'https://api.mor.org/api/v1/auth/login' \
+  'https://api.dev.mor.org/api/v1/auth/login' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -53,7 +53,7 @@ Now, you will create your API key through the /api/v1/auth/keys endpoint. Click 
 [createapikey.png]
 
 curl -X 'POST' \
-  'https://api.mor.org/api/v1/auth/keys' \
+  'https://api.dev.mor.org/api/v1/auth/keys' \
   -H 'accept: application/json' \
   -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDc2OTYwODQsInN1YiI6IjEyIiwidHlwZSI6ImFjY2VzcyJ9.fuDiUyhW-vX9_ixPx0DpZ9WrX6GJdFAyjjUqhqq4ld0' \
   -H 'Content-Type: application/json' \
@@ -74,7 +74,7 @@ Set automation settings with the /api/v1/automation/settings. This allows the AP
 [automation.png]
 
 curl -X 'PUT' \
-  'https://api.mor.org/api/v1/automation/settings' \
+  'https://api.dev.mor.org/api/v1/automation/settings' \
   -H 'accept: application/json' \
   -H 'Authorization: Bearer sk-2ardOd.8c2d111e430398e0ccaae07343ce163d9720cf2bc9231438c972e1f4de87136c' \
   -H 'Content-Type: application/json' \
@@ -93,5 +93,5 @@ curl -X 'PUT' \
 
 Now you can begin using the Morpheus Compute Node through the API Gateway! For integrations, use the following information:
 
-Base URL: https://api.mor.org/api/v1
+Base URL: https://api.dev.mor.org/api/v1
 API Key: [Identified above]

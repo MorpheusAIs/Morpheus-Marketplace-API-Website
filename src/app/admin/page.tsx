@@ -79,7 +79,7 @@ export default function AdminPage() {
   const fetchApiKeys = async () => {
     try {
       console.log('Fetching API keys');
-      const response = await apiGet<ApiKey[]>('https://api.mor.org/api/v1/auth/keys', accessToken || '');
+      const response = await apiGet<ApiKey[]>('https://api.dev.mor.org/api/v1/auth/keys', accessToken || '');
 
       if (response.error) {
         throw new Error(response.error);
@@ -111,7 +111,7 @@ export default function AdminPage() {
     try {
       console.log('Fetching automation settings with API key');
       const response = await apiGet<AutomationSettings>(
-        'https://api.mor.org/api/v1/automation/settings', 
+        'https://api.dev.mor.org/api/v1/automation/settings', 
         fullApiKey
       );
 
@@ -143,7 +143,7 @@ export default function AdminPage() {
     try {
       console.log('Creating API key with name:', newKeyName);
       const response = await apiPost<ApiKeyResponse>(
-        'https://api.mor.org/api/v1/auth/keys',
+        'https://api.dev.mor.org/api/v1/auth/keys',
         { name: newKeyName },
         accessToken || ''
       );
@@ -171,7 +171,7 @@ export default function AdminPage() {
         try {
           console.log('Setting up automation settings for new API key with default values');
           const automationResponse = await apiPut<AutomationSettings>(
-            'https://api.mor.org/api/v1/automation/settings',
+            'https://api.dev.mor.org/api/v1/automation/settings',
             {
               is_enabled: true,
               session_duration: 86400, // 24 hours in seconds
@@ -232,7 +232,7 @@ export default function AdminPage() {
     try {
       console.log('Updating automation settings with API key:', { isEnabled: localIsEnabled, duration: localSessionDuration });
       const response = await apiPut<AutomationSettings>(
-        'https://api.mor.org/api/v1/automation/settings',
+        'https://api.dev.mor.org/api/v1/automation/settings',
         {
           is_enabled: localIsEnabled,
           session_duration: localSessionDuration,
@@ -282,7 +282,7 @@ export default function AdminPage() {
     try {
       console.log('Fetching automation settings with API key');
       const response = await apiGet<AutomationSettings>(
-        'https://api.mor.org/api/v1/automation/settings', 
+        'https://api.dev.mor.org/api/v1/automation/settings', 
         apiKey
       );
 

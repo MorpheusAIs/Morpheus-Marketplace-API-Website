@@ -30,7 +30,7 @@ Step by Step
 1. Click “Add new model” and start configuring the model:
     1. Label: MorpheusAI
     2. Model request name: Choose model from Morpheus Marketplace
-    3. Server endpoint: https://api.mor.org/api/v1/chat/completions
+    3. Server endpoint: https://api.dev.mor.org/api/v1/chat/completions
     4. Context size: Customize or leave as 4000
     5. API Key: Morpheus API Key
     6. System Prompt: Customize or leave as default

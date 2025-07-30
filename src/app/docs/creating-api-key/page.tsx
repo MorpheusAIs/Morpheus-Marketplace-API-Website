@@ -25,7 +25,7 @@ export default function CreatingAPIKey() {
             Step 1: Access Swagger UI
           </h3>
           <p className="text-lg mb-4">
-            First go to <a href="https://api.mor.org/docs" className="text-[var(--neon-mint)] hover:text-[var(--emerald)] font-medium" target="_blank" rel="noreferrer">api.mor.org/docs</a>
+            First go to <a href="https://api.dev.mor.org/docs" className="text-[var(--neon-mint)] hover:text-[var(--emerald)] font-medium" target="_blank" rel="noreferrer">api.dev.mor.org/docs</a>
           </p>
           <div className="relative h-80 w-full border-2 border-[var(--emerald)]/30 rounded-lg overflow-hidden mb-4 bg-[var(--eclipse)]">
             <Image 
@@ -55,7 +55,7 @@ export default function CreatingAPIKey() {
           <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`curl -X 'POST' \\
-  'https://api.mor.org/api/v1/auth/register' \\
+  'https://api.dev.mor.org/api/v1/auth/register' \\
   -H 'accept: application/json' \\
   -H 'Content-Type: application/json' \\
   -d '{
@@ -101,7 +101,7 @@ export default function CreatingAPIKey() {
           <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`curl -X 'POST' \\
-  'https://api.mor.org/api/v1/auth/login' \\
+  'https://api.dev.mor.org/api/v1/auth/login' \\
   -H 'accept: application/json' \\
   -H 'Content-Type: application/json' \\
   -d '{
@@ -151,7 +151,7 @@ export default function CreatingAPIKey() {
           <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`curl -X 'POST' \\
-  'https://api.mor.org/api/v1/auth/keys' \\
+  'https://api.dev.mor.org/api/v1/auth/keys' \\
   -H 'accept: application/json' \\
   -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDc2OTYwODQsInN1YiI6IjEyIiwidHlwZSI6ImFjY2VzcyJ9.fuDiUyhW-vX9_ixPx0DpZ9WrX6GJdFAyjjUqhqq4ld0' \\
   -H 'Content-Type: application/json' \\
@@ -198,7 +198,7 @@ export default function CreatingAPIKey() {
           <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`curl -X 'PUT' \\
-  'https://api.mor.org/api/v1/automation/settings' \\
+  'https://api.dev.mor.org/api/v1/automation/settings' \\
   -H 'accept: application/json' \\
   -H 'Authorization: Bearer sk-2ardOd.8c2d111e430398e0ccaae07343ce163d9720cf2bc9231438c972e1f4de87136c' \\
   -H 'Content-Type: application/json' \\
@@ -236,7 +236,7 @@ export default function CreatingAPIKey() {
           </p>
           <div className="bg-[var(--eclipse)] border-l-4 border-[var(--emerald)]/30 p-4 mb-4">
             <p className="text-[var(--platinum)] font-medium">
-              <strong>Base URL:</strong> https://api.mor.org/api/v1
+              <strong>Base URL:</strong> https://api.dev.mor.org/api/v1
             </p>
             <p className="text-[var(--platinum)] font-medium">
               <strong>API Key:</strong> [The key you generated above]

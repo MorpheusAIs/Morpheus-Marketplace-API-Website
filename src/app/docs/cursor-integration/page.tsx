@@ -122,7 +122,7 @@ export default function CursorIntegration() {
               <strong>OpenAI API Key:</strong> Use your Morpheus API Key
             </p>
             <p className="text-lg">
-              <strong>Override OpenAI Base URL:</strong> https://api.mor.org/api/v1
+              <strong>Override OpenAI Base URL:</strong> https://api.dev.mor.org/api/v1
             </p>
           </div>
           <div className="relative h-80 w-full border-2 border-[var(--emerald)]/30 rounded-lg overflow-hidden mb-4 bg-[var(--eclipse)]">
