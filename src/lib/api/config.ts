@@ -15,7 +15,10 @@ export const API_CONFIG = {
     },
     // Chat endpoints
     CHAT: {
-      COMPLETIONS: '/chat/completions'
+      COMPLETIONS: '/chat/completions',
+      HISTORY: '/chat-history/chats',
+      CHAT_DETAIL: '/chat-history/chats',
+      MESSAGES: '/chat-history/chats'
     },
     // Session endpoints
     SESSION: {
@@ -60,6 +63,9 @@ export const API_URLS = {
   
   // Chat URLs
   chatCompletions: () => buildApiUrl(API_CONFIG.ENDPOINTS.CHAT.COMPLETIONS),
+  chatHistory: () => buildApiUrl(API_CONFIG.ENDPOINTS.CHAT.HISTORY),
+  chatDetail: (chatId: string) => buildApiUrl(`${API_CONFIG.ENDPOINTS.CHAT.CHAT_DETAIL}/${chatId}`),
+  chatMessages: (chatId: string) => buildApiUrl(`${API_CONFIG.ENDPOINTS.CHAT.MESSAGES}/${chatId}/messages`),
   
   // Session URLs
   sessionInitialize: () => buildApiUrl(API_CONFIG.ENDPOINTS.SESSION.INITIALIZE),
