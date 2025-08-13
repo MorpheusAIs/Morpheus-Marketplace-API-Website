@@ -31,7 +31,7 @@ interface AutomationSettings {
 }
 
 export default function AdminPage() {
-  const { accessToken, isAuthenticated, apiKeys, refreshApiKeys } = useCognitoAuth();
+  const { accessToken, isAuthenticated, apiKeys, refreshApiKeys, isLoading: authLoading } = useCognitoAuth();
   const router = useRouter();
   const { trackApiKey } = useGTM();
   const [automationSettings, setAutomationSettings] = useState<AutomationSettings | null>(null);
@@ -41,7 +41,6 @@ export default function AdminPage() {
   const [newKeyName, setNewKeyName] = useState('');
   const [selectedApiKeyPrefix, setSelectedApiKeyPrefix] = useState<string>('');
   const [fullApiKey, setFullApiKey] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [newlyCreatedKey, setNewlyCreatedKey] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -49,11 +48,11 @@ export default function AdminPage() {
   const [keyInputValue, setKeyInputValue] = useState('');
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!authLoading && !isAuthenticated) {
       router.push('/login');
       return;
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, authLoading, router]);
 
   useEffect(() => {
     if (automationSettings) {
@@ -288,7 +287,7 @@ export default function AdminPage() {
     }
   };
 
-  if (isLoading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-lg">Loading...</div>
@@ -400,7 +399,7 @@ export default function AdminPage() {
             {/* Existing API Keys */}
             <div>
               <h3 className="text-lg font-medium text-[var(--platinum)] mb-3">Your API Keys</h3>
-              {isLoading ? (
+              {authLoading ? (
                 <p className="text-[var(--platinum)]/70">Loading API keys...</p>
               ) : apiKeys.length > 0 ? (
                 <ul className="space-y-4">
