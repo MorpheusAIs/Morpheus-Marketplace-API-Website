@@ -259,11 +259,11 @@ export default function ChatPage() {
 
   // Get the full API key for the selected key prefix
   const getFullApiKey = () => {
-    if (!selectedApiKey) return '';
+    if (!selectedApiKeyPrefix) return '';
     
     // For now, we'll need the user to provide the full key
     // In the future, we could store encrypted keys or use a different approach
-    return selectedApiKey;
+    return fullApiKey;
   };
 
   // Handle keyboard shortcuts for sending messages
@@ -819,7 +819,6 @@ export default function ChatPage() {
             </div>
           </div>
         </div>
-      </div>
     </main>
   );
 } 
