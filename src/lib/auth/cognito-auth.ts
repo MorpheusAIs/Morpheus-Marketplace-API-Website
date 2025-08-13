@@ -70,9 +70,17 @@ export class CognitoAuth {
    */
   static async handleCallback(code: string, state: string): Promise<CognitoTokens> {
     const storedState = localStorage.getItem('cognito_auth_state');
-    if (state !== storedState) {
-      throw new Error('Invalid state parameter');
+    
+    // More robust state validation
+    if (!storedState) {
+      throw new Error('No stored state found - authentication may have already been processed');
     }
+    
+    if (state !== storedState) {
+      throw new Error('Invalid state parameter - possible CSRF attack or duplicate callback');
+    }
+    
+    // Remove state immediately to prevent reuse
     localStorage.removeItem('cognito_auth_state');
 
     const tokenUrl = `https://${COGNITO_CONFIG.domain}/oauth2/token`;

@@ -10,10 +10,16 @@ function AuthCallbackContent() {
   const { handleAuthCallback } = useCognitoAuth();
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(true);
+  const [hasProcessed, setHasProcessed] = useState(false);
 
   useEffect(() => {
+    // Prevent multiple processing attempts (React Strict Mode, etc.)
+    if (hasProcessed) return;
+
     const processCallback = async () => {
       try {
+        setHasProcessed(true); // Mark as processed immediately
+        
         const code = searchParams.get('code');
         const state = searchParams.get('state');
         const error = searchParams.get('error');
@@ -45,7 +51,7 @@ function AuthCallbackContent() {
     };
 
     processCallback();
-  }, [searchParams, handleAuthCallback, router]);
+  }, [searchParams, handleAuthCallback, router, hasProcessed]);
 
   if (isProcessing) {
     return (
