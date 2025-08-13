@@ -276,6 +276,10 @@ export default function AdminPage() {
         setLocalIsEnabled(response.data.is_enabled);
         setShowKeyInput(false);
         setKeyInputValue('');
+        
+        // Store the verified API key for use in chat/test pages
+        sessionStorage.setItem('verified_api_key', apiKey);
+        sessionStorage.setItem('verified_api_key_prefix', selectedApiKeyPrefix);
       } else {
         console.log('No automation settings data received');
         setError('No automation settings data received');

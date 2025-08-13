@@ -41,9 +41,9 @@ export default function ChatPage() {
   const { accessToken, isAuthenticated, apiKeys, isLoading: authLoading } = useCognitoAuth();
   const router = useRouter();
   
-  // API Key state (only needed for chat completions)
-  const [selectedApiKeyPrefix, setSelectedApiKeyPrefix] = useState<string>('');
+  // API Key state (retrieved from sessionStorage)
   const [fullApiKey, setFullApiKey] = useState<string>('');
+  const [apiKeyPrefix, setApiKeyPrefix] = useState<string>('');
   
   // Chat state
   const [userPrompt, setUserPrompt] = useState('');
@@ -78,12 +78,16 @@ export default function ChatPage() {
     }
   }, [isAuthenticated, authLoading, router]);
 
-  // Set default API key when apiKeys are loaded
+  // Load API key from sessionStorage
   useEffect(() => {
-    if (apiKeys.length > 0 && !selectedApiKeyPrefix) {
-      setSelectedApiKeyPrefix(apiKeys[0].key_prefix); // Use the first available API key
+    const storedApiKey = sessionStorage.getItem('verified_api_key');
+    const storedPrefix = sessionStorage.getItem('verified_api_key_prefix');
+    
+    if (storedApiKey && storedPrefix) {
+      setFullApiKey(storedApiKey);
+      setApiKeyPrefix(storedPrefix);
     }
-  }, [apiKeys, selectedApiKeyPrefix]);
+  }, []);
 
   // Load chat history when authenticated (uses Cognito JWT)
   useEffect(() => {
@@ -257,12 +261,8 @@ export default function ChatPage() {
     setMessages([]);
   };
 
-  // Get the full API key for the selected key prefix
+  // Get the full API key from sessionStorage
   const getFullApiKey = () => {
-    if (!selectedApiKeyPrefix) return '';
-    
-    // For now, we'll need the user to provide the full key
-    // In the future, we could store encrypted keys or use a different approach
     return fullApiKey;
   };
 
@@ -585,107 +585,51 @@ export default function ChatPage() {
         <div className="flex-1 flex flex-col overflow-hidden">
           <div className="flex-1 overflow-auto p-8">
             <div className="max-w-3xl mx-auto">
-              {/* API Key Selection for Chat Completions */}
-              <div className="mb-6 bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30">
-                <h3 className="text-lg font-medium text-[var(--neon-mint)] mb-3">API Key for Chat</h3>
-                <p className="text-sm text-[var(--platinum)]/70 mb-4">
-                  Select an API key and enter the full key to enable chat completions. Chat history is automatically loaded using your account.
-                </p>
-                
-                <div className="mb-4">
-                  <label htmlFor="apiKeySelect" className="block text-sm font-medium mb-1 text-[var(--platinum)]">
-                    Select API Key
-                  </label>
-                  <select
-                    id="apiKeySelect"
-                    value={selectedApiKeyPrefix}
-                    onChange={(e) => setSelectedApiKeyPrefix(e.target.value)}
-                    className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] focus:ring-0 focus:border-[var(--emerald)]"
-                    style={{color: 'var(--platinum)'}}
-                  >
-                    <option value="">Select an API key...</option>
-                    {apiKeys.map((key) => (
-                      <option key={key.id} value={key.key_prefix}>
-                        {key.name} ({key.key_prefix}...)
-                      </option>
-                    ))}
-                  </select>
+              {/* API Key Status */}
+              {!fullApiKey ? (
+                <div className="mb-6 bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30 text-center">
+                  <h3 className="text-lg font-medium text-[var(--neon-mint)] mb-2">API Key Required</h3>
+                  <p className="text-sm text-[var(--platinum)]/70 mb-3">
+                    Please go to the <Link href="/admin" className="text-[var(--neon-mint)] hover:underline">Admin page</Link> to set up your API key first.
+                  </p>
                 </div>
-                
-                {selectedApiKeyPrefix && (
-                  <div className="mb-4">
-                    <label htmlFor="fullApiKey" className="block text-sm font-medium mb-1 text-[var(--platinum)]">
-                      Enter Full API Key
-                    </label>
-                    <div className="flex">
-                      <input
-                        type="password"
-                        id="fullApiKey"
-                        value={fullApiKey}
-                        onChange={(e) => setFullApiKey(e.target.value)}
-                        className="flex-1 p-2 border border-[var(--neon-mint)]/30 rounded-l-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70 focus:ring-0 focus:border-[var(--emerald)]"
-                        placeholder={`Enter your full API key starting with ${selectedApiKeyPrefix}...`}
-                        style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
-                      />
-                      <button
-                        onClick={() => {
-                          if (fullApiKey && fullApiKey.startsWith(selectedApiKeyPrefix)) {
-                            setAuthError(false);
-                          } else {
-                            setAuthError(true);
-                          }
-                        }}
-                        className="px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-r-md hover:bg-[var(--emerald)] transition-colors"
-                      >
-                        Verify
-                      </button>
+              ) : (
+                <div className="mb-6 bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30">
+                  <div className="flex justify-between items-center mb-3">
+                    <div>
+                      <h3 className="text-lg font-medium text-[var(--neon-mint)]">Ready to Chat</h3>
+                      <p className="text-sm text-[var(--platinum)]/70">Using API key: {apiKeyPrefix}...</p>
                     </div>
-                    {authError && (
-                      <div className="mt-2 text-red-400">
-                        Please enter a valid API key that starts with {selectedApiKeyPrefix}
+                    <div className="flex items-center space-x-4">
+                      <div>
+                        <label htmlFor="modelSelect" className="block text-xs font-medium mb-1 text-[var(--platinum)]">
+                          Model
+                        </label>
+                        <select
+                          id="modelSelect"
+                          value={selectedModel}
+                          onChange={(e) => setSelectedModel(e.target.value)}
+                          className="p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] focus:ring-0 focus:border-[var(--emerald)]"
+                          disabled={loadingModels}
+                          style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
+                        >
+                          {loadingModels ? (
+                            <option value="default">Loading...</option>
+                          ) : models.length === 0 ? (
+                            <option value="default">Default</option>
+                          ) : (
+                            models.map((model) => (
+                              <option key={model.id} value={model.id}>
+                                {model.id}
+                              </option>
+                            ))
+                          )}
+                        </select>
                       </div>
-                    )}
-                    {fullApiKey && fullApiKey.startsWith(selectedApiKeyPrefix) && (
-                      <div className="mt-2 text-[var(--neon-mint)]">
-                        API key verified! You can now send chat messages.
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-                
-                {/* Model Selection Dropdown */}
-                <div>
-                  <label htmlFor="modelSelect" className="block text-sm font-medium mb-1 text-[var(--platinum)]">
-                    Model
-                  </label>
-                  <select
-                    id="modelSelect"
-                    value={selectedModel}
-                    onChange={(e) => setSelectedModel(e.target.value)}
-                    className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70 focus:ring-0 focus:border-[var(--emerald)]"
-                    disabled={loadingModels}
-                    style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
-                  >
-                    {loadingModels ? (
-                      <option value="default">Loading models...</option>
-                    ) : models.length === 0 ? (
-                      <option value="default">Default</option>
-                    ) : (
-                      models.map((model) => (
-                        <option key={model.id} value={model.id}>
-                          {model.id}
-                        </option>
-                      ))
-                    )}
-                  </select>
-                  <div className="text-xs text-[var(--platinum)]/70 mt-1">
-                    {loadingModels ? 'Fetching available models...' : 
-                     models.length === 0 ? 'No models found, using default' : 
-                     `${models.length} model${models.length !== 1 ? 's' : ''} available`}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
               
               {/* Messages - Always show (uses Cognito JWT for history) */}
               <div className="mb-6 space-y-6">
@@ -693,9 +637,9 @@ export default function ChatPage() {
                   <div className="text-center text-[var(--platinum)] my-12">
                     <p className="text-xl mb-2">Start a new conversation</p>
                     <p className="text-sm">Or select a previous chat from the sidebar</p>
-                    {(!fullApiKey || !fullApiKey.startsWith(selectedApiKeyPrefix)) && (
+                    {!fullApiKey && (
                       <p className="text-sm text-[var(--platinum)]/60 mt-2">
-                        Enter your API key above to send messages
+                        Set up your API key in the Admin page to send messages
                       </p>
                     )}
                   </div>
@@ -787,8 +731,8 @@ export default function ChatPage() {
                 )}
               </div>
               
-              {/* Input form - only show when API key is verified */}
-              {fullApiKey && fullApiKey.startsWith(selectedApiKeyPrefix) && (
+              {/* Input form - only show when API key is available */}
+              {fullApiKey && (
                 <form onSubmit={handleSubmit} className="bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30 sticky bottom-4">
                 <div className="flex flex-col">
                   <div className="flex items-start">
@@ -819,6 +763,7 @@ export default function ChatPage() {
             </div>
           </div>
         </div>
+      </div>
     </main>
   );
 } 
