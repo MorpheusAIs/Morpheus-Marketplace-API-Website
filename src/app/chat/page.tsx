@@ -41,7 +41,7 @@ export default function ChatPage() {
   const { accessToken, isAuthenticated, apiKeys, isLoading: authLoading } = useCognitoAuth();
   const router = useRouter();
   
-  // API Key state
+  // API Key state (only needed for chat completions)
   const [selectedApiKeyPrefix, setSelectedApiKeyPrefix] = useState<string>('');
   const [fullApiKey, setFullApiKey] = useState<string>('');
   
@@ -85,12 +85,12 @@ export default function ChatPage() {
     }
   }, [apiKeys, selectedApiKeyPrefix]);
 
-  // Load chat history when full API key is provided
+  // Load chat history when authenticated (uses Cognito JWT)
   useEffect(() => {
-    if (fullApiKey && isAuthenticated) {
+    if (isAuthenticated && accessToken) {
       loadChatHistory();
     }
-  }, [fullApiKey, isAuthenticated]);
+  }, [isAuthenticated, accessToken]);
 
   // Fetch available models on component mount
   useEffect(() => {
@@ -170,9 +170,9 @@ export default function ChatPage() {
     }
   };
 
-  // Load chat history from the server
+  // Load chat history from the server (uses Cognito JWT)
   const loadChatHistory = async () => {
-    if (!fullApiKey || !accessToken) return;
+    if (!accessToken) return;
     
     setLoadingChats(true);
     try {
@@ -585,8 +585,13 @@ export default function ChatPage() {
         <div className="flex-1 flex flex-col overflow-hidden">
           <div className="flex-1 overflow-auto p-8">
             <div className="max-w-3xl mx-auto">
-              {/* API Key Selection and Input */}
+              {/* API Key Selection for Chat Completions */}
               <div className="mb-6 bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30">
+                <h3 className="text-lg font-medium text-[var(--neon-mint)] mb-3">API Key for Chat</h3>
+                <p className="text-sm text-[var(--platinum)]/70 mb-4">
+                  Select an API key and enter the full key to enable chat completions. Chat history is automatically loaded using your account.
+                </p>
+                
                 <div className="mb-4">
                   <label htmlFor="apiKeySelect" className="block text-sm font-medium mb-1 text-[var(--platinum)]">
                     Select API Key
@@ -626,7 +631,6 @@ export default function ChatPage() {
                         onClick={() => {
                           if (fullApiKey && fullApiKey.startsWith(selectedApiKeyPrefix)) {
                             setAuthError(false);
-                            loadChatHistory();
                           } else {
                             setAuthError(true);
                           }
@@ -643,7 +647,7 @@ export default function ChatPage() {
                     )}
                     {fullApiKey && fullApiKey.startsWith(selectedApiKeyPrefix) && (
                       <div className="mt-2 text-[var(--neon-mint)]">
-                        API key verified! You can now use the chat.
+                        API key verified! You can now send chat messages.
                       </div>
                     )}
                   </div>
@@ -683,15 +687,19 @@ export default function ChatPage() {
                 </div>
               </div>
               
-              {/* Messages */}
-              {fullApiKey && fullApiKey.startsWith(selectedApiKeyPrefix) ? (
-                <div className="mb-6 space-y-6">
-                  {messages.length === 0 ? (
-                    <div className="text-center text-[var(--platinum)] my-12">
-                      <p className="text-xl mb-2">Start a new conversation</p>
-                      <p className="text-sm">Or select a previous chat from the sidebar</p>
-                    </div>
-                  ) : (
+              {/* Messages - Always show (uses Cognito JWT for history) */}
+              <div className="mb-6 space-y-6">
+                {messages.length === 0 ? (
+                  <div className="text-center text-[var(--platinum)] my-12">
+                    <p className="text-xl mb-2">Start a new conversation</p>
+                    <p className="text-sm">Or select a previous chat from the sidebar</p>
+                    {(!fullApiKey || !fullApiKey.startsWith(selectedApiKeyPrefix)) && (
+                      <p className="text-sm text-[var(--platinum)]/60 mt-2">
+                        Enter your API key above to send messages
+                      </p>
+                    )}
+                  </div>
+                ) : (
                   <div className="space-y-6">
                     {messages.map((message, index) => (
                       <div 
@@ -776,13 +784,8 @@ export default function ChatPage() {
                     ))}
                     <div ref={messagesEndRef} />
                   </div>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center text-[var(--platinum)] my-12">
-                  <p className="text-xl mb-2">Please select and verify your API key to start chatting</p>
-                </div>
-              )}
+                )}
+              </div>
               
               {/* Input form - only show when API key is verified */}
               {fullApiKey && fullApiKey.startsWith(selectedApiKeyPrefix) && (
