@@ -294,5 +294,3 @@ To complete the implementation:
 3. Test the application to ensure chat history is working correctly
 
 All the code is now ready for deployment. The database will be initialized automatically when you run the setup script with your AWS RDS credentials.
-
-adjust

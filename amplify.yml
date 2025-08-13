@@ -3,6 +3,7 @@ frontend:
   phases:
     preBuild:
       commands:
+        - nvm use 20
         - echo "Starting preBuild phase..."
         - npm ci --legacy-peer-deps --include=dev
         - echo "Checking current Tailwind installation:"
