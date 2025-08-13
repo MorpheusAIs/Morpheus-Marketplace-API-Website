@@ -295,3 +295,4 @@ To complete the implementation:
 
 All the code is now ready for deployment. The database will be initialized automatically when you run the setup script with your AWS RDS credentials.
 
+adjust
