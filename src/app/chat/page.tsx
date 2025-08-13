@@ -342,7 +342,7 @@ export default function ChatPage() {
         headers: {
           'Content-Type': 'application/json',
           'accept': 'application/json',
-          'Authorization': fullApiKey || '' // Use the full API key
+          'Authorization': `Bearer ${fullApiKey}` // Use Bearer format for API key
         },
         body: JSON.stringify(requestBody)
       });
