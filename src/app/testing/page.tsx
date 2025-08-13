@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { useAuth } from '@/lib/auth/AuthContext';
+import React, { useState } from 'react';
+import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
 import Link from 'next/link';
 
 export default function TestPage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useCognitoAuth();
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 

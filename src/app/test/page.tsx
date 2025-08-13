@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { API_URLS } from '@/lib/api/config';
 
 // Type definition for models
 type Model = {
@@ -50,7 +51,7 @@ export default function TestPage() {
     try {
       console.log('Fetching models from API...');
       
-      const response = await fetch('https://api.dev.mor.org/api/v1/models/', {
+      const response = await fetch(API_URLS.models(), {
         method: 'GET',
         headers: {
           'accept': 'application/json'
@@ -135,7 +136,7 @@ export default function TestPage() {
       };
 
       // Make the actual API call using the user-provided API key
-      const res = await fetch('https://api.dev.mor.org/api/v1/chat/completions', {
+      const res = await fetch(API_URLS.chatCompletions(), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -170,7 +171,7 @@ export default function TestPage() {
 
   // Generate the CURL command based on user input
   const curlCommand = `curl -X 'POST' \\
-  'https://api.dev.mor.org/api/v1/chat/completions' \\
+  '${API_URLS.chatCompletions()}' \\
   -H 'accept: application/json' \\
   -H 'Authorization: ${apiKey || '[YOUR_API_KEY]'}' \\
   -H 'Content-Type: application/json' \\
