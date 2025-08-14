@@ -8,15 +8,15 @@ import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
 import { BUILD_VERSION } from '@/lib/build-version';
 
 export default function Home() {
-  const { login, signup, isAuthenticated } = useCognitoAuth();
+  const { login, signup, logout, isAuthenticated } = useCognitoAuth();
   
   // Use build version from generated file
   const buildVersion = BUILD_VERSION;
 
-  const handleLogin = () => {
+  const handleLoginLogout = () => {
     if (isAuthenticated) {
-      // If already authenticated, go directly to admin
-      window.location.href = '/admin';
+      // If authenticated, logout and clear credentials
+      logout();
     } else {
       // Otherwise, redirect to Cognito login
       login();
@@ -85,10 +85,10 @@ export default function Home() {
         
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
           <button 
-            onClick={handleLogin}
+            onClick={handleLoginLogout}
             className="px-6 py-3 bg-[var(--eclipse)] text-[var(--platinum)] rounded-md text-center hover:shadow-lg hover:shadow-[var(--eclipse)]/20 transition-all hover:-translate-y-1 font-medium border border-[var(--emerald)]/30"
           >
-            {isAuthenticated ? 'Go to Admin' : 'Login'}
+            {isAuthenticated ? 'Logout' : 'Login'}
           </button>
           <button 
             onClick={handleRegister}

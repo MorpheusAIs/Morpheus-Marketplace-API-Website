@@ -174,4 +174,19 @@ export const apiPut = <T>(url: string, data: any, token?: string) => {
     headers,
     body: JSON.stringify(data)
   });
+};
+
+export const apiDelete = <T>(url: string, token?: string) => {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json'
+  };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
+  return apiRequest<T>(url, {
+    method: 'DELETE',
+    headers
+  });
 }; 

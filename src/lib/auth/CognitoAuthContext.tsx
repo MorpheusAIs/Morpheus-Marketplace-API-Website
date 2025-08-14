@@ -103,6 +103,13 @@ export function CognitoAuthProvider({ children }: { children: React.ReactNode })
     setAccessToken(null);
     setIdToken(null);
     setApiKeys([]);
+    
+    // Clear API key storage
+    sessionStorage.removeItem('verified_api_key');
+    sessionStorage.removeItem('verified_api_key_prefix');
+    sessionStorage.removeItem('verified_api_key_timestamp');
+    localStorage.removeItem('selected_api_key_prefix');
+    
     CognitoAuth.logout();
   };
 

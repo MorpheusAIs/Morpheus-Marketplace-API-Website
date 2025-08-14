@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
 import { useRouter } from 'next/navigation';
-import { apiGet, apiPost, apiPut } from '@/lib/api/apiService';
+import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api/apiService';
 import { useGTM } from '@/components/providers/GTMProvider';
 import { API_URLS } from '@/lib/api/config';
 import Link from 'next/link';
@@ -228,6 +228,48 @@ export default function AdminPage() {
         console.error('Failed to copy: ', err);
         setError('Failed to copy to clipboard');
       });
+  };
+
+  const deleteApiKey = async (keyId: number, keyName: string) => {
+    if (!accessToken) {
+      setError('No access token available');
+      return;
+    }
+
+    if (!window.confirm(`Are you sure you want to delete the API key "${keyName}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      console.log('Deleting API key:', keyId);
+      const response = await apiDelete(API_URLS.deleteKey(keyId), accessToken);
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      // Refresh the API keys list from the server
+      await refreshApiKeys();
+      
+      // If this was the selected key, clear the selection
+      const deletedKey = apiKeys.find(key => key.id === keyId);
+      if (deletedKey && selectedApiKeyPrefix === deletedKey.key_prefix) {
+        setSelectedApiKeyPrefix('');
+        setFullApiKey('');
+        setAutomationSettings(null);
+        // Clear stored keys
+        sessionStorage.removeItem('verified_api_key');
+        sessionStorage.removeItem('verified_api_key_prefix');
+        sessionStorage.removeItem('verified_api_key_timestamp');
+        localStorage.removeItem('selected_api_key_prefix');
+      }
+
+      setSuccessMessage(`API key "${keyName}" deleted successfully`);
+      trackApiKey('deleted', keyName);
+    } catch (err) {
+      setError(`Failed to delete API key: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      console.error('Error deleting API key:', err);
+    }
   };
 
   const updateAutomationSettings = async () => {
@@ -464,6 +506,13 @@ export default function AdminPage() {
                             } transition-colors`}
                           >
                             {selectedApiKeyPrefix === key.key_prefix ? 'Selected' : 'Select'}
+                          </button>
+                          <button
+                            onClick={() => deleteApiKey(key.id, key.name)}
+                            className="px-3 py-1 text-sm rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors"
+                            title={`Delete ${key.name}`}
+                          >
+                            Delete
                           </button>
                         </div>
                       </div>

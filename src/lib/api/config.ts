@@ -58,6 +58,7 @@ export const API_URLS = {
   register: () => buildApiUrl(API_CONFIG.ENDPOINTS.AUTH.REGISTER),
   login: () => buildApiUrl(API_CONFIG.ENDPOINTS.AUTH.LOGIN),
   keys: () => buildApiUrl(API_CONFIG.ENDPOINTS.AUTH.KEYS),
+  deleteKey: (keyId: number) => buildApiUrl(`${API_CONFIG.ENDPOINTS.AUTH.KEYS}/${keyId}`),
   privateKey: () => buildApiUrl(API_CONFIG.ENDPOINTS.AUTH.PRIVATE_KEY),
   delegation: () => buildApiUrl(API_CONFIG.ENDPOINTS.AUTH.DELEGATION),
   
