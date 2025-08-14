@@ -5,20 +5,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { API_CONFIG } from '@/lib/api/config';
 import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
+import { BUILD_VERSION } from '@/lib/build-version';
 
 export default function Home() {
   const { login, signup, isAuthenticated } = useCognitoAuth();
   
-  // Generate build version timestamp
-  const buildVersion = process.env.NEXT_PUBLIC_BUILD_VERSION || (() => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    return `${year}${month}${day}-${hours}${minutes}`;
-  })();
+  // Use build version from generated file
+  const buildVersion = BUILD_VERSION;
 
   const handleLogin = () => {
     if (isAuthenticated) {
