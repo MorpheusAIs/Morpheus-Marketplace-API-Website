@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { API_URLS } from '@/lib/api/config';
+import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
 
 // Type definition for models
 type Model = {
@@ -14,12 +15,15 @@ type Model = {
 };
 
 export default function TestPage() {
-  const [apiKey, setApiKey] = useState('');
   const [userPrompt, setUserPrompt] = useState('');
   const [response, setResponse] = useState('');
   const [serverResponse, setServerResponse] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [authError, setAuthError] = useState(false);
+  
+  // API key state from sessionStorage
+  const [fullApiKey, setFullApiKey] = useState<string>('');
+  const [selectedApiKeyPrefix, setSelectedApiKeyPrefix] = useState<string>('');
   
   // Model state
   const [models, setModels] = useState<Model[]>([]);
@@ -27,16 +31,20 @@ export default function TestPage() {
   const [loadingModels, setLoadingModels] = useState(false);
   
   const router = useRouter();
+  const { isAuthenticated, isLoading: authLoading } = useCognitoAuth();
 
-  // Try to get auth token from localStorage on component mount
+  // Load API key from sessionStorage on component mount
   useEffect(() => {
     try {
-      const storedToken = localStorage.getItem('authToken');
-      if (storedToken) {
-        setApiKey(storedToken);
+      const storedFullApiKey = sessionStorage.getItem('fullApiKey');
+      const storedApiKeyPrefix = sessionStorage.getItem('selectedApiKeyPrefix');
+      
+      if (storedFullApiKey && storedApiKeyPrefix) {
+        setFullApiKey(storedFullApiKey);
+        setSelectedApiKeyPrefix(storedApiKeyPrefix);
       }
     } catch (error) {
-      console.error('Error accessing localStorage:', error);
+      console.error('Error accessing sessionStorage:', error);
     }
   }, []);
 
@@ -135,13 +143,13 @@ export default function TestPage() {
         stream: false
       };
 
-      // Make the actual API call using the user-provided API key
+      // Make the actual API call using the stored API key
       const res = await fetch(API_URLS.chatCompletions(), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'accept': 'application/json',
-          'Authorization': apiKey || '' // Use empty string if no API key is provided
+          'Authorization': `Bearer ${fullApiKey}` // Use Bearer format for API key
         },
         body: JSON.stringify(requestBody)
       });
@@ -173,7 +181,7 @@ export default function TestPage() {
   const curlCommand = `curl -X 'POST' \\
   '${API_URLS.chatCompletions()}' \\
   -H 'accept: application/json' \\
-  -H 'Authorization: ${apiKey || '[YOUR_API_KEY]'}' \\
+  -H 'Authorization: Bearer ${fullApiKey || '[YOUR_API_KEY]'}' \\
   -H 'Content-Type: application/json' \\
   -d '{
   "model": "${selectedModel}",
@@ -223,29 +231,50 @@ export default function TestPage() {
         <h1 className="text-3xl font-bold text-[var(--neon-mint)]">API Test Interface</h1>
       </div>
       
-      <form onSubmit={handleSubmit} className="mb-8">
-        <div className="mb-4">
-          <label htmlFor="apiKey" className="block text-sm font-medium mb-1 text-[var(--platinum)]">
-            API Key
-          </label>
-          <input
-            type="text"
-            id="apiKey"
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-            className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70 focus:ring-0 focus:border-[var(--emerald)]"
-            placeholder="Enter your API key"
-            style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
-          />
-          {authError && (
-            <div className="mt-2 text-red-400">
-              Authentication failed. Please provide a valid API key or&nbsp;
-              <Link href="/login" className="text-[var(--platinum)] hover:text-[var(--neon-mint)]">
-                log in to get one
-              </Link>.
-            </div>
-          )}
+      {/* Authentication Status */}
+      {!isAuthenticated ? (
+        <div className="mb-8 p-4 bg-[var(--matrix-green)] border border-[var(--emerald)]/30 rounded-md">
+          <div className="text-[var(--platinum)] mb-2">
+            You need to be authenticated to use the API test interface.
+          </div>
+          <Link 
+            href="/admin" 
+            className="px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md hover:bg-[var(--emerald)] transition-colors"
+          >
+            Go to Admin to Login & Select API Key
+          </Link>
         </div>
+      ) : !fullApiKey ? (
+        <div className="mb-8 p-4 bg-[var(--matrix-green)] border border-[var(--emerald)]/30 rounded-md">
+          <div className="text-[var(--platinum)] mb-2">
+            No API key selected. Please go to the Admin page to select an API key.
+          </div>
+          <Link 
+            href="/admin" 
+            className="px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md hover:bg-[var(--emerald)] transition-colors"
+          >
+            Go to Admin to Select API Key
+          </Link>
+        </div>
+      ) : (
+        <div className="mb-8 p-4 bg-[var(--matrix-green)] border border-[var(--emerald)]/30 rounded-md">
+          <div className="text-[var(--platinum)] mb-2">
+            <strong>Using API key:</strong> {selectedApiKeyPrefix}...
+          </div>
+          <div className="text-sm text-[var(--platinum)]/70">
+            Ready to test API endpoints
+          </div>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="mb-8">
+        {authError && (
+          <div className="mb-4 p-3 bg-red-900/20 border border-red-500/30 rounded-md">
+            <div className="text-red-400">
+              Authentication error: Please provide a valid API key or log in to get one.
+            </div>
+          </div>
+        )}
         
         {/* Model Selection Dropdown */}
         <div className="mb-4">
@@ -295,10 +324,10 @@ export default function TestPage() {
         
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isLoading || !fullApiKey || !isAuthenticated}
           className="px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md hover:bg-[var(--emerald)] disabled:bg-[var(--eclipse)] disabled:text-[var(--platinum)]/50 transition-colors"
         >
-          {isLoading ? 'Sending...' : 'Send Request'}
+          {isLoading ? 'Sending...' : !fullApiKey || !isAuthenticated ? 'API Key Required' : 'Send Request'}
         </button>
       </form>
       
