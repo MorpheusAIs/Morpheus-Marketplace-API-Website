@@ -36,8 +36,8 @@ export default function TestPage() {
   // Load API key from sessionStorage on component mount
   useEffect(() => {
     try {
-      const storedFullApiKey = sessionStorage.getItem('fullApiKey');
-      const storedApiKeyPrefix = sessionStorage.getItem('selectedApiKeyPrefix');
+      const storedFullApiKey = sessionStorage.getItem('verified_api_key');
+      const storedApiKeyPrefix = sessionStorage.getItem('verified_api_key_prefix');
       
       if (storedFullApiKey && storedApiKeyPrefix) {
         setFullApiKey(storedFullApiKey);
