@@ -108,10 +108,13 @@ export default function AdminPage() {
   const checkAutomationSettings = async (keyPrefix: string) => {
     setSelectedApiKeyPrefix(keyPrefix);
     setAutomationSettings(null); // Clear previous settings
-    setShowKeyInput(false); // Reset the form state
     setKeyInputValue(''); // Clear any existing value
     setFullApiKey(''); // Clear any existing full key
-    setSuccessMessage(`Selected ${keyPrefix} for automation settings view`);
+    setError(''); // Clear any errors
+    
+    // Immediately open the verification modal
+    setShowKeyInput(true);
+    setSuccessMessage(`Selected ${keyPrefix} - please verify your full API key`);
   };
 
   const fetchAutomationSettings = async () => {
@@ -500,19 +503,7 @@ export default function AdminPage() {
 
                 {!automationSettings ? (
                   <>
-                    {!showKeyInput ? (
-                      <div className="mb-6">
-                        <p className="text-[var(--platinum)]/80 mb-4">
-                          To view or update your automation settings, you need to enter your full API key.
-                        </p>
-                        <button
-                          onClick={() => setShowKeyInput(true)}
-                          className="px-4 py-2 bg-[var(--eclipse)] text-[var(--platinum)] font-medium rounded-md hover:bg-[var(--emerald)]/20 transition-colors"
-                        >
-                          Enter API Key
-                        </button>
-                      </div>
-                    ) : (
+                    {showKeyInput ? (
                       <>
                         {/* API Key Verification Modal */}
                         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -579,6 +570,12 @@ export default function AdminPage() {
                           </div>
                         </div>
                       </>
+                    ) : (
+                      <div className="mb-6 p-4 bg-[var(--eclipse)]/50 border border-[var(--neon-mint)]/20 rounded-md">
+                        <p className="text-[var(--platinum)]/80 text-sm">
+                          Click "Select" on an API key above to verify and access automation settings.
+                        </p>
+                      </div>
                     )}
                   </>
                 ) : (
