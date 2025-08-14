@@ -52,6 +52,36 @@ export default function AdminPage() {
       router.push('/login');
       return;
     }
+    
+    // Try to restore previously selected API key when authenticated
+    if (isAuthenticated) {
+      try {
+        const storedPrefix = localStorage.getItem('selected_api_key_prefix');
+        const storedFullKey = sessionStorage.getItem('verified_api_key');
+        const storedTimestamp = sessionStorage.getItem('verified_api_key_timestamp');
+        
+        // Check if the stored key is still valid (within 24 hours)
+        if (storedPrefix && storedFullKey && storedTimestamp) {
+          const keyAge = Date.now() - parseInt(storedTimestamp);
+          const twentyFourHours = 24 * 60 * 60 * 1000;
+          
+          if (keyAge < twentyFourHours) {
+            setSelectedApiKeyPrefix(storedPrefix);
+            setFullApiKey(storedFullKey);
+            // Automatically fetch automation settings if we have a valid key
+            fetchAutomationSettings();
+          } else {
+            // Clear expired keys
+            sessionStorage.removeItem('verified_api_key');
+            sessionStorage.removeItem('verified_api_key_prefix');
+            sessionStorage.removeItem('verified_api_key_timestamp');
+            localStorage.removeItem('selected_api_key_prefix');
+          }
+        }
+      } catch (error) {
+        console.error('Error restoring API key:', error);
+      }
+    }
   }, [isAuthenticated, authLoading, router]);
 
   useEffect(() => {
@@ -277,9 +307,13 @@ export default function AdminPage() {
         setShowKeyInput(false);
         setKeyInputValue('');
         
-        // Store the verified API key for use in chat/test pages
+        // Store the verified API key for use in chat/test pages with timestamp
         sessionStorage.setItem('verified_api_key', apiKey);
         sessionStorage.setItem('verified_api_key_prefix', selectedApiKeyPrefix);
+        sessionStorage.setItem('verified_api_key_timestamp', Date.now().toString());
+        
+        // Also store in localStorage for longer persistence (but clear on browser close)
+        localStorage.setItem('selected_api_key_prefix', selectedApiKeyPrefix);
       } else {
         console.log('No automation settings data received');
         setError('No automation settings data received');
@@ -446,9 +480,22 @@ export default function AdminPage() {
             {selectedApiKeyPrefix ? (
               <>
                 <div className="mb-4 p-3 bg-[var(--midnight)] border border-[var(--neon-mint)]/30 rounded-md">
-                  <p className="text-sm text-[var(--platinum)]">
-                    Selected API Key: <span className="font-mono">{selectedApiKeyPrefix}...</span>
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-[var(--platinum)]">
+                      Selected API Key: <span className="font-mono">{selectedApiKeyPrefix}...</span>
+                    </p>
+                    {fullApiKey && (
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                        <span className="text-xs text-green-400 font-medium">Verified</span>
+                      </div>
+                    )}
+                  </div>
+                  {fullApiKey && (
+                    <div className="text-xs text-green-400/70 mt-2">
+                      ✓ Ready for Chat and Test functionality
+                    </div>
+                  )}
                 </div>
 
                 {!automationSettings ? (
@@ -466,38 +513,72 @@ export default function AdminPage() {
                         </button>
                       </div>
                     ) : (
-                      <form onSubmit={handleKeyInputSubmit} className="mb-6 space-y-4">
-                        <div>
-                          <label htmlFor="fullApiKey" className="block text-sm font-medium text-[var(--platinum)]/70 mb-1">
-                            Enter your full API Key
-                          </label>
-                          <input
-                            type="password"
-                            id="fullApiKey"
-                            value={keyInputValue}
-                            onChange={(e) => setKeyInputValue(e.target.value)}
-                            className="w-full p-2 rounded-md border border-[var(--neon-mint)]/30 bg-[var(--midnight)] text-[var(--platinum)] !text-[var(--platinum)] focus:ring-0 focus:border-[var(--emerald)]"
-                            placeholder="Enter your full API key"
-                            required
-                            style={{color: 'var(--platinum)'}}
-                          />
+                      <>
+                        {/* API Key Verification Modal */}
+                        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                          <div className="bg-[var(--midnight)] border border-[var(--neon-mint)]/30 rounded-lg p-6 max-w-md w-full mx-4">
+                            <div className="flex items-center mb-4">
+                              <div className="w-8 h-8 bg-[var(--neon-mint)]/20 rounded-full flex items-center justify-center mr-3">
+                                <svg className="w-4 h-4 text-[var(--neon-mint)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                              </div>
+                              <h3 className="text-lg font-semibold text-[var(--neon-mint)]">Verify API Key</h3>
+                            </div>
+                            
+                            <div className="mb-4">
+                              <p className="text-[var(--platinum)]/80 text-sm mb-2">
+                                You've selected: <span className="font-mono text-[var(--neon-mint)]">{selectedApiKeyPrefix}...</span>
+                              </p>
+                              <p className="text-[var(--platinum)]/60 text-xs">
+                                For security, we need you to verify the full API key to enable Chat and Test functionality.
+                              </p>
+                            </div>
+
+                            <form onSubmit={handleKeyInputSubmit} className="space-y-4">
+                              <div>
+                                <label htmlFor="fullApiKey" className="block text-sm font-medium text-[var(--platinum)]/70 mb-2">
+                                  Enter Full API Key
+                                </label>
+                                <input
+                                  type="password"
+                                  id="fullApiKey"
+                                  value={keyInputValue}
+                                  onChange={(e) => setKeyInputValue(e.target.value)}
+                                  className="w-full p-3 rounded-md border border-[var(--neon-mint)]/30 bg-[var(--eclipse)] text-[var(--platinum)] focus:ring-2 focus:ring-[var(--neon-mint)]/50 focus:border-[var(--emerald)]"
+                                  placeholder={`${selectedApiKeyPrefix}...`}
+                                  required
+                                  autoFocus
+                                />
+                                <div className="text-xs text-[var(--platinum)]/50 mt-1">
+                                  Must start with {selectedApiKeyPrefix}
+                                </div>
+                              </div>
+                              
+                              <div className="flex gap-3 pt-2">
+                                <button
+                                  type="submit"
+                                  className="flex-1 px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md hover:bg-[var(--emerald)] transition-colors font-medium"
+                                >
+                                  Verify & Continue
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setShowKeyInput(false);
+                                    setSelectedApiKeyPrefix('');
+                                    setKeyInputValue('');
+                                    setError('');
+                                  }}
+                                  className="px-4 py-2 bg-[var(--eclipse)] text-[var(--platinum)] rounded-md hover:bg-[var(--midnight)] transition-colors border border-[var(--platinum)]/20"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </form>
+                          </div>
                         </div>
-                        <div className="flex space-x-2">
-                          <button
-                            type="submit"
-                            className="px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] font-medium rounded-md hover:bg-[var(--emerald)] transition-colors"
-                          >
-                            Submit
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setShowKeyInput(false)}
-                            className="px-4 py-2 bg-[var(--eclipse)] text-[var(--platinum)] font-medium rounded-md hover:bg-[var(--emerald)]/20 transition-colors"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </form>
+                      </>
                     )}
                   </>
                 ) : (
