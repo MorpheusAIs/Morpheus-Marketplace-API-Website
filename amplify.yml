@@ -16,6 +16,8 @@ frontend:
     build:
       commands:
         - echo "Starting build phase..."
+        - export NEXT_PUBLIC_BUILD_VERSION=$(date +"%Y%m%d-%H%M")
+        - echo "Build version: $NEXT_PUBLIC_BUILD_VERSION"
         - npm run build
         - echo "Build completed successfully"
   artifacts:
