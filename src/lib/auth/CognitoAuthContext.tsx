@@ -83,7 +83,9 @@ export function CognitoAuthProvider({ children }: { children: React.ReactNode })
     try {
       const response = await apiGet<ApiKey[]>(API_URLS.keys(), token);
       if (response.data) {
-        setApiKeys(response.data);
+        // Filter to only show active API keys
+        const activeKeys = response.data.filter(key => key.is_active);
+        setApiKeys(activeKeys);
       }
     } catch (error) {
       console.error('Error fetching API keys:', error);
