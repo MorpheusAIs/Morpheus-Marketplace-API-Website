@@ -112,7 +112,7 @@ export default function ChatPage() {
     try {
       console.log('Fetching models from API...');
       
-      const response = await fetch('https://api.dev.mor.org/api/v1/models/', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://newapi.dev.mor.org'}/api/v1/models`, {
         method: 'GET',
         headers: {
           'accept': 'application/json'
@@ -337,7 +337,7 @@ export default function ChatPage() {
       };
 
       // Make the actual API call using the user-provided API key
-      const res = await fetch('https://api.dev.mor.org/api/v1/chat/completions', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://newapi.dev.mor.org'}/api/v1/chat/completions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
