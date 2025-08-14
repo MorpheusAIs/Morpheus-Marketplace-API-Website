@@ -8,6 +8,17 @@ import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
 
 export default function Home() {
   const { login, signup, isAuthenticated } = useCognitoAuth();
+  
+  // Generate build version timestamp
+  const buildVersion = process.env.NEXT_PUBLIC_BUILD_VERSION || (() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `${year}${month}${day}-${hours}${minutes}`;
+  })();
 
   const handleLogin = () => {
     if (isAuthenticated) {
@@ -36,7 +47,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8">
-      <div className="bg-[var(--eclipse)]/80 p-8 rounded-lg max-w-5xl w-full backdrop-blur-md border border-[var(--neon-mint)]/20">
+      <div className="relative bg-[var(--eclipse)]/80 p-8 rounded-lg max-w-5xl w-full backdrop-blur-md border border-[var(--neon-mint)]/20">
         <div className="flex flex-col items-center mb-8">
           <Image
             src="/images/Morpheus Logo - White.svg"
@@ -95,6 +106,11 @@ export default function Home() {
           <Link href={`${API_CONFIG.BASE_URL}/docs`} className="px-6 py-3 bg-[var(--eclipse)] text-[var(--platinum)] rounded-md text-center hover:shadow-lg hover:shadow-[var(--eclipse)]/20 transition-all hover:-translate-y-1 font-medium border border-[var(--emerald)]/30">
             Swagger UI
           </Link>
+        </div>
+        
+        {/* Version watermark */}
+        <div className="absolute bottom-2 right-2 text-xs text-[var(--platinum)]/40 font-mono">
+          v.{buildVersion}
         </div>
       </div>
     </main>
