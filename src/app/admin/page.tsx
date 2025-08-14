@@ -46,6 +46,8 @@ export default function AdminPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [showKeyInput, setShowKeyInput] = useState(false);
   const [keyInputValue, setKeyInputValue] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [keyToDelete, setKeyToDelete] = useState<{id: number, name: string, prefix: string} | null>(null);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -230,19 +232,20 @@ export default function AdminPage() {
       });
   };
 
-  const deleteApiKey = async (keyId: number, keyName: string) => {
-    if (!accessToken) {
+  const showDeleteConfirmation = (keyId: number, keyName: string, keyPrefix: string) => {
+    setKeyToDelete({ id: keyId, name: keyName, prefix: keyPrefix });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteApiKey = async () => {
+    if (!keyToDelete || !accessToken) {
       setError('No access token available');
       return;
     }
 
-    if (!window.confirm(`Are you sure you want to delete the API key "${keyName}"? This action cannot be undone.`)) {
-      return;
-    }
-
     try {
-      console.log('Deleting API key:', keyId);
-      const response = await apiDelete(API_URLS.deleteKey(keyId), accessToken);
+      console.log('Deleting API key:', keyToDelete.id);
+      const response = await apiDelete(API_URLS.deleteKey(keyToDelete.id), accessToken);
 
       if (response.error) {
         throw new Error(response.error);
@@ -252,8 +255,7 @@ export default function AdminPage() {
       await refreshApiKeys();
       
       // If this was the selected key, clear the selection
-      const deletedKey = apiKeys.find(key => key.id === keyId);
-      if (deletedKey && selectedApiKeyPrefix === deletedKey.key_prefix) {
+      if (selectedApiKeyPrefix === keyToDelete.prefix) {
         setSelectedApiKeyPrefix('');
         setFullApiKey('');
         setAutomationSettings(null);
@@ -264,12 +266,21 @@ export default function AdminPage() {
         localStorage.removeItem('selected_api_key_prefix');
       }
 
-      setSuccessMessage(`API key "${keyName}" deleted successfully`);
-      trackApiKey('deleted', keyName);
+      setSuccessMessage(`API key "${keyToDelete.name}" deleted successfully`);
+      trackApiKey('deleted', keyToDelete.name);
+      
+      // Close modal and reset state
+      setShowDeleteModal(false);
+      setKeyToDelete(null);
     } catch (err) {
       setError(`Failed to delete API key: ${err instanceof Error ? err.message : 'Unknown error'}`);
       console.error('Error deleting API key:', err);
     }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setKeyToDelete(null);
   };
 
   const updateAutomationSettings = async () => {
@@ -379,7 +390,8 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8" style={{
+    <>
+      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8" style={{
       backgroundImage: "url('/images/942b261a-ecc5-420d-9d4b-4b2ae73cab6d.png')",
       backgroundSize: "cover",
       backgroundPosition: "center",
@@ -508,7 +520,7 @@ export default function AdminPage() {
                             {selectedApiKeyPrefix === key.key_prefix ? 'Selected' : 'Select'}
                           </button>
                           <button
-                            onClick={() => deleteApiKey(key.id, key.name)}
+                            onClick={() => showDeleteConfirmation(key.id, key.name, key.key_prefix)}
                             className="px-3 py-1 text-sm rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors"
                             title={`Delete ${key.name}`}
                           >
@@ -684,6 +696,55 @@ export default function AdminPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && keyToDelete && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-[var(--midnight)] border border-red-500/30 rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex items-center mb-4">
+              <div className="w-8 h-8 bg-red-500/20 rounded-full flex items-center justify-center mr-3">
+                <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-red-400">Delete API Key</h3>
+            </div>
+            
+            <div className="mb-6">
+              <p className="text-[var(--platinum)]/80 mb-3">
+                Are you sure you want to delete this API key?
+              </p>
+              <div className="bg-[var(--eclipse)] p-3 rounded-md border border-red-500/20">
+                <p className="text-sm text-[var(--platinum)]">
+                  <strong>Name:</strong> {keyToDelete?.name}
+                </p>
+                <p className="text-sm text-[var(--platinum)] font-mono">
+                  <strong>Key:</strong> {keyToDelete?.prefix}...
+                </p>
+              </div>
+              <p className="text-red-400/80 text-sm mt-3">
+                ⚠️ This action cannot be undone. The API key will be permanently deleted.
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={confirmDeleteApiKey}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-medium"
+              >
+                Delete Permanently
+              </button>
+              <button
+                onClick={cancelDelete}
+                className="px-4 py-2 bg-[var(--eclipse)] text-[var(--platinum)] rounded-md hover:bg-[var(--midnight)] transition-colors border border-[var(--platinum)]/20"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 } 
