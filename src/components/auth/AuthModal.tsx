@@ -141,10 +141,12 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
       <div className="bg-gradient-to-br from-[#106F48] via-[#022C33] to-[#88018B] p-6 rounded-lg max-w-sm w-full mx-4 shadow-2xl">
         <div className="text-center mb-6">
           {/* Morpheus Logo */}
-          <div className="w-16 h-16 mx-auto mb-4 bg-white rounded-lg flex items-center justify-center">
-            <svg width="40" height="30" viewBox="0 0 40 30" fill="none" className="text-[#106F48]">
-              <path d="M20 2L10 12V32H16V20H24V32H30V12L20 2Z" fill="currentColor"/>
-            </svg>
+          <div className="w-16 h-16 mx-auto mb-4 bg-white rounded-lg flex items-center justify-center p-2">
+            <img 
+              src="/images/mor_mark_white.png" 
+              alt="Morpheus AI" 
+              className="w-full h-full object-contain filter invert"
+            />
           </div>
           {/* Title */}
           <h2 className="text-white text-lg font-normal mb-6">
@@ -180,7 +182,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium placeholder-gray-500 focus:outline-none focus:ring-0"
+                className="w-full p-3 bg-gray-200 border-0 rounded text-black font-semibold placeholder-gray-600 focus:outline-none focus:ring-0"
                 placeholder="name@host.com"
               />
             </div>
@@ -192,7 +194,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium placeholder-gray-500 focus:outline-none focus:ring-0"
+                className="w-full p-3 bg-gray-200 border-0 rounded text-black font-semibold placeholder-gray-600 focus:outline-none focus:ring-0"
                 placeholder="Password"
               />
             </div>
@@ -238,7 +240,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium placeholder-gray-500 focus:outline-none focus:ring-0"
+                  className="w-full p-3 bg-gray-200 border-0 rounded text-black font-semibold placeholder-gray-600 focus:outline-none focus:ring-0"
                   placeholder="name@host.com"
               />
             </div>
@@ -251,7 +253,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={8}
-                  className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium placeholder-gray-500 focus:outline-none focus:ring-0"
+                  className="w-full p-3 bg-gray-200 border-0 rounded text-black font-semibold placeholder-gray-600 focus:outline-none focus:ring-0"
                   placeholder="Password (min 8 characters)"
               />
             </div>
@@ -263,7 +265,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium placeholder-gray-500 focus:outline-none focus:ring-0"
+                  className="w-full p-3 bg-gray-200 border-0 rounded text-black font-semibold placeholder-gray-600 focus:outline-none focus:ring-0"
                   placeholder="Confirm Password"
               />
             </div>
@@ -343,7 +345,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium placeholder-gray-500 focus:outline-none focus:ring-0"
+                  className="w-full p-3 bg-gray-200 border-0 rounded text-black font-semibold placeholder-gray-600 focus:outline-none focus:ring-0"
                   placeholder="name@host.com"
               />
             </div>

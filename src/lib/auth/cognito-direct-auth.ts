@@ -78,6 +78,9 @@ export class CognitoDirectAuth {
         }
       };
 
+      console.log('🚀 Sending auth request to:', url);
+      console.log('📦 Payload:', { ...payload, AuthParameters: { ...payload.AuthParameters, PASSWORD: '[HIDDEN]' } });
+
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -88,6 +91,8 @@ export class CognitoDirectAuth {
       });
 
       const data = await response.json();
+      console.log('📥 Response status:', response.status);
+      console.log('📥 Response data:', data);
 
       if (!response.ok) {
         return {
