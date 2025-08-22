@@ -42,7 +42,7 @@ interface ConfirmSignUpResult {
 }
 
 const COGNITO_CONFIG = {
-  userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || '',
+  userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || 'us-east-2_tqCTHoSST',
   clientId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || '',
   region: process.env.NEXT_PUBLIC_COGNITO_REGION || 'us-east-2',
 };

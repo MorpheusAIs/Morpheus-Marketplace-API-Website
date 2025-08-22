@@ -1,39 +1,63 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useCognitoDirectAuth } from '@/lib/auth/CognitoDirectAuthContext';
+import { CognitoDirectAuth } from '@/lib/auth/cognito-direct-auth';
 import AuthModal from '@/components/auth/AuthModal';
 import Link from 'next/link';
 
 export default function DirectLoginPage() {
   const router = useRouter();
-  const { 
-    isAuthenticated, 
-    showAuthModal, 
-    setShowAuthModal, 
-    handleAuthSuccess,
-    user 
-  } = useCognitoDirectAuth();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Redirect if already authenticated
+  // Check authentication on mount
   useEffect(() => {
-    if (isAuthenticated) {
-      router.push('/admin');
-    }
-  }, [isAuthenticated, router]);
+    const checkAuth = async () => {
+      try {
+        const token = await CognitoDirectAuth.getValidAccessToken();
+        if (token) {
+          setIsAuthenticated(true);
+          router.push('/admin');
+        } else {
+          setShowAuthModal(true);
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        setShowAuthModal(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  // Show modal on page load
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setShowAuthModal(true);
-    }
-  }, [isAuthenticated, setShowAuthModal]);
+    checkAuth();
+  }, [router]);
+
+  const handleAuthSuccess = async (tokens: any, userInfo: any) => {
+    // Store tokens using the direct auth utility
+    CognitoDirectAuth.storeTokens(tokens);
+    setIsAuthenticated(true);
+    setShowAuthModal(false);
+    router.push('/admin');
+  };
 
   const handleModalClose = () => {
     setShowAuthModal(false);
     router.push('/'); // Go back to home if they close the modal
   };
+
+  // Show loading during SSR or initial auth check
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[var(--matrix-green)]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--neon-mint)] mx-auto mb-4"></div>
+          <p className="text-white">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--matrix-green)] py-12 px-4 sm:px-6 lg:px-8">
@@ -63,7 +87,7 @@ export default function DirectLoginPage() {
             </div>
           )}
           
-          {/* Loading state */}
+          {/* Authenticated state */}
           {isAuthenticated && (
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--neon-mint)] mx-auto mb-4"></div>

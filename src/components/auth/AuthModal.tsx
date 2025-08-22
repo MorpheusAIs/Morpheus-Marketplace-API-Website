@@ -20,6 +20,8 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Prevent SSR issues
+  if (typeof window === 'undefined') return null;
   if (!isOpen) return null;
 
   const handleSignIn = async (e: React.FormEvent) => {
