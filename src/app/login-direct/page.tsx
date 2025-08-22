@@ -37,9 +37,16 @@ export default function DirectLoginPage() {
   const handleAuthSuccess = async (tokens: any, userInfo: any) => {
     // Store tokens using the direct auth utility
     CognitoDirectAuth.storeTokens(tokens);
+    
+    // Also store user info for compatibility with existing auth context
+    localStorage.setItem('user_info', JSON.stringify(userInfo));
+    
     setIsAuthenticated(true);
     setShowAuthModal(false);
-    router.push('/admin');
+    
+    // Force a page reload to ensure the main auth context picks up the new tokens
+    // This ensures compatibility with your existing authentication system
+    window.location.href = '/admin';
   };
 
   const handleModalClose = () => {
