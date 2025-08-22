@@ -186,7 +186,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full p-3 bg-gray-100 border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black"
+                  className="w-full p-3 bg-white border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black font-medium placeholder-gray-500"
                   placeholder="name@host.com"
                 />
               </div>
@@ -198,7 +198,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full p-3 bg-gray-100 border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black"
+                  className="w-full p-3 bg-white border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black font-medium placeholder-gray-500"
                   placeholder="Password"
                 />
               </div>
@@ -244,7 +244,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full p-3 bg-gray-100 border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black"
+                  className="w-full p-3 bg-white border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black font-medium placeholder-gray-500"
                   placeholder="name@host.com"
                 />
               </div>
@@ -257,7 +257,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={8}
-                  className="w-full p-3 bg-gray-100 border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black"
+                  className="w-full p-3 bg-white border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black font-medium placeholder-gray-500"
                   placeholder="Password (min 8 characters)"
                 />
               </div>
@@ -269,7 +269,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  className="w-full p-3 bg-gray-100 border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black"
+                  className="w-full p-3 bg-white border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black font-medium placeholder-gray-500"
                   placeholder="Confirm Password"
                 />
               </div>
@@ -309,7 +309,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   value={confirmationCode}
                   onChange={(e) => setConfirmationCode(e.target.value)}
                   required
-                  className="w-full p-3 bg-gray-100 border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black text-center text-lg tracking-widest"
+                  className="w-full p-3 bg-white border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black font-medium text-center text-lg tracking-widest placeholder-gray-500"
                   placeholder="123456"
                   maxLength={6}
                 />
@@ -349,7 +349,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full p-3 bg-gray-100 border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black"
+                  className="w-full p-3 bg-white border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black font-medium placeholder-gray-500"
                   placeholder="name@host.com"
                 />
               </div>

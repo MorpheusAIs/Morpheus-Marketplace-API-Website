@@ -54,6 +54,19 @@ export class CognitoDirectAuth {
    */
   static async signIn(email: string, password: string): Promise<AuthenticationResult> {
     try {
+      console.log('🔐 Cognito Config:', {
+        userPoolId: COGNITO_CONFIG.userPoolId,
+        clientId: COGNITO_CONFIG.clientId ? '[SET]' : '[MISSING]',
+        region: COGNITO_CONFIG.region
+      });
+
+      if (!COGNITO_CONFIG.clientId) {
+        return {
+          success: false,
+          error: 'Cognito Client ID not configured. Please set NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID environment variable.'
+        };
+      }
+
       const url = `https://cognito-idp.${COGNITO_CONFIG.region}.amazonaws.com/`;
       
       const payload = {
