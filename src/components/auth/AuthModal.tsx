@@ -138,7 +138,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-      <div className="bg-gradient-to-br from-[#106F48] via-[#022C33] to-[#88018B] p-6 rounded-lg max-w-sm w-full mx-4 shadow-2xl">
+      <div className="bg-gradient-to-br from-[#106F48] via-[#022C33] to-[#88018B] p-6 rounded-lg max-w-md w-full mx-4 shadow-2xl">
         <div className="text-center mb-6">
           {/* Morpheus Logo */}
           <div className="w-4/5 mx-auto mb-6 flex items-center justify-center" style={{height: '80px'}}>
@@ -305,7 +305,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   value={confirmationCode}
                   onChange={(e) => setConfirmationCode(e.target.value)}
                   required
-                  className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium text-center text-lg tracking-widest placeholder-gray-500 focus:outline-none focus:ring-0"
+                  className="w-full p-3 bg-gray-100 border-0 rounded text-gray-700 font-semibold text-center text-lg tracking-widest placeholder-gray-700 focus:outline-none focus:ring-0 focus:bg-white focus:text-black"
                   placeholder="123456"
                   maxLength={6}
               />
