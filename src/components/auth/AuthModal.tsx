@@ -137,37 +137,31 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div 
-        className="bg-gradient-to-br from-[#106F48] via-[#022C33] to-[#88018B] p-1 rounded-lg max-w-md w-full mx-4"
-        style={{ 
-          background: 'linear-gradient(135deg, #106F48 0%, #022C33 50%, #88018B 100%)'
-        }}
-      >
-        <div className="bg-[#022C33] p-8 rounded-lg">
-          {/* Header */}
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center space-x-3">
-              {/* Morpheus Logo */}
-              <div className="w-10 h-10 bg-white rounded-sm flex items-center justify-center">
-                <svg width="32" height="24" viewBox="0 0 32 24" fill="none">
-                  <path d="M16 0L8 8V24H12V12H20V24H24V8L16 0Z" fill="#106F48"/>
-                </svg>
-              </div>
-              <h2 className="text-2xl font-bold text-white">
-                {mode === 'signin' && 'Sign in to your account'}
-                {mode === 'signup' && 'Create your account'}
-                {mode === 'confirm' && 'Confirm your email'}
-                {mode === 'forgot' && 'Reset your password'}
-              </h2>
-            </div>
-            <button 
-              onClick={handleClose}
-              className="text-white hover:text-gray-300 text-2xl"
-            >
-              ×
-            </button>
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+      <div className="bg-gradient-to-br from-[#106F48] via-[#022C33] to-[#88018B] p-6 rounded-lg max-w-sm w-full mx-4 shadow-2xl">
+        <div className="text-center mb-6">
+          {/* Morpheus Logo */}
+          <div className="w-16 h-16 mx-auto mb-4 bg-white rounded-lg flex items-center justify-center">
+            <svg width="40" height="30" viewBox="0 0 40 30" fill="none" className="text-[#106F48]">
+              <path d="M20 2L10 12V32H16V20H24V32H30V12L20 2Z" fill="currentColor"/>
+            </svg>
           </div>
+          {/* Title */}
+          <h2 className="text-white text-lg font-normal mb-6">
+            {mode === 'signin' && 'Sign in with your email and password'}
+            {mode === 'signup' && 'Create your account'}
+            {mode === 'confirm' && 'Confirm your email'}
+            {mode === 'forgot' && 'Reset your password'}
+          </h2>
+
+          {/* Close button */}
+          <button 
+            onClick={handleClose}
+            className="absolute top-4 right-4 text-white hover:text-gray-300 text-xl"
+          >
+            ×
+          </button>
+        </div>
 
           {/* Error Message */}
           {error && (
@@ -180,53 +174,53 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
           {mode === 'signin' && (
             <form onSubmit={handleSignIn} className="space-y-4">
               <div>
-                <label className="block text-white text-sm font-medium mb-2">Email</label>
+                <label className="block text-white text-sm mb-1">Email</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full p-3 bg-white border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black font-medium placeholder-gray-500"
+                  className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium placeholder-gray-500 focus:outline-none focus:ring-0"
                   placeholder="name@host.com"
                 />
               </div>
               
               <div>
-                <label className="block text-white text-sm font-medium mb-2">Password</label>
+                <label className="block text-white text-sm mb-1">Password</label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full p-3 bg-white border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black font-medium placeholder-gray-500"
+                  className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium placeholder-gray-500 focus:outline-none focus:ring-0"
                   placeholder="Password"
                 />
               </div>
 
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-[#106F48] hover:bg-[#23DC8E] text-white p-3 rounded font-medium transition-colors disabled:opacity-50"
-              >
-                {isLoading ? 'Signing in...' : 'Sign in'}
-              </button>
-
-              <div className="text-center">
+              <div className="text-left pt-2">
                 <button
                   type="button"
                   onClick={() => setMode('forgot')}
-                  className="text-[#23DC8E] hover:text-white text-sm"
+                  className="text-blue-400 hover:text-blue-300 text-sm underline"
                 >
                   Forgot your password?
                 </button>
               </div>
 
-              <div className="text-center text-white text-sm">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-[#106F48] hover:bg-[#0e5a3c] text-white p-3 rounded font-medium transition-colors disabled:opacity-50 mt-4"
+              >
+                {isLoading ? 'Signing in...' : 'Sign in'}
+              </button>
+
+              <div className="text-center text-white text-sm pt-4">
                 Need an account?{' '}
                 <button
                   type="button"
                   onClick={() => setMode('signup')}
-                  className="text-[#23DC8E] hover:text-white"
+                  className="text-blue-400 hover:text-blue-300 underline"
                 >
                   Sign up
                 </button>
@@ -238,38 +232,38 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
           {mode === 'signup' && (
             <form onSubmit={handleSignUp} className="space-y-4">
               <div>
-                <label className="block text-white text-sm font-medium mb-2">Email</label>
+                <label className="block text-white text-sm mb-1">Email</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full p-3 bg-white border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black font-medium placeholder-gray-500"
+                  className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium placeholder-gray-500 focus:outline-none focus:ring-0"
                   placeholder="name@host.com"
                 />
               </div>
               
               <div>
-                <label className="block text-white text-sm font-medium mb-2">Password</label>
+                <label className="block text-white text-sm mb-1">Password</label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={8}
-                  className="w-full p-3 bg-white border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black font-medium placeholder-gray-500"
+                  className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium placeholder-gray-500 focus:outline-none focus:ring-0"
                   placeholder="Password (min 8 characters)"
                 />
               </div>
 
               <div>
-                <label className="block text-white text-sm font-medium mb-2">Confirm Password</label>
+                <label className="block text-white text-sm mb-1">Confirm Password</label>
                 <input
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  className="w-full p-3 bg-white border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black font-medium placeholder-gray-500"
+                  className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium placeholder-gray-500 focus:outline-none focus:ring-0"
                   placeholder="Confirm Password"
                 />
               </div>
@@ -277,7 +271,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#106F48] hover:bg-[#23DC8E] text-white p-3 rounded font-medium transition-colors disabled:opacity-50"
+                className="w-full bg-[#106F48] hover:bg-[#0e5a3c] text-white p-3 rounded font-medium transition-colors disabled:opacity-50"
               >
                 {isLoading ? 'Creating account...' : 'Create account'}
               </button>
@@ -287,7 +281,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                 <button
                   type="button"
                   onClick={() => setMode('signin')}
-                  className="text-[#23DC8E] hover:text-white"
+                  className="text-blue-400 hover:text-blue-300 underline"
                 >
                   Sign in
                 </button>
@@ -303,13 +297,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
               </div>
               
               <div>
-                <label className="block text-white text-sm font-medium mb-2">Confirmation Code</label>
+                <label className="block text-white text-sm mb-1">Confirmation Code</label>
                 <input
                   type="text"
                   value={confirmationCode}
                   onChange={(e) => setConfirmationCode(e.target.value)}
                   required
-                  className="w-full p-3 bg-white border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black font-medium text-center text-lg tracking-widest placeholder-gray-500"
+                  className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium text-center text-lg tracking-widest placeholder-gray-500 focus:outline-none focus:ring-0"
                   placeholder="123456"
                   maxLength={6}
                 />
@@ -318,7 +312,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#106F48] hover:bg-[#23DC8E] text-white p-3 rounded font-medium transition-colors disabled:opacity-50"
+                className="w-full bg-[#106F48] hover:bg-[#0e5a3c] text-white p-3 rounded font-medium transition-colors disabled:opacity-50"
               >
                 {isLoading ? 'Confirming...' : 'Confirm Account'}
               </button>
@@ -327,7 +321,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                 <button
                   type="button"
                   onClick={() => setMode('signin')}
-                  className="text-[#23DC8E] hover:text-white"
+                  className="text-blue-400 hover:text-blue-300 underline"
                 >
                   Back to sign in
                 </button>
@@ -343,13 +337,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
               </div>
               
               <div>
-                <label className="block text-white text-sm font-medium mb-2">Email</label>
+                <label className="block text-white text-sm mb-1">Email</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full p-3 bg-white border border-[#88018B] rounded focus:border-[#106F48] focus:outline-none text-black font-medium placeholder-gray-500"
+                  className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium placeholder-gray-500 focus:outline-none focus:ring-0"
                   placeholder="name@host.com"
                 />
               </div>
@@ -357,7 +351,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#106F48] hover:bg-[#23DC8E] text-white p-3 rounded font-medium transition-colors disabled:opacity-50"
+                className="w-full bg-[#106F48] hover:bg-[#0e5a3c] text-white p-3 rounded font-medium transition-colors disabled:opacity-50"
               >
                 {isLoading ? 'Sending...' : 'Send Reset Code'}
               </button>
@@ -366,7 +360,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                 <button
                   type="button"
                   onClick={() => setMode('signin')}
-                  className="text-[#23DC8E] hover:text-white"
+                  className="text-blue-400 hover:text-blue-300 underline"
                 >
                   Back to sign in
                 </button>

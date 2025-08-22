@@ -1,14 +1,17 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { API_CONFIG } from '@/lib/api/config';
 import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
 import { BUILD_VERSION } from '@/lib/build-version';
+import AuthModal from '@/components/auth/AuthModal';
+import { CognitoDirectAuth } from '@/lib/auth/cognito-direct-auth';
 
 export default function Home() {
-  const { login, signup, logout, isAuthenticated } = useCognitoAuth();
+  const { logout, isAuthenticated } = useCognitoAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
   
   // Use build version from generated file
   const buildVersion = BUILD_VERSION;
@@ -18,14 +21,14 @@ export default function Home() {
       // If authenticated, logout and clear credentials
       logout();
     } else {
-      // Otherwise, redirect to Cognito login
-      login();
+      // Open the beautiful direct auth modal instead of redirect
+      setShowAuthModal(true);
     }
   };
 
   const handleRegister = () => {
-    // Always redirect to Cognito signup
-    signup();
+    // Open the beautiful direct auth modal in signup mode
+    setShowAuthModal(true);
   };
 
   const handleAdmin = () => {
@@ -33,9 +36,17 @@ export default function Home() {
       // If already authenticated, go directly to admin
       window.location.href = '/admin';
     } else {
-      // Otherwise, redirect to Cognito login first
-      login();
+      // Open the beautiful direct auth modal instead of redirect
+      setShowAuthModal(true);
     }
+  };
+
+  const handleAuthSuccess = (tokens: any, userInfo: any) => {
+    // Store tokens and redirect to admin
+    CognitoDirectAuth.storeTokens(tokens);
+    localStorage.setItem('user_info', JSON.stringify(userInfo));
+    setShowAuthModal(false);
+    window.location.href = '/admin';
   };
 
   return (
@@ -106,6 +117,13 @@ export default function Home() {
           v.{buildVersion}
         </div>
       </div>
+
+      {/* Beautiful Direct Authentication Modal - NO REDIRECTS! */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={handleAuthSuccess}
+      />
     </main>
   );
 }
