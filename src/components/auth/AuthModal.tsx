@@ -163,89 +163,89 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
           </button>
         </div>
 
-          {/* Error Message */}
-          {error && (
-            <div className="mb-4 p-3 bg-red-500 bg-opacity-20 border border-red-500 rounded text-red-200 text-sm">
-              {error}
+        {/* Error Message */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-500 bg-opacity-20 border border-red-500 rounded text-red-200 text-sm">
+            {error}
+          </div>
+        )}
+
+        {/* Sign In Form */}
+        {mode === 'signin' && (
+          <form onSubmit={handleSignIn} className="space-y-4">
+            <div>
+              <label className="block text-white text-sm mb-1">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium placeholder-gray-500 focus:outline-none focus:ring-0"
+                placeholder="name@host.com"
+              />
             </div>
-          )}
+            
+            <div>
+              <label className="block text-white text-sm mb-1">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium placeholder-gray-500 focus:outline-none focus:ring-0"
+                placeholder="Password"
+              />
+            </div>
 
-          {/* Sign In Form */}
-          {mode === 'signin' && (
-            <form onSubmit={handleSignIn} className="space-y-4">
-              <div>
-                <label className="block text-white text-sm mb-1">Email</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium placeholder-gray-500 focus:outline-none focus:ring-0"
-                  placeholder="name@host.com"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-white text-sm mb-1">Password</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium placeholder-gray-500 focus:outline-none focus:ring-0"
-                  placeholder="Password"
-                />
-              </div>
-
-              <div className="text-left pt-2">
-                <button
-                  type="button"
-                  onClick={() => setMode('forgot')}
-                  className="text-blue-400 hover:text-blue-300 text-sm underline"
-                >
-                  Forgot your password?
-                </button>
-              </div>
-
+            <div className="text-left pt-2">
               <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-[#106F48] hover:bg-[#0e5a3c] text-white p-3 rounded font-medium transition-colors disabled:opacity-50 mt-4"
+                type="button"
+                onClick={() => setMode('forgot')}
+                className="text-blue-400 hover:text-blue-300 text-sm underline"
               >
-                {isLoading ? 'Signing in...' : 'Sign in'}
+                Forgot your password?
               </button>
+            </div>
 
-              <div className="text-center text-white text-sm pt-4">
-                Need an account?{' '}
-                <button
-                  type="button"
-                  onClick={() => setMode('signup')}
-                  className="text-blue-400 hover:text-blue-300 underline"
-                >
-                  Sign up
-                </button>
-              </div>
-            </form>
-          )}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-[#106F48] hover:bg-[#0e5a3c] text-white p-3 rounded font-medium transition-colors disabled:opacity-50 mt-4"
+            >
+              {isLoading ? 'Signing in...' : 'Sign in'}
+            </button>
 
-          {/* Sign Up Form */}
-          {mode === 'signup' && (
-            <form onSubmit={handleSignUp} className="space-y-4">
-              <div>
-                <label className="block text-white text-sm mb-1">Email</label>
-                <input
+            <div className="text-center text-white text-sm pt-4">
+              Need an account?{' '}
+              <button
+                type="button"
+                onClick={() => setMode('signup')}
+                className="text-blue-400 hover:text-blue-300 underline"
+              >
+                Sign up
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Sign Up Form */}
+        {mode === 'signup' && (
+          <form onSubmit={handleSignUp} className="space-y-4">
+            <div>
+              <label className="block text-white text-sm mb-1">Email</label>
+              <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium placeholder-gray-500 focus:outline-none focus:ring-0"
                   placeholder="name@host.com"
-                />
-              </div>
+              />
+            </div>
               
-              <div>
-                <label className="block text-white text-sm mb-1">Password</label>
-                <input
+            <div>
+              <label className="block text-white text-sm mb-1">Password</label>
+              <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -253,52 +253,52 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   minLength={8}
                   className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium placeholder-gray-500 focus:outline-none focus:ring-0"
                   placeholder="Password (min 8 characters)"
-                />
-              </div>
+              />
+            </div>
 
-              <div>
-                <label className="block text-white text-sm mb-1">Confirm Password</label>
-                <input
+            <div>
+              <label className="block text-white text-sm mb-1">Confirm Password</label>
+              <input
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium placeholder-gray-500 focus:outline-none focus:ring-0"
                   placeholder="Confirm Password"
-                />
-              </div>
+              />
+            </div>
 
-              <button
-                type="submit"
+            <button
+              type="submit"
                 disabled={isLoading}
                 className="w-full bg-[#106F48] hover:bg-[#0e5a3c] text-white p-3 rounded font-medium transition-colors disabled:opacity-50"
               >
                 {isLoading ? 'Creating account...' : 'Create account'}
-              </button>
+            </button>
 
-              <div className="text-center text-white text-sm">
+            <div className="text-center text-white text-sm">
                 Already have an account?{' '}
-                <button
-                  type="button"
+              <button
+                type="button"
                   onClick={() => setMode('signin')}
                   className="text-blue-400 hover:text-blue-300 underline"
                 >
                   Sign in
-                </button>
-              </div>
-            </form>
-          )}
+              </button>
+            </div>
+          </form>
+        )}
 
-          {/* Confirmation Form */}
-          {mode === 'confirm' && (
-            <form onSubmit={handleConfirmSignUp} className="space-y-4">
-              <div className="text-white text-sm mb-4">
+        {/* Confirmation Form */}
+        {mode === 'confirm' && (
+          <form onSubmit={handleConfirmSignUp} className="space-y-4">
+            <div className="text-white text-sm mb-4">
                 We've sent a confirmation code to <strong>{email}</strong>. Please enter it below.
-              </div>
+            </div>
               
-              <div>
-                <label className="block text-white text-sm mb-1">Confirmation Code</label>
-                <input
+            <div>
+              <label className="block text-white text-sm mb-1">Confirmation Code</label>
+              <input
                   type="text"
                   value={confirmationCode}
                   onChange={(e) => setConfirmationCode(e.target.value)}
@@ -306,68 +306,67 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium text-center text-lg tracking-widest placeholder-gray-500 focus:outline-none focus:ring-0"
                   placeholder="123456"
                   maxLength={6}
-                />
-              </div>
+              />
+            </div>
 
-              <button
-                type="submit"
+            <button
+              type="submit"
                 disabled={isLoading}
                 className="w-full bg-[#106F48] hover:bg-[#0e5a3c] text-white p-3 rounded font-medium transition-colors disabled:opacity-50"
               >
                 {isLoading ? 'Confirming...' : 'Confirm Account'}
-              </button>
+            </button>
 
-              <div className="text-center text-white text-sm">
-                <button
-                  type="button"
+            <div className="text-center text-white text-sm">
+              <button
+                type="button"
                   onClick={() => setMode('signin')}
                   className="text-blue-400 hover:text-blue-300 underline"
                 >
                   Back to sign in
-                </button>
-              </div>
-            </form>
-          )}
+              </button>
+            </div>
+          </form>
+        )}
 
-          {/* Forgot Password Form */}
-          {mode === 'forgot' && (
-            <form onSubmit={handleForgotPassword} className="space-y-4">
-              <div className="text-white text-sm mb-4">
+        {/* Forgot Password Form */}
+        {mode === 'forgot' && (
+          <form onSubmit={handleForgotPassword} className="space-y-4">
+            <div className="text-white text-sm mb-4">
                 Enter your email address and we'll send you a password reset code.
-              </div>
+            </div>
               
-              <div>
-                <label className="block text-white text-sm mb-1">Email</label>
-                <input
+            <div>
+              <label className="block text-white text-sm mb-1">Email</label>
+              <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="w-full p-3 bg-gray-200 border-0 rounded text-gray-800 font-medium placeholder-gray-500 focus:outline-none focus:ring-0"
                   placeholder="name@host.com"
-                />
-              </div>
+              />
+            </div>
 
-              <button
-                type="submit"
+            <button
+              type="submit"
                 disabled={isLoading}
                 className="w-full bg-[#106F48] hover:bg-[#0e5a3c] text-white p-3 rounded font-medium transition-colors disabled:opacity-50"
               >
                 {isLoading ? 'Sending...' : 'Send Reset Code'}
-              </button>
+            </button>
 
-              <div className="text-center text-white text-sm">
-                <button
-                  type="button"
+            <div className="text-center text-white text-sm">
+              <button
+                type="button"
                   onClick={() => setMode('signin')}
                   className="text-blue-400 hover:text-blue-300 underline"
                 >
                   Back to sign in
-                </button>
-              </div>
-            </form>
-          )}
-        </div>
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );
