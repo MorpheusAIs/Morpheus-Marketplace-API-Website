@@ -3,7 +3,7 @@
 // Direct Cognito Authentication - No Redirects!
 // This module provides in-app authentication using Cognito APIs directly
 
-import crypto from 'crypto';
+// Note: We'll use Web Crypto API for browser compatibility
 
 interface CognitoTokens {
   accessToken: string;
@@ -56,16 +56,12 @@ export class CognitoDirectAuth {
     try {
       const url = `https://cognito-idp.${COGNITO_CONFIG.region}.amazonaws.com/`;
       
-      // Generate SECRET_HASH if your app client has a secret
-      const secretHash = this.calculateSecretHash(email);
-      
       const payload = {
         AuthFlow: 'USER_PASSWORD_AUTH',
         ClientId: COGNITO_CONFIG.clientId,
         AuthParameters: {
           USERNAME: email,
-          PASSWORD: password,
-          SECRET_HASH: secretHash
+          PASSWORD: password
         }
       };
 
@@ -136,8 +132,6 @@ export class CognitoDirectAuth {
     try {
       const url = `https://cognito-idp.${COGNITO_CONFIG.region}.amazonaws.com/`;
       
-      const secretHash = this.calculateSecretHash(email);
-      
       const userAttributes = [
         { Name: 'email', Value: email },
         ...(attributes ? Object.entries(attributes).map(([key, value]) => ({ Name: key, Value: value })) : [])
@@ -147,8 +141,7 @@ export class CognitoDirectAuth {
         ClientId: COGNITO_CONFIG.clientId,
         Username: email,
         Password: password,
-        UserAttributes: userAttributes,
-        SecretHash: secretHash
+        UserAttributes: userAttributes
       };
 
       const response = await fetch(url, {
@@ -190,13 +183,10 @@ export class CognitoDirectAuth {
     try {
       const url = `https://cognito-idp.${COGNITO_CONFIG.region}.amazonaws.com/`;
       
-      const secretHash = this.calculateSecretHash(email);
-
       const payload = {
         ClientId: COGNITO_CONFIG.clientId,
         Username: email,
-        ConfirmationCode: confirmationCode,
-        SecretHash: secretHash
+        ConfirmationCode: confirmationCode
       };
 
       const response = await fetch(url, {
@@ -234,12 +224,9 @@ export class CognitoDirectAuth {
     try {
       const url = `https://cognito-idp.${COGNITO_CONFIG.region}.amazonaws.com/`;
       
-      const secretHash = this.calculateSecretHash(email);
-
       const payload = {
         ClientId: COGNITO_CONFIG.clientId,
-        Username: email,
-        SecretHash: secretHash
+        Username: email
       };
 
       const response = await fetch(url, {
@@ -270,17 +257,7 @@ export class CognitoDirectAuth {
     }
   }
 
-  /**
-   * Calculate SECRET_HASH (required if your app client has a secret)
-   * Note: You'll need to set this up in your Cognito configuration
-   */
-  private static calculateSecretHash(username: string): string {
-    const clientSecret = process.env.NEXT_PUBLIC_COGNITO_CLIENT_SECRET;
-    if (!clientSecret) return '';
-    
-    const message = username + COGNITO_CONFIG.clientId;
-    return crypto.createHmac('SHA256', clientSecret).update(message).digest('base64');
-  }
+
 
   /**
    * Parse user info from ID token (same as before)
