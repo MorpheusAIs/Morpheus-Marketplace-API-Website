@@ -184,10 +184,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                 required
                 className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
                 style={{
-                  color: '#374151 !important'
+                  color: '#000000 !important'
                 }}
                 onFocus={(e) => e.target.style.color = '#000000 !important'}
-                onBlur={(e) => e.target.style.color = '#374151 !important'}
+                onBlur={(e) => e.target.style.color = '#000000 !important'}
                 placeholder="name@host.com"
               />
             </div>
@@ -201,10 +201,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                 required
                 className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
                 style={{
-                  color: '#374151 !important'
+                  color: '#000000 !important'
                 }}
                 onFocus={(e) => e.target.style.color = '#000000 !important'}
-                onBlur={(e) => e.target.style.color = '#374151 !important'}
+                onBlur={(e) => e.target.style.color = '#000000 !important'}
                 placeholder="Password"
               />
             </div>
@@ -252,10 +252,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   required
                   className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
                 style={{
-                  color: '#374151 !important'
+                  color: '#000000 !important'
                 }}
                 onFocus={(e) => e.target.style.color = '#000000 !important'}
-                onBlur={(e) => e.target.style.color = '#374151 !important'}
+                onBlur={(e) => e.target.style.color = '#000000 !important'}
                   placeholder="name@host.com"
               />
             </div>
@@ -270,10 +270,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   minLength={8}
                   className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
                 style={{
-                  color: '#374151 !important'
+                  color: '#000000 !important'
                 }}
                 onFocus={(e) => e.target.style.color = '#000000 !important'}
-                onBlur={(e) => e.target.style.color = '#374151 !important'}
+                onBlur={(e) => e.target.style.color = '#000000 !important'}
                   placeholder="Password (min 8 characters)"
               />
             </div>
@@ -287,10 +287,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   required
                   className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
                 style={{
-                  color: '#374151 !important'
+                  color: '#000000 !important'
                 }}
                 onFocus={(e) => e.target.style.color = '#000000 !important'}
-                onBlur={(e) => e.target.style.color = '#374151 !important'}
+                onBlur={(e) => e.target.style.color = '#000000 !important'}
                   placeholder="Confirm Password"
               />
             </div>
@@ -332,10 +332,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   required
                   className="w-full p-3 bg-gray-100 border-0 rounded font-semibold text-center text-lg tracking-widest focus:outline-none focus:ring-0 focus:bg-white"
                   style={{
-                    color: '#374151 !important'
+                    color: '#000000 !important'
                   }}
                   onFocus={(e) => e.target.style.color = '#000000 !important'}
-                  onBlur={(e) => e.target.style.color = '#374151 !important'}
+                  onBlur={(e) => e.target.style.color = '#000000 !important'}
                   placeholder="123456"
                   maxLength={6}
               />
@@ -377,10 +377,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   required
                   className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
                 style={{
-                  color: '#374151 !important'
+                  color: '#000000 !important'
                 }}
                 onFocus={(e) => e.target.style.color = '#000000 !important'}
-                onBlur={(e) => e.target.style.color = '#374151 !important'}
+                onBlur={(e) => e.target.style.color = '#000000 !important'}
                   placeholder="name@host.com"
               />
             </div>
