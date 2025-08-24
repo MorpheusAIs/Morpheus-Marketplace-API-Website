@@ -184,8 +184,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                 required
                 className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
                 style={{
-                  color: '#374151 !important',
-                  placeholderColor: '#374151 !important'
+                  color: '#374151 !important'
                 }}
                 onFocus={(e) => e.target.style.color = '#000000 !important'}
                 onBlur={(e) => e.target.style.color = '#374151 !important'}
@@ -202,8 +201,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                 required
                 className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
                 style={{
-                  color: '#374151 !important',
-                  placeholderColor: '#374151 !important'
+                  color: '#374151 !important'
                 }}
                 onFocus={(e) => e.target.style.color = '#000000 !important'}
                 onBlur={(e) => e.target.style.color = '#374151 !important'}
@@ -254,8 +252,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   required
                   className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
                 style={{
-                  color: '#374151 !important',
-                  placeholderColor: '#374151 !important'
+                  color: '#374151 !important'
                 }}
                 onFocus={(e) => e.target.style.color = '#000000 !important'}
                 onBlur={(e) => e.target.style.color = '#374151 !important'}
@@ -273,8 +270,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   minLength={8}
                   className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
                 style={{
-                  color: '#374151 !important',
-                  placeholderColor: '#374151 !important'
+                  color: '#374151 !important'
                 }}
                 onFocus={(e) => e.target.style.color = '#000000 !important'}
                 onBlur={(e) => e.target.style.color = '#374151 !important'}
@@ -291,8 +287,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   required
                   className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
                 style={{
-                  color: '#374151 !important',
-                  placeholderColor: '#374151 !important'
+                  color: '#374151 !important'
                 }}
                 onFocus={(e) => e.target.style.color = '#000000 !important'}
                 onBlur={(e) => e.target.style.color = '#374151 !important'}
@@ -337,8 +332,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   required
                   className="w-full p-3 bg-gray-100 border-0 rounded font-semibold text-center text-lg tracking-widest focus:outline-none focus:ring-0 focus:bg-white"
                   style={{
-                    color: '#374151 !important',
-                    placeholderColor: '#374151 !important'
+                    color: '#374151 !important'
                   }}
                   onFocus={(e) => e.target.style.color = '#000000 !important'}
                   onBlur={(e) => e.target.style.color = '#374151 !important'}
@@ -383,8 +377,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   required
                   className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
                 style={{
-                  color: '#374151 !important',
-                  placeholderColor: '#374151 !important'
+                  color: '#374151 !important'
                 }}
                 onFocus={(e) => e.target.style.color = '#000000 !important'}
                 onBlur={(e) => e.target.style.color = '#374151 !important'}
