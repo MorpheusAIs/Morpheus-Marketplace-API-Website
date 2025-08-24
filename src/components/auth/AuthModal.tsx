@@ -182,7 +182,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full p-3 bg-gray-100 border-0 rounded text-gray-700 font-semibold placeholder-gray-700 focus:outline-none focus:ring-0 focus:bg-white focus:text-black"
+                className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
+                style={{
+                  color: '#374151 !important',
+                  placeholderColor: '#374151 !important'
+                }}
+                onFocus={(e) => e.target.style.color = '#000000 !important'}
+                onBlur={(e) => e.target.style.color = '#374151 !important'}
                 placeholder="name@host.com"
               />
             </div>
@@ -194,7 +200,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full p-3 bg-gray-100 border-0 rounded text-gray-700 font-semibold placeholder-gray-700 focus:outline-none focus:ring-0 focus:bg-white focus:text-black"
+                className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
+                style={{
+                  color: '#374151 !important',
+                  placeholderColor: '#374151 !important'
+                }}
+                onFocus={(e) => e.target.style.color = '#000000 !important'}
+                onBlur={(e) => e.target.style.color = '#374151 !important'}
                 placeholder="Password"
               />
             </div>
@@ -240,7 +252,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full p-3 bg-gray-100 border-0 rounded text-gray-700 font-semibold placeholder-gray-700 focus:outline-none focus:ring-0 focus:bg-white focus:text-black"
+                  className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
+                style={{
+                  color: '#374151 !important',
+                  placeholderColor: '#374151 !important'
+                }}
+                onFocus={(e) => e.target.style.color = '#000000 !important'}
+                onBlur={(e) => e.target.style.color = '#374151 !important'}
                   placeholder="name@host.com"
               />
             </div>
@@ -253,7 +271,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={8}
-                  className="w-full p-3 bg-gray-100 border-0 rounded text-gray-700 font-semibold placeholder-gray-700 focus:outline-none focus:ring-0 focus:bg-white focus:text-black"
+                  className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
+                style={{
+                  color: '#374151 !important',
+                  placeholderColor: '#374151 !important'
+                }}
+                onFocus={(e) => e.target.style.color = '#000000 !important'}
+                onBlur={(e) => e.target.style.color = '#374151 !important'}
                   placeholder="Password (min 8 characters)"
               />
             </div>
@@ -265,7 +289,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  className="w-full p-3 bg-gray-100 border-0 rounded text-gray-700 font-semibold placeholder-gray-700 focus:outline-none focus:ring-0 focus:bg-white focus:text-black"
+                  className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
+                style={{
+                  color: '#374151 !important',
+                  placeholderColor: '#374151 !important'
+                }}
+                onFocus={(e) => e.target.style.color = '#000000 !important'}
+                onBlur={(e) => e.target.style.color = '#374151 !important'}
                   placeholder="Confirm Password"
               />
             </div>
@@ -305,7 +335,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   value={confirmationCode}
                   onChange={(e) => setConfirmationCode(e.target.value)}
                   required
-                  className="w-full p-3 bg-gray-100 border-0 rounded text-gray-700 font-semibold text-center text-lg tracking-widest placeholder-gray-700 focus:outline-none focus:ring-0 focus:bg-white focus:text-black"
+                  className="w-full p-3 bg-gray-100 border-0 rounded font-semibold text-center text-lg tracking-widest focus:outline-none focus:ring-0 focus:bg-white"
+                  style={{
+                    color: '#374151 !important',
+                    placeholderColor: '#374151 !important'
+                  }}
+                  onFocus={(e) => e.target.style.color = '#000000 !important'}
+                  onBlur={(e) => e.target.style.color = '#374151 !important'}
                   placeholder="123456"
                   maxLength={6}
               />
@@ -345,7 +381,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full p-3 bg-gray-100 border-0 rounded text-gray-700 font-semibold placeholder-gray-700 focus:outline-none focus:ring-0 focus:bg-white focus:text-black"
+                  className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
+                style={{
+                  color: '#374151 !important',
+                  placeholderColor: '#374151 !important'
+                }}
+                onFocus={(e) => e.target.style.color = '#000000 !important'}
+                onBlur={(e) => e.target.style.color = '#374151 !important'}
                   placeholder="name@host.com"
               />
             </div>
