@@ -52,8 +52,10 @@ input:focus, textarea:focus, select:focus, button:focus {
   box-shadow: 0 0 0 2px var(--matrix-green), 0 0 0 3px var(--emerald) !important;
 }
 
-/* For white background inputs only */
+/* For white and gray background inputs only */
 .bg-white input, .bg-white textarea, .bg-white select,
-input.bg-white, textarea.bg-white, select.bg-white {
+input.bg-white, textarea.bg-white, select.bg-white,
+.bg-gray-100 input, .bg-gray-100 textarea, .bg-gray-100 select,
+input.bg-gray-100, textarea.bg-gray-100, select.bg-gray-100 {
   color: var(--midnight) !important;
 }

@@ -1,6 +1,6 @@
 'use client';
 
-interface ApiResponse<T> {
+export interface ApiResponse<T> {
   data: T | null;
   error: string | null;
   status: number;
@@ -173,5 +173,20 @@ export const apiPut = <T>(url: string, data: any, token?: string) => {
     method: 'PUT',
     headers,
     body: JSON.stringify(data)
+  });
+};
+
+export const apiDelete = <T>(url: string, token?: string) => {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json'
+  };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
+  return apiRequest<T>(url, {
+    method: 'DELETE',
+    headers
   });
 }; 

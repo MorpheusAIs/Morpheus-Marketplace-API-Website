@@ -9,6 +9,9 @@ import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
 import 'highlight.js/styles/github-dark.css';
 import './markdown.css';
+import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
+import { apiGet, apiPost } from '@/lib/api/apiService';
+import { API_URLS } from '@/lib/api/config';
 
 // Type definitions
 type Message = {
@@ -34,9 +37,13 @@ type Model = {
 };
 
 export default function ChatPage() {
-  // API Key state
-  const [apiKey, setApiKey] = useState('');
-  const [apiKeySaved, setApiKeySaved] = useState(false);
+  // Cognito authentication
+  const { accessToken, isAuthenticated, apiKeys, isLoading: authLoading } = useCognitoAuth();
+  const router = useRouter();
+  
+  // API Key state (retrieved from sessionStorage)
+  const [fullApiKey, setFullApiKey] = useState<string>('');
+  const [apiKeyPrefix, setApiKeyPrefix] = useState<string>('');
   
   // Chat state
   const [userPrompt, setUserPrompt] = useState('');
@@ -57,31 +64,37 @@ export default function ChatPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
 
   // Scroll to bottom of messages
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Try to get auth token from localStorage on component mount
+  // Redirect to login if not authenticated
   useEffect(() => {
-    try {
-      const storedToken = localStorage.getItem('authToken');
-      if (storedToken) {
-        setApiKey(storedToken);
-      }
-    } catch (error) {
-      console.error('Error accessing localStorage:', error);
+    if (!authLoading && !isAuthenticated) {
+      router.push('/');
+      return;
+    }
+  }, [isAuthenticated, authLoading, router]);
+
+  // Load API key from sessionStorage
+  useEffect(() => {
+    const storedApiKey = sessionStorage.getItem('verified_api_key');
+    const storedPrefix = sessionStorage.getItem('verified_api_key_prefix');
+    
+    if (storedApiKey && storedPrefix) {
+      setFullApiKey(storedApiKey);
+      setApiKeyPrefix(storedPrefix);
     }
   }, []);
 
-  // Load chat history when API key changes
+  // Load chat history when authenticated (uses Cognito JWT)
   useEffect(() => {
-    if (apiKey) {
+    if (isAuthenticated && accessToken) {
       loadChatHistory();
     }
-  }, [apiKey]);
+  }, [isAuthenticated, accessToken]);
 
   // Fetch available models on component mount
   useEffect(() => {
@@ -99,7 +112,7 @@ export default function ChatPage() {
     try {
       console.log('Fetching models from API...');
       
-      const response = await fetch('https://api.dev.mor.org/api/v1/models/', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://newapi.dev.mor.org'}/api/v1/models`, {
         method: 'GET',
         headers: {
           'accept': 'application/json'
@@ -161,19 +174,24 @@ export default function ChatPage() {
     }
   };
 
-  // Load chat history from the server
+  // Load chat history from the server (uses Cognito JWT)
   const loadChatHistory = async () => {
-    if (!apiKey) return;
+    if (!accessToken) return;
     
     setLoadingChats(true);
     try {
-      const response = await axios.get('/api/chat/history', {
-        headers: {
-          Authorization: apiKey,
-        },
-      });
+      const response = await apiGet<any[]>(API_URLS.chatHistory(), accessToken);
       
-      setChats(response.data.chats || []);
+      if (response.data) {
+        // Convert API response to expected format
+        const formattedChats = response.data.map((chat: any) => ({
+          id: chat.id,
+          title: chat.title,
+          createdAt: chat.created_at,
+          updatedAt: chat.updated_at
+        }));
+        setChats(formattedChats);
+      }
     } catch (error) {
       console.error('Error loading chat history:', error);
     } finally {
@@ -183,20 +201,23 @@ export default function ChatPage() {
 
   // Load a specific chat
   const loadChat = async (chatId: string) => {
-    if (!apiKey) return;
+    if (!accessToken) return;
     
     setIsLoading(true);
     try {
-      const response = await axios.post('/api/chat/load', {
-        chatId,
-      }, {
-        headers: {
-          Authorization: apiKey,
-        },
-      });
+      const response = await apiGet<any>(API_URLS.chatDetail(chatId), accessToken);
       
-      setActiveChatId(chatId);
-      setMessages(response.data.messages || []);
+      if (response.data) {
+        setActiveChatId(chatId);
+        // Convert API response to expected format
+        const formattedMessages = response.data.messages.map((msg: any) => ({
+          id: msg.id,
+          role: msg.role,
+          content: msg.content,
+          sequence: msg.sequence
+        }));
+        setMessages(formattedMessages);
+      }
     } catch (error) {
       console.error('Error loading chat:', error);
     } finally {
@@ -207,24 +228,27 @@ export default function ChatPage() {
   // Delete a chat
   const deleteChat = async (chatId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!apiKey || !window.confirm('Are you sure you want to delete this chat?')) return;
+    if (!accessToken || !window.confirm('Are you sure you want to delete this chat?')) return;
     
     try {
-      await axios.post('/api/chat/delete', {
-        chatId,
-      }, {
+      // Use DELETE method for the chat endpoint
+      const response = await fetch(API_URLS.chatDetail(chatId), {
+        method: 'DELETE',
         headers: {
-          Authorization: apiKey,
-        },
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        }
       });
       
-      // Remove from local state
-      setChats(chats.filter(chat => chat.id !== chatId));
-      
-      // If this was the active chat, clear it
-      if (activeChatId === chatId) {
-        setActiveChatId(null);
-        setMessages([]);
+      if (response.ok) {
+        // Remove from local state
+        setChats(chats.filter(chat => chat.id !== chatId));
+        
+        // If this was the active chat, clear it
+        if (activeChatId === chatId) {
+          setActiveChatId(null);
+          setMessages([]);
+        }
       }
     } catch (error) {
       console.error('Error deleting chat:', error);
@@ -237,35 +261,9 @@ export default function ChatPage() {
     setMessages([]);
   };
 
-  // Save API key to localStorage
-  const saveApiKey = () => {
-    try {
-      // Check if API key has changed
-      const oldApiKey = localStorage.getItem('authToken');
-      const apiKeyChanged = oldApiKey !== apiKey;
-      
-      localStorage.setItem('authToken', apiKey);
-      
-      // Show confirmation message
-      setApiKeySaved(true);
-      
-      // Hide the confirmation message after 3 seconds
-      setTimeout(() => {
-        setApiKeySaved(false);
-      }, 3000);
-      
-      // If API key changed, clear the chat history display
-      if (apiKeyChanged) {
-        setActiveChatId(null);
-        setMessages([]);
-        setChats([]);
-      }
-      
-      // Load chat history for the new API key
-      loadChatHistory();
-    } catch (error) {
-      console.error('Error saving to localStorage:', error);
-    }
+  // Get the full API key from sessionStorage
+  const getFullApiKey = () => {
+    return fullApiKey;
   };
 
   // Handle keyboard shortcuts for sending messages
@@ -339,12 +337,12 @@ export default function ChatPage() {
       };
 
       // Make the actual API call using the user-provided API key
-      const res = await fetch('https://api.dev.mor.org/api/v1/chat/completions', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://newapi.dev.mor.org'}/api/v1/chat/completions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'accept': 'application/json',
-          'Authorization': apiKey || '' // Use empty string if no API key is provided
+          'Authorization': `Bearer ${fullApiKey}` // Use Bearer format for API key
         },
         body: JSON.stringify(requestBody)
       });
@@ -373,25 +371,53 @@ export default function ChatPage() {
         setMessages(prev => [...prev, newAssistantMessage]);
         
         // Save to database if saveChatHistory is enabled
-        if (saveChatHistory) {
-          const chatTitle = activeChatId ? undefined : currentPrompt.substring(0, 30) + (currentPrompt.length > 30 ? '...' : '');
-          
-          const saveResponse = await axios.post('/api/chat/save', {
-            chatId: activeChatId,
-            title: chatTitle,
-            userMessage: currentPrompt,
-            assistantMessage: assistantResponse,
-            saveChatHistory,
-          }, {
-            headers: {
-              Authorization: apiKey,
-            },
-          });
-          
-          if (!activeChatId && saveResponse.data.chatId) {
-            setActiveChatId(saveResponse.data.chatId);
-            // Refresh chat list
-            loadChatHistory();
+        if (saveChatHistory && accessToken) {
+          try {
+            if (!activeChatId) {
+              // Create new chat
+              const chatTitle = currentPrompt.substring(0, 30) + (currentPrompt.length > 30 ? '...' : '');
+              const createChatResponse = await apiPost<any>(
+                API_URLS.chatHistory(),
+                { title: chatTitle },
+                accessToken
+              );
+              
+              if (createChatResponse.data) {
+                setActiveChatId(createChatResponse.data.id);
+                
+                // Add user message
+                await apiPost<any>(
+                  API_URLS.chatMessages(createChatResponse.data.id),
+                  { role: 'user', content: currentPrompt },
+                  accessToken
+                );
+                
+                // Add assistant message
+                await apiPost<any>(
+                  API_URLS.chatMessages(createChatResponse.data.id),
+                  { role: 'assistant', content: assistantResponse },
+                  accessToken
+                );
+                
+                // Refresh chat list
+                loadChatHistory();
+              }
+            } else {
+              // Add messages to existing chat
+              await apiPost<any>(
+                API_URLS.chatMessages(activeChatId),
+                { role: 'user', content: currentPrompt },
+                accessToken
+              );
+              
+              await apiPost<any>(
+                API_URLS.chatMessages(activeChatId),
+                { role: 'assistant', content: assistantResponse },
+                accessToken
+              );
+            }
+          } catch (saveError) {
+            console.error('Error saving chat:', saveError);
           }
         }
       } else {
@@ -559,83 +585,63 @@ export default function ChatPage() {
         <div className="flex-1 flex flex-col overflow-hidden">
           <div className="flex-1 overflow-auto p-8">
             <div className="max-w-3xl mx-auto">
-              {/* API Key input */}
-              <div className="mb-6 bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30">
-                <div className="mb-4">
-                  <label htmlFor="apiKey" className="block text-sm font-medium mb-1 text-[var(--platinum)]">
-                    API Key
-                  </label>
-                  <div className="flex">
-                    <input
-                      type="text"
-                      id="apiKey"
-                      value={apiKey}
-                      onChange={(e) => setApiKey(e.target.value)}
-                      className="flex-1 p-2 border border-[var(--neon-mint)]/30 rounded-l-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70 focus:ring-0 focus:border-[var(--emerald)]"
-                      placeholder="Enter your API key"
-                      style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
-                    />
-                    <button
-                      onClick={saveApiKey}
-                      className="px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-r-md hover:bg-[var(--emerald)] transition-colors"
-                    >
-                      Save
-                    </button>
-                  </div>
-                  {apiKeySaved && (
-                    <div className="mt-2 text-[var(--neon-mint)]">
-                      API key saved successfully!
-                    </div>
-                  )}
-                  {authError && (
-                    <div className="mt-2 text-red-400">
-                      Authentication failed. Please provide a valid API key or&nbsp;
-                      <Link href="/login" className="text-[var(--platinum)] hover:text-[var(--neon-mint)]">
-                        log in to get one
-                      </Link>.
-                    </div>
-                  )}
+              {/* API Key Status */}
+              {!fullApiKey ? (
+                <div className="mb-6 bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30 text-center">
+                  <h3 className="text-lg font-medium text-[var(--neon-mint)] mb-2">API Key Required</h3>
+                  <p className="text-sm text-[var(--platinum)]/70 mb-3">
+                    Please go to the <Link href="/admin" className="text-[var(--neon-mint)] hover:underline">Admin page</Link> to set up your API key first.
+                  </p>
                 </div>
-                
-                {/* Model Selection Dropdown */}
-                <div>
-                  <label htmlFor="modelSelect" className="block text-sm font-medium mb-1 text-[var(--platinum)]">
-                    Model
-                  </label>
-                  <select
-                    id="modelSelect"
-                    value={selectedModel}
-                    onChange={(e) => setSelectedModel(e.target.value)}
-                    className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70 focus:ring-0 focus:border-[var(--emerald)]"
-                    disabled={loadingModels}
-                    style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
-                  >
-                    {loadingModels ? (
-                      <option value="default">Loading models...</option>
-                    ) : models.length === 0 ? (
-                      <option value="default">Default</option>
-                    ) : (
-                      models.map((model) => (
-                        <option key={model.id} value={model.id}>
-                          {model.id}
-                        </option>
-                      ))
-                    )}
-                  </select>
-                  <div className="text-xs text-[var(--platinum)]/70 mt-1">
-                    {loadingModels ? 'Fetching available models...' : 
-                     models.length === 0 ? 'No models found, using default' : 
-                     `${models.length} model${models.length !== 1 ? 's' : ''} available`}
+              ) : (
+                <div className="mb-6 bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30">
+                  <div className="flex justify-between items-center mb-3">
+                    <div>
+                      <h3 className="text-lg font-medium text-[var(--neon-mint)]">Ready to Chat</h3>
+                      <p className="text-sm text-[var(--platinum)]/70">Using API key: {apiKeyPrefix}...</p>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <div>
+                        <label htmlFor="modelSelect" className="block text-xs font-medium mb-1 text-[var(--platinum)]">
+                          Model
+                        </label>
+                        <select
+                          id="modelSelect"
+                          value={selectedModel}
+                          onChange={(e) => setSelectedModel(e.target.value)}
+                          className="p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] focus:ring-0 focus:border-[var(--emerald)]"
+                          disabled={loadingModels}
+                          style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
+                        >
+                          {loadingModels ? (
+                            <option value="default">Loading...</option>
+                          ) : models.length === 0 ? (
+                            <option value="default">Default</option>
+                          ) : (
+                            models.map((model) => (
+                              <option key={model.id} value={model.id}>
+                                {model.id}
+                              </option>
+                            ))
+                          )}
+                        </select>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
               
-              {/* Messages */}
+              {/* Messages - Always show (uses Cognito JWT for history) */}
               <div className="mb-6 space-y-6">
                 {messages.length === 0 ? (
                   <div className="text-center text-[var(--platinum)] my-12">
                     <p className="text-xl mb-2">Start a new conversation</p>
                     <p className="text-sm">Or select a previous chat from the sidebar</p>
+                    {!fullApiKey && (
+                      <p className="text-sm text-[var(--platinum)]/60 mt-2">
+                        Set up your API key in the Admin page to send messages
+                      </p>
+                    )}
                   </div>
                 ) : (
                   <div className="space-y-6">
@@ -725,8 +731,9 @@ export default function ChatPage() {
                 )}
               </div>
               
-              {/* Input form */}
-              <form onSubmit={handleSubmit} className="bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30 sticky bottom-4">
+              {/* Input form - only show when API key is available */}
+              {fullApiKey && (
+                <form onSubmit={handleSubmit} className="bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30 sticky bottom-4">
                 <div className="flex flex-col">
                   <div className="flex items-start">
                     <textarea
@@ -751,7 +758,8 @@ export default function ChatPage() {
                     Press Shift+Enter for a new line
                   </div>
                 </div>
-              </form>
+                </form>
+              )}
             </div>
           </div>
         </div>

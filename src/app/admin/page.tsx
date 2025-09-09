@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
 import { useRouter } from 'next/navigation';
-import { apiGet, apiPost, apiPut } from '@/lib/api/apiService';
+import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api/apiService';
 import { useGTM } from '@/components/providers/GTMProvider';
 import { API_URLS } from '@/lib/api/config';
 import Link from 'next/link';
@@ -31,7 +31,7 @@ interface AutomationSettings {
 }
 
 export default function AdminPage() {
-  const { accessToken, isAuthenticated, apiKeys, refreshApiKeys } = useCognitoAuth();
+  const { accessToken, isAuthenticated, apiKeys, refreshApiKeys, isLoading: authLoading } = useCognitoAuth();
   const router = useRouter();
   const { trackApiKey } = useGTM();
   const [automationSettings, setAutomationSettings] = useState<AutomationSettings | null>(null);
@@ -41,19 +41,50 @@ export default function AdminPage() {
   const [newKeyName, setNewKeyName] = useState('');
   const [selectedApiKeyPrefix, setSelectedApiKeyPrefix] = useState<string>('');
   const [fullApiKey, setFullApiKey] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [newlyCreatedKey, setNewlyCreatedKey] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [showKeyInput, setShowKeyInput] = useState(false);
   const [keyInputValue, setKeyInputValue] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [keyToDelete, setKeyToDelete] = useState<{id: number, name: string, prefix: string} | null>(null);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!authLoading && !isAuthenticated) {
       router.push('/login');
       return;
     }
-  }, [isAuthenticated, router]);
+    
+    // Try to restore previously selected API key when authenticated
+    if (isAuthenticated) {
+      try {
+        const storedPrefix = localStorage.getItem('selected_api_key_prefix');
+        const storedFullKey = sessionStorage.getItem('verified_api_key');
+        const storedTimestamp = sessionStorage.getItem('verified_api_key_timestamp');
+        
+        // Check if the stored key is still valid (within 24 hours)
+        if (storedPrefix && storedFullKey && storedTimestamp) {
+          const keyAge = Date.now() - parseInt(storedTimestamp);
+          const twentyFourHours = 24 * 60 * 60 * 1000;
+          
+          if (keyAge < twentyFourHours) {
+            setSelectedApiKeyPrefix(storedPrefix);
+            setFullApiKey(storedFullKey);
+            // Automatically fetch automation settings if we have a valid key
+            fetchAutomationSettings();
+          } else {
+            // Clear expired keys
+            sessionStorage.removeItem('verified_api_key');
+            sessionStorage.removeItem('verified_api_key_prefix');
+            sessionStorage.removeItem('verified_api_key_timestamp');
+            localStorage.removeItem('selected_api_key_prefix');
+          }
+        }
+      } catch (error) {
+        console.error('Error restoring API key:', error);
+      }
+    }
+  }, [isAuthenticated, authLoading, router]);
 
   useEffect(() => {
     if (automationSettings) {
@@ -79,10 +110,13 @@ export default function AdminPage() {
   const checkAutomationSettings = async (keyPrefix: string) => {
     setSelectedApiKeyPrefix(keyPrefix);
     setAutomationSettings(null); // Clear previous settings
-    setShowKeyInput(false); // Reset the form state
     setKeyInputValue(''); // Clear any existing value
     setFullApiKey(''); // Clear any existing full key
-    setSuccessMessage(`Selected ${keyPrefix} for automation settings view`);
+    setError(''); // Clear any errors
+    
+    // Immediately open the verification modal
+    setShowKeyInput(true);
+    setSuccessMessage(`Selected ${keyPrefix} - please verify your full API key`);
   };
 
   const fetchAutomationSettings = async () => {
@@ -198,6 +232,57 @@ export default function AdminPage() {
       });
   };
 
+  const showDeleteConfirmation = (keyId: number, keyName: string, keyPrefix: string) => {
+    setKeyToDelete({ id: keyId, name: keyName, prefix: keyPrefix });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteApiKey = async () => {
+    if (!keyToDelete || !accessToken) {
+      setError('No access token available');
+      return;
+    }
+
+    try {
+      console.log('Deleting API key:', keyToDelete.id);
+      const response = await apiDelete(API_URLS.deleteKey(keyToDelete.id), accessToken);
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      // Refresh the API keys list from the server
+      await refreshApiKeys();
+      
+      // If this was the selected key, clear the selection
+      if (selectedApiKeyPrefix === keyToDelete.prefix) {
+        setSelectedApiKeyPrefix('');
+        setFullApiKey('');
+        setAutomationSettings(null);
+        // Clear stored keys
+        sessionStorage.removeItem('verified_api_key');
+        sessionStorage.removeItem('verified_api_key_prefix');
+        sessionStorage.removeItem('verified_api_key_timestamp');
+        localStorage.removeItem('selected_api_key_prefix');
+      }
+
+      setSuccessMessage(`API key "${keyToDelete.name}" deleted successfully`);
+      trackApiKey('deleted', keyToDelete.name);
+      
+      // Close modal and reset state
+      setShowDeleteModal(false);
+      setKeyToDelete(null);
+    } catch (err) {
+      setError(`Failed to delete API key: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      console.error('Error deleting API key:', err);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setKeyToDelete(null);
+  };
+
   const updateAutomationSettings = async () => {
     if (!fullApiKey) {
       setError('No API key provided. Please enter your full API key to update settings.');
@@ -277,6 +362,14 @@ export default function AdminPage() {
         setLocalIsEnabled(response.data.is_enabled);
         setShowKeyInput(false);
         setKeyInputValue('');
+        
+        // Store the verified API key for use in chat/test pages with timestamp
+        sessionStorage.setItem('verified_api_key', apiKey);
+        sessionStorage.setItem('verified_api_key_prefix', selectedApiKeyPrefix);
+        sessionStorage.setItem('verified_api_key_timestamp', Date.now().toString());
+        
+        // Also store in localStorage for longer persistence (but clear on browser close)
+        localStorage.setItem('selected_api_key_prefix', selectedApiKeyPrefix);
       } else {
         console.log('No automation settings data received');
         setError('No automation settings data received');
@@ -288,7 +381,7 @@ export default function AdminPage() {
     }
   };
 
-  if (isLoading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-lg">Loading...</div>
@@ -297,7 +390,8 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8" style={{
+    <>
+      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8" style={{
       backgroundImage: "url('/images/942b261a-ecc5-420d-9d4b-4b2ae73cab6d.png')",
       backgroundSize: "cover",
       backgroundPosition: "center",
@@ -400,7 +494,7 @@ export default function AdminPage() {
             {/* Existing API Keys */}
             <div>
               <h3 className="text-lg font-medium text-[var(--platinum)] mb-3">Your API Keys</h3>
-              {isLoading ? (
+              {authLoading ? (
                 <p className="text-[var(--platinum)]/70">Loading API keys...</p>
               ) : apiKeys.length > 0 ? (
                 <ul className="space-y-4">
@@ -425,6 +519,13 @@ export default function AdminPage() {
                           >
                             {selectedApiKeyPrefix === key.key_prefix ? 'Selected' : 'Select'}
                           </button>
+                          <button
+                            onClick={() => showDeleteConfirmation(key.id, key.name, key.key_prefix)}
+                            className="px-3 py-1 text-sm rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors"
+                            title={`Delete ${key.name}`}
+                          >
+                            Delete
+                          </button>
                         </div>
                       </div>
                     </li>
@@ -443,58 +544,99 @@ export default function AdminPage() {
             {selectedApiKeyPrefix ? (
               <>
                 <div className="mb-4 p-3 bg-[var(--midnight)] border border-[var(--neon-mint)]/30 rounded-md">
-                  <p className="text-sm text-[var(--platinum)]">
-                    Selected API Key: <span className="font-mono">{selectedApiKeyPrefix}...</span>
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-[var(--platinum)]">
+                      Selected API Key: <span className="font-mono">{selectedApiKeyPrefix}...</span>
+                    </p>
+                    {fullApiKey && (
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                        <span className="text-xs text-green-400 font-medium">Verified</span>
+                      </div>
+                    )}
+                  </div>
+                  {fullApiKey && (
+                    <div className="text-xs text-green-400/70 mt-2">
+                      ✓ Ready for Chat and Test functionality
+                    </div>
+                  )}
                 </div>
 
                 {!automationSettings ? (
                   <>
-                    {!showKeyInput ? (
-                      <div className="mb-6">
-                        <p className="text-[var(--platinum)]/80 mb-4">
-                          To view or update your automation settings, you need to enter your full API key.
-                        </p>
-                        <button
-                          onClick={() => setShowKeyInput(true)}
-                          className="px-4 py-2 bg-[var(--eclipse)] text-[var(--platinum)] font-medium rounded-md hover:bg-[var(--emerald)]/20 transition-colors"
-                        >
-                          Enter API Key
-                        </button>
-                      </div>
+                    {showKeyInput ? (
+                      <>
+                        {/* API Key Verification Modal */}
+                        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                          <div className="bg-[var(--midnight)] border border-[var(--neon-mint)]/30 rounded-lg p-6 max-w-md w-full mx-4">
+                            <div className="flex items-center mb-4">
+                              <div className="w-8 h-8 bg-[var(--neon-mint)]/20 rounded-full flex items-center justify-center mr-3">
+                                <svg className="w-4 h-4 text-[var(--neon-mint)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                              </div>
+                              <h3 className="text-lg font-semibold text-[var(--neon-mint)]">Verify API Key</h3>
+                            </div>
+                            
+                            <div className="mb-4">
+                              <p className="text-[var(--platinum)]/80 text-sm mb-2">
+                                You've selected: <span className="font-mono text-[var(--neon-mint)]">{selectedApiKeyPrefix}...</span>
+                              </p>
+                              <p className="text-[var(--platinum)]/60 text-xs">
+                                For security, we need you to verify the full API key to enable Chat and Test functionality.
+                              </p>
+                            </div>
+
+                            <form onSubmit={handleKeyInputSubmit} className="space-y-4">
+                              <div>
+                                <label htmlFor="fullApiKey" className="block text-sm font-medium text-[var(--platinum)]/70 mb-2">
+                                  Enter Full API Key
+                                </label>
+                                <input
+                                  type="password"
+                                  id="fullApiKey"
+                                  value={keyInputValue}
+                                  onChange={(e) => setKeyInputValue(e.target.value)}
+                                  className="w-full p-3 rounded-md border border-[var(--neon-mint)]/30 bg-[var(--eclipse)] text-[var(--platinum)] focus:ring-2 focus:ring-[var(--neon-mint)]/50 focus:border-[var(--emerald)]"
+                                  placeholder={`${selectedApiKeyPrefix}...`}
+                                  required
+                                  autoFocus
+                                />
+                                <div className="text-xs text-[var(--platinum)]/50 mt-1">
+                                  Must start with {selectedApiKeyPrefix}
+                                </div>
+                              </div>
+                              
+                              <div className="flex gap-3 pt-2">
+                                <button
+                                  type="submit"
+                                  className="flex-1 px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md hover:bg-[var(--emerald)] transition-colors font-medium"
+                                >
+                                  Verify & Continue
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setShowKeyInput(false);
+                                    setSelectedApiKeyPrefix('');
+                                    setKeyInputValue('');
+                                    setError('');
+                                  }}
+                                  className="px-4 py-2 bg-[var(--eclipse)] text-[var(--platinum)] rounded-md hover:bg-[var(--midnight)] transition-colors border border-[var(--platinum)]/20"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </>
                     ) : (
-                      <form onSubmit={handleKeyInputSubmit} className="mb-6 space-y-4">
-                        <div>
-                          <label htmlFor="fullApiKey" className="block text-sm font-medium text-[var(--platinum)]/70 mb-1">
-                            Enter your full API Key
-                          </label>
-                          <input
-                            type="password"
-                            id="fullApiKey"
-                            value={keyInputValue}
-                            onChange={(e) => setKeyInputValue(e.target.value)}
-                            className="w-full p-2 rounded-md border border-[var(--neon-mint)]/30 bg-[var(--midnight)] text-[var(--platinum)] !text-[var(--platinum)] focus:ring-0 focus:border-[var(--emerald)]"
-                            placeholder="Enter your full API key"
-                            required
-                            style={{color: 'var(--platinum)'}}
-                          />
-                        </div>
-                        <div className="flex space-x-2">
-                          <button
-                            type="submit"
-                            className="px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] font-medium rounded-md hover:bg-[var(--emerald)] transition-colors"
-                          >
-                            Submit
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setShowKeyInput(false)}
-                            className="px-4 py-2 bg-[var(--eclipse)] text-[var(--platinum)] font-medium rounded-md hover:bg-[var(--emerald)]/20 transition-colors"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </form>
+                      <div className="mb-6 p-4 bg-[var(--eclipse)]/50 border border-[var(--neon-mint)]/20 rounded-md">
+                        <p className="text-[var(--platinum)]/80 text-sm">
+                          Click "Select" on an API key above to verify and access automation settings.
+                        </p>
+                      </div>
                     )}
                   </>
                 ) : (
@@ -554,6 +696,55 @@ export default function AdminPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && keyToDelete && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-[var(--midnight)] border border-red-500/30 rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex items-center mb-4">
+              <div className="w-8 h-8 bg-red-500/20 rounded-full flex items-center justify-center mr-3">
+                <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-red-400">Delete API Key</h3>
+            </div>
+            
+            <div className="mb-6">
+              <p className="text-[var(--platinum)]/80 mb-3">
+                Are you sure you want to delete this API key?
+              </p>
+              <div className="bg-[var(--eclipse)] p-3 rounded-md border border-red-500/20">
+                <p className="text-sm text-[var(--platinum)]">
+                  <strong>Name:</strong> {keyToDelete?.name}
+                </p>
+                <p className="text-sm text-[var(--platinum)] font-mono">
+                  <strong>Key:</strong> {keyToDelete?.prefix}...
+                </p>
+              </div>
+              <p className="text-red-400/80 text-sm mt-3">
+                ⚠️ This action cannot be undone. The API key will be permanently deleted.
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={confirmDeleteApiKey}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-medium"
+              >
+                Delete Permanently
+              </button>
+              <button
+                onClick={cancelDelete}
+                className="px-4 py-2 bg-[var(--eclipse)] text-[var(--platinum)] rounded-md hover:bg-[var(--midnight)] transition-colors border border-[var(--platinum)]/20"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 } 
