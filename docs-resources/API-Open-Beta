@@ -8,7 +8,7 @@ We’re making it easy for you to use the Morpheus Compute router access LLM inf
 
 To open a “session” in the Morpheus Compute Marketplace, users have 2 choices:
 
-1. Pay Directly with MOR: Spend MOR tokens to achieve a 1:1 payment ratio for the session. 
+1. Pay Directly with MOR: Spend MOR tokens to achieve a 1:1 payment ratio for the session!
 2. Stake MOR: Stake MOR tokens to utilize your daily allowance of compute inference. Staking provides a daily allocation of credits that can be used for opening sessions. Your daily credits are determined by your amount of staked MOR token (credit calculator for testing purposes only currently on [calc.kyletest.com](http://calc.kyletest.com), which will be transitioned). 
 
 Before today, you’ve needed to host your own proxy-router in order to interact with the system, which is burdensome for most application. This new API gateway takes care of those interactions on your behalf, allowing you to access the compute marketplace with just an API key (created through the API portal). The API gateway simplifies session management by providing an automated workflow to create sessions when you need them, identifying the highest rated provider for your model of choice. 
