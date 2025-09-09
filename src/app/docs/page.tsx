@@ -32,7 +32,7 @@ const docs = [
   {
     title: 'Links',
     items: [
-      { title: 'Swagger UI', path: 'https://api.mor.org/docs' },
+      { title: 'Swagger UI', path: 'https://api.dev.mor.org/docs' },
       { title: 'Morpheus Website', path: 'https://mor.org' },
       { title: 'Twitter', path: 'https://x.com/MorpheusAIs' },
       { title: 'Discord', path: 'https://discord.gg/morpheusai' },

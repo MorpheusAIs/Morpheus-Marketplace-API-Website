@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/lib/auth/AuthContext';
+import React, { useState, useEffect } from 'react';
+import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
 import { useRouter } from 'next/navigation';
 import { apiGet, apiPost, apiPut } from '@/lib/api/apiService';
+import { useGTM } from '@/components/providers/GTMProvider';
+import { API_URLS } from '@/lib/api/config';
 import Link from 'next/link';
 
 interface ApiKey {
@@ -29,9 +31,9 @@ interface AutomationSettings {
 }
 
 export default function AdminPage() {
-  const { accessToken, isAuthenticated } = useAuth();
+  const { accessToken, isAuthenticated, apiKeys, refreshApiKeys } = useCognitoAuth();
   const router = useRouter();
-  const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
+  const { trackApiKey } = useGTM();
   const [automationSettings, setAutomationSettings] = useState<AutomationSettings | null>(null);
   const [localSessionDuration, setLocalSessionDuration] = useState<number>(0);
   const [localIsEnabled, setLocalIsEnabled] = useState<boolean>(false);
@@ -51,8 +53,6 @@ export default function AdminPage() {
       router.push('/login');
       return;
     }
-
-    fetchApiKeys();
   }, [isAuthenticated, router]);
 
   useEffect(() => {
@@ -74,25 +74,7 @@ export default function AdminPage() {
     }
   }, [successMessage]);
 
-  const fetchApiKeys = async () => {
-    try {
-      console.log('Fetching API keys');
-      const response = await apiGet<ApiKey[]>('https://api.mor.org/api/v1/auth/keys', accessToken || '');
 
-      if (response.error) {
-        throw new Error(response.error);
-      }
-
-      if (response.data) {
-        setApiKeys(response.data);
-        setIsLoading(false);
-      }
-    } catch (err) {
-      setError('Failed to load API keys');
-      console.error('Error fetching API keys:', err);
-      setIsLoading(false);
-    }
-  };
 
   const checkAutomationSettings = async (keyPrefix: string) => {
     setSelectedApiKeyPrefix(keyPrefix);
@@ -109,7 +91,7 @@ export default function AdminPage() {
     try {
       console.log('Fetching automation settings with API key');
       const response = await apiGet<AutomationSettings>(
-        'https://api.mor.org/api/v1/automation/settings', 
+        API_URLS.automationSettings(), 
         fullApiKey
       );
 
@@ -141,7 +123,7 @@ export default function AdminPage() {
     try {
       console.log('Creating API key with name:', newKeyName);
       const response = await apiPost<ApiKeyResponse>(
-        'https://api.mor.org/api/v1/auth/keys',
+        API_URLS.keys(),
         { name: newKeyName },
         accessToken || ''
       );
@@ -156,6 +138,9 @@ export default function AdminPage() {
         console.log('API key created successfully:', response.data.key_prefix);
         setNewlyCreatedKey(fullKey);
         
+        // Track API key creation event
+        trackApiKey('created', response.data.name);
+        
         // Set the selected key prefix for viewing
         setSelectedApiKeyPrefix(response.data.key_prefix);
         
@@ -166,7 +151,7 @@ export default function AdminPage() {
         try {
           console.log('Setting up automation settings for new API key with default values');
           const automationResponse = await apiPut<AutomationSettings>(
-            'https://api.mor.org/api/v1/automation/settings',
+            API_URLS.automationSettings(),
             {
               is_enabled: true,
               session_duration: 86400, // 24 hours in seconds
@@ -192,7 +177,7 @@ export default function AdminPage() {
         }
         
         // Refresh the API keys list but wait a moment to avoid race conditions
-        setTimeout(fetchApiKeys, 1000);
+        setTimeout(() => refreshApiKeys(), 1000);
       } else {
         throw new Error('Invalid response format from API key creation');
       }
@@ -227,7 +212,7 @@ export default function AdminPage() {
     try {
       console.log('Updating automation settings with API key:', { isEnabled: localIsEnabled, duration: localSessionDuration });
       const response = await apiPut<AutomationSettings>(
-        'https://api.mor.org/api/v1/automation/settings',
+        API_URLS.automationSettings(),
         {
           is_enabled: localIsEnabled,
           session_duration: localSessionDuration,
@@ -277,7 +262,7 @@ export default function AdminPage() {
     try {
       console.log('Fetching automation settings with API key');
       const response = await apiGet<AutomationSettings>(
-        'https://api.mor.org/api/v1/automation/settings', 
+        API_URLS.automationSettings(), 
         apiKey
       );
 

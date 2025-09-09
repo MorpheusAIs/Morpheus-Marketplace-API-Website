@@ -44,3 +44,6 @@ next-env.d.ts
 AWS_RDS.md
 Database_Plan.md
 README-CHAT-DB.md
+
+# generated files
+/src/generated/prisma

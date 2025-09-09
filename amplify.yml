@@ -1,0 +1,27 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - echo "Starting preBuild phase..."
+        - npm ci --legacy-peer-deps --include=dev
+        - echo "Checking current Tailwind installation:"
+        - npm list tailwindcss || true
+        - echo "Checking if tailwind.config.js exists:"
+        - ls -la tailwind.config.js
+        - echo "Checking if postcss.config.js exists:"
+        - ls -la postcss.config.js
+        - echo "Dependencies installed successfully"
+    build:
+      commands:
+        - echo "Starting build phase..."
+        - npm run build
+        - echo "Build completed successfully"
+  artifacts:
+    baseDirectory: .next
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+      - .next/cache/**/* 

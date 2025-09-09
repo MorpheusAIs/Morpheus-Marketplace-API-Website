@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string) => {
     try {
       console.log('Login attempt with:', { email });
-      const response = await apiPost<LoginResponse>('https://api.mor.org/api/v1/auth/login', { email, password });
+      const response = await apiPost<LoginResponse>('https://api.dev.mor.org/api/v1/auth/login', { email, password });
       
       if (response.error) {
         throw new Error(response.error);
@@ -73,7 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const register = async (email: string, name: string, password: string) => {
     try {
       console.log('Registration attempt with:', { email, name });
-      const response = await apiPost<User>('https://api.mor.org/api/v1/auth/register', { 
+      const response = await apiPost<User>('https://api.dev.mor.org/api/v1/auth/register', { 
         email, 
         name, 
         password, 
