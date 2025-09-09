@@ -94,7 +94,7 @@ curl -X 'POST' \
 
 Create API Key Response:
 {
-  "key": "sk-nfl4ff.5d275a53daf882ef5d5e961e7bd74e910c811ecdfd96b844e3996783275317e5",
+  "key": "sk-example.your-api-key-here-replace-with-actual-key",
   "key_prefix": "sk-nfl4ff",
   "name": "string"
 }
@@ -120,7 +120,7 @@ Set Automation Example:
 curl -X 'PUT' \
   'https://api.dev.mor.org/api/v1/automation/settings' \
   -H 'accept: application/json' \
-  -H 'Authorization: Bearer sk-nfl4ff.5d275a53daf882ef5d5e961e7bd74e910c811ecdfd96b844e3996783275317e5' \
+  -H 'Authorization: Bearer sk-example.your-api-key-here-replace-with-actual-key' \
   -H 'Content-Type: application/json' \
   -d '{
   "is_enabled": true,
@@ -140,7 +140,7 @@ Get Automation Example:
 curl -X 'GET' \
   'https://api.dev.mor.org/api/v1/automation/settings' \
   -H 'accept: application/json' \
-  -H 'Authorization: Bearer sk-nfl4ff.5d275a53daf882ef5d5e961e7bd74e910c811ecdfd96b844e3996783275317e5'
+  -H 'Authorization: Bearer sk-example.your-api-key-here-replace-with-actual-key'
 
 Get Automation Response:
 {
