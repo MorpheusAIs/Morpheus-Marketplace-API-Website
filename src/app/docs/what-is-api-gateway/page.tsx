@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { DOC_URLS } from '@/lib/api/config';
 
 export default function WhatIsApiGatewayPage() {
   return (
@@ -72,10 +73,10 @@ export default function WhatIsApiGatewayPage() {
 
           <div className="bg-[var(--matrix-green)] border-l-4 border-[var(--neon-mint)] p-4 space-y-2">
             <p className="text-[var(--platinum)] font-medium">
-              <strong>API Gateway Base URL:</strong> <code className="bg-[var(--midnight)] px-2 py-1 rounded">https://api.dev.mor.org/api/v1</code>
+              <strong>API Gateway Base URL:</strong> <code className="bg-[var(--midnight)] px-2 py-1 rounded">{DOC_URLS.baseAPI()}</code>
             </p>
             <p className="text-[var(--platinum)] font-medium">
-              <strong>API Gateway Swagger UI:</strong> <a href="https://api.dev.mor.org/docs" className="text-[var(--neon-mint)] hover:text-[var(--emerald)]">https://api.dev.mor.org/docs</a>
+              <strong>API Gateway Swagger UI:</strong> <a href={DOC_URLS.swaggerUI()} className="text-[var(--neon-mint)] hover:text-[var(--emerald)]">{DOC_URLS.swaggerUI()}</a>
             </p>
             <p className="text-[var(--platinum)] font-medium">
               <strong>Postman Collection:</strong> <a href="https://www.postman.com/bluefin-6568608/morpheus-api/collection/7ll8i2s/api-documentation?action=share&creator=44737384" className="text-[var(--neon-mint)] hover:text-[var(--emerald)]">View Collection</a>

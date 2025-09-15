@@ -89,12 +89,12 @@ export default function ChatPage() {
     }
   }, []);
 
-  // Load chat history when authenticated (uses Cognito JWT)
+  // Load chat history when API key is available (consistent with chat completions)
   useEffect(() => {
-    if (isAuthenticated && accessToken) {
+    if (fullApiKey) {
       loadChatHistory();
     }
-  }, [isAuthenticated, accessToken]);
+  }, [fullApiKey]);
 
   // Fetch available models on component mount
   useEffect(() => {
@@ -112,7 +112,7 @@ export default function ChatPage() {
     try {
       console.log('Fetching models from API...');
       
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://newapi.dev.mor.org'}/api/v1/models`, {
+      const response = await fetch(API_URLS.models(), {
         method: 'GET',
         headers: {
           'accept': 'application/json'
@@ -174,23 +174,32 @@ export default function ChatPage() {
     }
   };
 
-  // Load chat history from the server (uses Cognito JWT)
+  // Load chat history from the server (uses API key for consistency with chat completions)
   const loadChatHistory = async () => {
-    if (!accessToken) return;
+    if (!fullApiKey) return;
     
     setLoadingChats(true);
     try {
-      const response = await apiGet<any[]>(API_URLS.chatHistory(), accessToken);
+      const response = await fetch(API_URLS.chatHistory(), {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${fullApiKey}`,
+          'Content-Type': 'application/json'
+        }
+      });
       
-      if (response.data) {
+      if (response.ok) {
+        const data = await response.json();
         // Convert API response to expected format
-        const formattedChats = response.data.map((chat: any) => ({
+        const formattedChats = data.map((chat: any) => ({
           id: chat.id,
           title: chat.title,
           createdAt: chat.created_at,
           updatedAt: chat.updated_at
         }));
         setChats(formattedChats);
+      } else {
+        console.error('Error loading chat history:', response.status, response.statusText);
       }
     } catch (error) {
       console.error('Error loading chat history:', error);
@@ -201,22 +210,31 @@ export default function ChatPage() {
 
   // Load a specific chat
   const loadChat = async (chatId: string) => {
-    if (!accessToken) return;
+    if (!fullApiKey) return;
     
     setIsLoading(true);
     try {
-      const response = await apiGet<any>(API_URLS.chatDetail(chatId), accessToken);
+      const response = await fetch(API_URLS.chatDetail(chatId), {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${fullApiKey}`,
+          'Content-Type': 'application/json'
+        }
+      });
       
-      if (response.data) {
+      if (response.ok) {
+        const data = await response.json();
         setActiveChatId(chatId);
         // Convert API response to expected format
-        const formattedMessages = response.data.messages.map((msg: any) => ({
+        const formattedMessages = data.messages.map((msg: any) => ({
           id: msg.id,
           role: msg.role,
           content: msg.content,
           sequence: msg.sequence
         }));
         setMessages(formattedMessages);
+      } else {
+        console.error('Error loading chat:', response.status, response.statusText);
       }
     } catch (error) {
       console.error('Error loading chat:', error);
@@ -228,14 +246,14 @@ export default function ChatPage() {
   // Delete a chat
   const deleteChat = async (chatId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!accessToken || !window.confirm('Are you sure you want to delete this chat?')) return;
+    if (!fullApiKey || !window.confirm('Are you sure you want to delete this chat?')) return;
     
     try {
       // Use DELETE method for the chat endpoint
       const response = await fetch(API_URLS.chatDetail(chatId), {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
+          'Authorization': `Bearer ${fullApiKey}`,
           'Content-Type': 'application/json'
         }
       });
@@ -337,7 +355,7 @@ export default function ChatPage() {
       };
 
       // Make the actual API call using the user-provided API key
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://newapi.dev.mor.org'}/api/v1/chat/completions`, {
+      const res = await fetch(API_URLS.chatCompletions(), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -371,50 +389,66 @@ export default function ChatPage() {
         setMessages(prev => [...prev, newAssistantMessage]);
         
         // Save to database if saveChatHistory is enabled
-        if (saveChatHistory && accessToken) {
+        if (saveChatHistory && fullApiKey) {
           try {
             if (!activeChatId) {
               // Create new chat
               const chatTitle = currentPrompt.substring(0, 30) + (currentPrompt.length > 30 ? '...' : '');
-              const createChatResponse = await apiPost<any>(
-                API_URLS.chatHistory(),
-                { title: chatTitle },
-                accessToken
-              );
+              const createChatResponse = await fetch(API_URLS.chatHistory(), {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${fullApiKey}`,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ title: chatTitle })
+              });
               
-              if (createChatResponse.data) {
-                setActiveChatId(createChatResponse.data.id);
+              if (createChatResponse.ok) {
+                const chatData = await createChatResponse.json();
+                setActiveChatId(chatData.id);
                 
                 // Add user message
-                await apiPost<any>(
-                  API_URLS.chatMessages(createChatResponse.data.id),
-                  { role: 'user', content: currentPrompt },
-                  accessToken
-                );
+                await fetch(API_URLS.chatMessages(chatData.id), {
+                  method: 'POST',
+                  headers: {
+                    'Authorization': `Bearer ${fullApiKey}`,
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ role: 'user', content: currentPrompt })
+                });
                 
                 // Add assistant message
-                await apiPost<any>(
-                  API_URLS.chatMessages(createChatResponse.data.id),
-                  { role: 'assistant', content: assistantResponse },
-                  accessToken
-                );
+                await fetch(API_URLS.chatMessages(chatData.id), {
+                  method: 'POST',
+                  headers: {
+                    'Authorization': `Bearer ${fullApiKey}`,
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ role: 'assistant', content: assistantResponse })
+                });
                 
                 // Refresh chat list
                 loadChatHistory();
               }
             } else {
               // Add messages to existing chat
-              await apiPost<any>(
-                API_URLS.chatMessages(activeChatId),
-                { role: 'user', content: currentPrompt },
-                accessToken
-              );
+              await fetch(API_URLS.chatMessages(activeChatId), {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${fullApiKey}`,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ role: 'user', content: currentPrompt })
+              });
               
-              await apiPost<any>(
-                API_URLS.chatMessages(activeChatId),
-                { role: 'assistant', content: assistantResponse },
-                accessToken
-              );
+              await fetch(API_URLS.chatMessages(activeChatId), {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${fullApiKey}`,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ role: 'assistant', content: assistantResponse })
+              });
             }
           } catch (saveError) {
             console.error('Error saving chat:', saveError);

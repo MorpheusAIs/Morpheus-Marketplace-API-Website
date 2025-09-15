@@ -80,4 +80,10 @@ export const API_URLS = {
   models: () => buildApiUrl(API_CONFIG.ENDPOINTS.MODELS),
 };
 
+// Documentation URLs (environment-aware)
+export const DOC_URLS = {
+  swaggerUI: () => `${API_CONFIG.BASE_URL}/docs`,
+  baseAPI: () => `${API_CONFIG.BASE_URL}${API_CONFIG.VERSION}`,
+};
+
 export default API_CONFIG;

@@ -3,6 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { DOC_URLS } from '@/lib/api/config';
 import YouTubeEmbed from '../../components/YouTubeEmbed';
 
 export default function UsingSwaggerUI() {
@@ -60,7 +61,7 @@ export default function UsingSwaggerUI() {
             Step 1: Access Swagger UI
           </h3>
           <p className="text-lg mb-4">
-            Go to <a href="https://api.dev.mor.org/docs" className="text-[var(--neon-mint)] hover:text-[var(--emerald)] font-medium" target="_blank" rel="noreferrer">https://api.dev.mor.org/docs</a> to access the swagger UI. 
+            Go to <a href={DOC_URLS.swaggerUI()} className="text-[var(--neon-mint)] hover:text-[var(--emerald)] font-medium" target="_blank" rel="noreferrer">{DOC_URLS.swaggerUI()}</a> to access the swagger UI. 
             This is the home where you will be configuring all of your settings.
           </p>
           <div className="relative h-80 w-full border-2 border-[var(--emerald)]/30 rounded-lg overflow-hidden mb-4 bg-[var(--eclipse)]">

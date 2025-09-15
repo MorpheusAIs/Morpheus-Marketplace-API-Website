@@ -3,6 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { DOC_URLS } from '@/lib/api/config';
 import YouTubeEmbed from '../../components/YouTubeEmbed';
 
 export default function ViewingModels() {
@@ -25,7 +26,7 @@ export default function ViewingModels() {
             Step 1: Access Swagger UI
           </h3>
           <p className="text-lg mb-4">
-            First go to <a href="https://api.dev.mor.org/docs" className="text-[var(--neon-mint)] hover:text-[var(--emerald)] font-medium" target="_blank" rel="noreferrer">api.dev.mor.org/docs</a>
+            First go to <a href={DOC_URLS.swaggerUI()} className="text-[var(--neon-mint)] hover:text-[var(--emerald)] font-medium" target="_blank" rel="noreferrer">{DOC_URLS.swaggerUI().replace('https://', '')}</a>
           </p>
           <div className="relative h-80 w-full border-2 border-[var(--emerald)]/30 rounded-lg overflow-hidden mb-4 bg-[var(--eclipse)]">
             <Image 
