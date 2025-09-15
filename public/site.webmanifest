@@ -1,0 +1,16 @@
+{
+  "name": "Morpheus API Gateway",
+  "short_name": "Morpheus API",
+  "description": "Documentation and management interface for the Morpheus API Gateway",
+  "icons": [
+    {
+      "src": "/morpheus_green_purple_32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#6366f1",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/"
+}
