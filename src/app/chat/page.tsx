@@ -667,7 +667,7 @@ export default function ChatPage() {
                       <h3 className="text-lg font-medium text-[var(--neon-mint)]">Ready to Chat</h3>
                       <p className="text-sm text-[var(--platinum)]/70">Using API key: {apiKeyPrefix}...</p>
                     </div>
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-start space-x-4">
                       <div>
                         <label htmlFor="modelTypeFilter" className="block text-xs font-medium mb-1 text-[var(--platinum)]">
                           Model Type
@@ -686,6 +686,9 @@ export default function ChatPage() {
                             </option>
                           ))}
                         </select>
+                        <div className="text-xs text-transparent mt-1 select-none">
+                          &nbsp;
+                        </div>
                       </div>
                       <div>
                         <label htmlFor="modelSelect" className="block text-xs font-medium mb-1 text-[var(--platinum)]">
