@@ -94,7 +94,7 @@ Identify all the options for this database and think about how this can work eff
   - [x] Added `/api/chat/delete` - Delete a specific chat
 
 ### 2. Database Connection Layer
-- [x] Set up Prisma ORM for Vercel serverless environment
+- [x] Set up Prisma ORM for AWS Amplify serverless environment
 - [x] Create database schema and migrations
 - [ ] Configure connection pooling optimized for serverless
 - [ ] Implement proper connection handling for serverless functions
@@ -105,7 +105,7 @@ Identify all the options for this database and think about how this can work eff
 - [x] Filter all queries by API key for data isolation
 - [x] Implement input validation for all parameters
 - [x] Set up error handling to prevent information disclosure
-- [ ] Ensure RDS security group allows connections from Vercel IP ranges
+- [ ] Ensure RDS security group allows connections from AWS Amplify IP ranges
 
 ## Phase 4: Frontend Integration
 

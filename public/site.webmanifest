@@ -4,7 +4,7 @@
   "description": "Documentation and management interface for the Morpheus API Gateway",
   "icons": [
     {
-      "src": "/morpheus_green_purple_32x32.png",
+      "src": "/morpheus_wings_32x32.png",
       "sizes": "32x32",
       "type": "image/png"
     }

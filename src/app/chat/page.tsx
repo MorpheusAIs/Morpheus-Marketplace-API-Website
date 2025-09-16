@@ -12,6 +12,7 @@ import './markdown.css';
 import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
 import { apiGet, apiPost } from '@/lib/api/apiService';
 import { API_URLS } from '@/lib/api/config';
+import { getAllowedModelTypes, filterModelsByType, getFilterOptions, getFilterDescription, selectDefaultModel } from '@/lib/model-filter-utils';
 
 // Type definitions
 type Message = {
@@ -34,6 +35,7 @@ type Model = {
   blockchainId?: string;
   created?: number;
   tags?: Array<any>;
+  ModelType?: string;
 };
 
 export default function ChatPage() {
@@ -53,8 +55,12 @@ export default function ChatPage() {
   
   // Model state
   const [models, setModels] = useState<Model[]>([]);
+  const [filteredModels, setFilteredModels] = useState<Model[]>([]);
   const [selectedModel, setSelectedModel] = useState<string>('default');
   const [loadingModels, setLoadingModels] = useState(false);
+  const [selectedModelType, setSelectedModelType] = useState<string>('all');
+  const [filterOptions, setFilterOptions] = useState<Array<{value: string, label: string}>>([]);
+  const [allowedTypes] = useState<string[]>(getAllowedModelTypes());
   
   // Chat history state
   const [chats, setChats] = useState<Chat[]>([]);
@@ -132,46 +138,73 @@ export default function ChatPage() {
         const formattedModels = data.data.map((model: any) => ({
           id: model.id,
           blockchainId: model.blockchainId,
-          created: model.created
+          created: model.created,
+          ModelType: model.ModelType || model.modelType || 'UNKNOWN'
         }));
         
         // Sort models alphabetically by ID
         const sortedModels = formattedModels.sort((a: Model, b: Model) => a.id.localeCompare(b.id));
         setModels(sortedModels);
         
-        // Set llama-3.3-70b as default if available, otherwise use the first model
-        const defaultModel = sortedModels.find((model: Model) => model.id === 'llama-3.3-70b');
-        if (defaultModel) {
-          setSelectedModel('llama-3.3-70b');
-        } else if (sortedModels.length > 0) {
-          setSelectedModel(sortedModels[0].id);
-        }
+        // Apply initial filter (LLM and UNKNOWN only)
+        applyModelTypeFilter(sortedModels, 'all');
+        
       } else if (Array.isArray(data)) {
         console.log(`Retrieved ${data.length} models from direct array`);
         
+        const formattedModels = data.map((model: any) => ({
+          id: model.id,
+          blockchainId: model.blockchainId,
+          created: model.created,
+          ModelType: model.ModelType || model.modelType || 'UNKNOWN'
+        }));
+        
         // Sort models alphabetically by ID
-        const sortedModels = data.sort((a: Model, b: Model) => a.id.localeCompare(b.id));
+        const sortedModels = formattedModels.sort((a: Model, b: Model) => a.id.localeCompare(b.id));
         setModels(sortedModels);
         
-        // Set llama-3.3-70b as default if available, otherwise use the first model
-        const defaultModel = sortedModels.find((model: Model) => model.id === 'llama-3.3-70b');
-        if (defaultModel) {
-          setSelectedModel('llama-3.3-70b');
-        } else if (sortedModels.length > 0) {
-          setSelectedModel(sortedModels[0].id);
-        }
+        // Apply initial filter (LLM and UNKNOWN only)
+        applyModelTypeFilter(sortedModels, 'all');
       } else {
         console.error('Unexpected API response format:', data);
         // Set a fallback model
-        setModels([{ id: 'default' }]);
+        const fallbackModels = [{ id: 'default', ModelType: 'LLM' }];
+        setModels(fallbackModels);
+        setFilteredModels(fallbackModels);
       }
     } catch (error) {
       console.error('Error fetching models:', error);
       // Set a fallback model
-      setModels([{ id: 'default' }]);
+      const fallbackModels = [{ id: 'default', ModelType: 'LLM' }];
+      setModels(fallbackModels);
+      setFilteredModels(fallbackModels);
     } finally {
       setLoadingModels(false);
     }
+  };
+
+  // Filter models by type using environment configuration
+  const applyModelTypeFilter = (modelsToFilter: Model[], filterType: string) => {
+    const filtered = filterModelsByType(modelsToFilter, filterType, allowedTypes);
+    setFilteredModels(filtered);
+    
+    // Update filter options based on available models
+    const options = getFilterOptions(modelsToFilter, allowedTypes);
+    setFilterOptions(options);
+    
+    // Set default model selection using environment configuration
+    if (filtered.length > 0) {
+      const defaultModelId = selectDefaultModel(filtered);
+      if (defaultModelId) {
+        setSelectedModel(defaultModelId);
+      }
+    }
+  };
+
+  // Handle model type filter change
+  const handleModelTypeFilterChange = (filterType: string) => {
+    setSelectedModelType(filterType);
+    applyModelTypeFilter(models, filterType);
   };
 
   // Load chat history from the server (uses API key for consistency with chat completions)
@@ -636,6 +669,25 @@ export default function ChatPage() {
                     </div>
                     <div className="flex items-center space-x-4">
                       <div>
+                        <label htmlFor="modelTypeFilter" className="block text-xs font-medium mb-1 text-[var(--platinum)]">
+                          Model Type
+                        </label>
+                        <select
+                          id="modelTypeFilter"
+                          value={selectedModelType}
+                          onChange={(e) => handleModelTypeFilterChange(e.target.value)}
+                          className="p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] focus:ring-0 focus:border-[var(--emerald)]"
+                          disabled={loadingModels}
+                          style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
+                        >
+                          {filterOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
                         <label htmlFor="modelSelect" className="block text-xs font-medium mb-1 text-[var(--platinum)]">
                           Model
                         </label>
@@ -649,16 +701,21 @@ export default function ChatPage() {
                         >
                           {loadingModels ? (
                             <option value="default">Loading...</option>
-                          ) : models.length === 0 ? (
-                            <option value="default">Default</option>
+                          ) : filteredModels.length === 0 ? (
+                            <option value="default">No models available</option>
                           ) : (
-                            models.map((model) => (
+                            filteredModels.map((model) => (
                               <option key={model.id} value={model.id}>
                                 {model.id}
                               </option>
                             ))
                           )}
                         </select>
+                        <div className="text-xs text-[var(--platinum)]/70 mt-1">
+                          {loadingModels ? 'Fetching available models...' : 
+                           filteredModels.length === 0 ? 'No models found matching filter' : 
+                           `${filteredModels.length} model${filteredModels.length !== 1 ? 's' : ''} available`}
+                        </div>
                       </div>
                     </div>
                   </div>
