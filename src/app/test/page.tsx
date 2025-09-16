@@ -311,7 +311,7 @@ export default function TestPage() {
         
         {/* Model Selection Widget */}
         <div className="mb-4 bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-start space-x-4">
             <div>
               <label htmlFor="modelTypeFilter" className="block text-xs font-medium mb-1 text-[var(--platinum)]">
                 Model Type
@@ -330,6 +330,9 @@ export default function TestPage() {
                   </option>
                 ))}
               </select>
+              <div className="text-xs text-transparent mt-1 select-none">
+                &nbsp;
+              </div>
             </div>
             <div>
               <label htmlFor="modelSelect" className="block text-xs font-medium mb-1 text-[var(--platinum)]">
