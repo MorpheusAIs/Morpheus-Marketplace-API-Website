@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { AuthProvider } from '@/lib/auth/AuthContext';
+import { CognitoAuthProvider } from '@/lib/auth/CognitoAuthContext';
 import { Analytics } from "@vercel/analytics/next";
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google';
 import { GTMProvider } from '@/components/providers/GTMProvider';
@@ -11,6 +11,15 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Morpheus API Gateway Documentation",
   description: "Documentation and management interface for the Morpheus API Gateway",
+  icons: {
+    icon: [
+      { url: '/morpheus_green_purple_32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.ico', sizes: '32x32', type: 'image/png' }
+    ],
+    shortcut: '/morpheus_green_purple_32x32.png',
+    apple: '/morpheus_green_purple_32x32.png',
+  },
+  manifest: '/site.webmanifest',
 };
 
 export default function RootLayout({
@@ -35,11 +44,11 @@ export default function RootLayout({
             ></iframe>
           </noscript>
         )}
-        <AuthProvider>
+        <CognitoAuthProvider>
           <GTMProvider>
             {children}
           </GTMProvider>
-        </AuthProvider>
+        </CognitoAuthProvider>
         <Analytics />
         {gaId && <GoogleAnalytics gaId={gaId} />}
       </body>

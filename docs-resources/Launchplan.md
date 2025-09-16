@@ -1,4 +1,4 @@
-I am planning on launching a basic front-end website to support api.mor.org/docs. This website will do 2 key things, for now. 
+I am planning on launching a basic front-end website to support api.dev.mor.org/docs. This website will do 2 key things, for now. 
 
 1) Host all of the documentation for open beta, including the following:
     * What is the API Gateway
@@ -47,7 +47,7 @@ Samples:
 
 Register User Example:
 curl -X 'POST' \
-  'https://api.mor.org/api/v1/auth/register' \
+  'https://api.dev.mor.org/api/v1/auth/register' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -67,7 +67,7 @@ Register User Response:
 
 Login Example:
 curl -X 'POST' \
-  'https://api.mor.org/api/v1/auth/login' \
+  'https://api.dev.mor.org/api/v1/auth/login' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -84,7 +84,7 @@ Login Response:
 
 Create API Key Example:
 curl -X 'POST' \
-  'https://api.mor.org/api/v1/auth/keys' \
+  'https://api.dev.mor.org/api/v1/auth/keys' \
   -H 'accept: application/json' \
   -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDc2MjcxNTQsInN1YiI6IjYiLCJ0eXBlIjoiYWNjZXNzIn0.N0oHK3v9taRJeaGBL1wIeMMZelT0TyNcyCsP7goB7JA' \
   -H 'Content-Type: application/json' \
@@ -94,14 +94,14 @@ curl -X 'POST' \
 
 Create API Key Response:
 {
-  "key": "sk-nfl4ff.5d275a53daf882ef5d5e961e7bd74e910c811ecdfd96b844e3996783275317e5",
+  "key": "sk-example.your-api-key-here-replace-with-actual-key",
   "key_prefix": "sk-nfl4ff",
   "name": "string"
 }
 
 Get API Key Example:
 curl -X 'GET' \
-  'https://api.mor.org/api/v1/auth/keys' \
+  'https://api.dev.mor.org/api/v1/auth/keys' \
   -H 'accept: application/json' \
   -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDc2MjcxNTQsInN1YiI6IjYiLCJ0eXBlIjoiYWNjZXNzIn0.N0oHK3v9taRJeaGBL1wIeMMZelT0TyNcyCsP7goB7JA'
 
@@ -118,9 +118,9 @@ curl -X 'GET' \
 
 Set Automation Example:
 curl -X 'PUT' \
-  'https://api.mor.org/api/v1/automation/settings' \
+  'https://api.dev.mor.org/api/v1/automation/settings' \
   -H 'accept: application/json' \
-  -H 'Authorization: Bearer sk-nfl4ff.5d275a53daf882ef5d5e961e7bd74e910c811ecdfd96b844e3996783275317e5' \
+  -H 'Authorization: Bearer sk-example.your-api-key-here-replace-with-actual-key' \
   -H 'Content-Type: application/json' \
   -d '{
   "is_enabled": true,
@@ -138,9 +138,9 @@ Set Automation Response:
 
 Get Automation Example:
 curl -X 'GET' \
-  'https://api.mor.org/api/v1/automation/settings' \
+  'https://api.dev.mor.org/api/v1/automation/settings' \
   -H 'accept: application/json' \
-  -H 'Authorization: Bearer sk-nfl4ff.5d275a53daf882ef5d5e961e7bd74e910c811ecdfd96b844e3996783275317e5'
+  -H 'Authorization: Bearer sk-example.your-api-key-here-replace-with-actual-key'
 
 Get Automation Response:
 {
@@ -153,7 +153,7 @@ Get Automation Response:
 
 Chat Example:
 curl -X 'POST' \
-  'https://api.mor.org/api/v1/chat/completions' \
+  'https://api.dev.mor.org/api/v1/chat/completions' \
   -H 'accept: application/json' \
   -H 'Authorization: sk-1Tdk8L.dc597efa0c1ae700cbf66ec17596a21edc29bd31102e39b3ac76fd37fef3a14c' \
   -H 'Content-Type: application/json' \
