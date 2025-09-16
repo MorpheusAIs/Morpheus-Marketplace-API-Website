@@ -33,7 +33,7 @@ This is a pain for users to do all these steps in the swagger UI. We can automat
 
 
 Design:
-* This will be launched via Vercel, so keep this in mind during development
+* This will be launched via AWS Amplify, so keep this in mind during development
 * I'd like the design to be very simple. It should be a basic page with formatting similar to what you would see on MOR.ORG.
 * There should be 3 tabs: Admin, Docs, Testing
     Admin: Contain user settings when logged in. Username and password. Ability to view and create API keys. Ability to view and set automation
@@ -204,7 +204,7 @@ This does not need a local database. Pull everything you need at the time you ne
   - Create a new Next.js project using `create-next-app`
   - Set up TypeScript configuration
   - Configure ESLint and Prettier for code quality
-  - Set up deployment configuration for Vercel
+  - Set up deployment configuration for AWS Amplify
   - Initialize Git repository with proper .gitignore
 
 - **Dependencies**
@@ -367,7 +367,7 @@ This does not need a local database. Pull everything you need at the time you ne
   - Configure environment variables
 
 - **Production Deployment**
-  - Configure Vercel deployment settings
+  - Configure AWS Amplify deployment settings
   - Set up analytics and monitoring
   - Implement CI/CD pipeline with GitHub Actions
 
