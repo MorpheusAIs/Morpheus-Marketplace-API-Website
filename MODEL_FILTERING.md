@@ -13,6 +13,11 @@ Add this to your `.env.local` or deployment environment:
 # Comma-separated list of ModelTypes to show in the UI
 # Available types: LLM, UNKNOWN, STT, TTS, EMBEDDING
 NEXT_PUBLIC_ALLOWED_MODEL_TYPES=LLM,UNKNOWN
+
+# Default Model Configuration
+# Model ID to select by default when models are loaded
+# Falls back to first available model if specified model is not found
+NEXT_PUBLIC_DEFAULT_MODEL=llama-3.3-70b
 ```
 
 ### Available Model Types
@@ -30,6 +35,7 @@ Based on the Morpheus API, these ModelTypes are currently available:
 ### Default Configuration (LLM + Unknown only)
 ```bash
 NEXT_PUBLIC_ALLOWED_MODEL_TYPES=LLM,UNKNOWN
+NEXT_PUBLIC_DEFAULT_MODEL=llama-3.3-70b
 ```
 
 ### Show All Model Types
@@ -45,14 +51,36 @@ NEXT_PUBLIC_ALLOWED_MODEL_TYPES=LLM
 ### Custom Combination
 ```bash
 NEXT_PUBLIC_ALLOWED_MODEL_TYPES=LLM,STT,TTS
+NEXT_PUBLIC_DEFAULT_MODEL=mistral-31-24b
+```
+
+### Different Environment Examples
+
+**Development (show all models, default to test model):**
+```bash
+NEXT_PUBLIC_ALLOWED_MODEL_TYPES=LLM,UNKNOWN,STT,TTS,EMBEDDING
+NEXT_PUBLIC_DEFAULT_MODEL=llama-3.2-3b
+```
+
+**Production (chat-focused, default to flagship model):**
+```bash
+NEXT_PUBLIC_ALLOWED_MODEL_TYPES=LLM,UNKNOWN
+NEXT_PUBLIC_DEFAULT_MODEL=llama-3.3-70b
+```
+
+**Voice-focused environment:**
+```bash
+NEXT_PUBLIC_ALLOWED_MODEL_TYPES=LLM,STT,TTS
+NEXT_PUBLIC_DEFAULT_MODEL=qwen3-235b
 ```
 
 ## How It Works
 
-1. **Environment Loading**: The system reads `NEXT_PUBLIC_ALLOWED_MODEL_TYPES` on app startup
+1. **Environment Loading**: The system reads `NEXT_PUBLIC_ALLOWED_MODEL_TYPES` and `NEXT_PUBLIC_DEFAULT_MODEL` on app startup
 2. **API Filtering**: When models are fetched from the API, they're filtered based on allowed types
-3. **Dynamic UI**: Filter dropdown options are generated based on available model types
-4. **Fallback**: If no environment variable is set, defaults to `LLM,UNKNOWN`
+3. **Default Selection**: System tries to select the configured default model, falls back to first available
+4. **Dynamic UI**: Filter dropdown options are generated based on available model types
+5. **Fallback**: If no environment variables are set, defaults to `LLM,UNKNOWN` types and `llama-3.3-70b` model
 
 ## UI Behavior
 
@@ -64,7 +92,7 @@ NEXT_PUBLIC_ALLOWED_MODEL_TYPES=LLM,STT,TTS
 ### Model Selector
 - Only shows models matching the allowed types
 - Displays format: "model-name (TYPE)"
-- Automatically selects llama-3.3-70b if available, otherwise first model
+- Automatically selects configured default model if available, otherwise first model
 
 ### Descriptive Text
 - Shows user-friendly description: "Only LLM and UNKNOWN models are shown"

@@ -12,7 +12,7 @@ import './markdown.css';
 import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
 import { apiGet, apiPost } from '@/lib/api/apiService';
 import { API_URLS } from '@/lib/api/config';
-import { getAllowedModelTypes, filterModelsByType, getFilterOptions, getFilterDescription } from '@/lib/model-filter-utils';
+import { getAllowedModelTypes, filterModelsByType, getFilterOptions, getFilterDescription, selectDefaultModel } from '@/lib/model-filter-utils';
 
 // Type definitions
 type Message = {
@@ -192,13 +192,11 @@ export default function ChatPage() {
     const options = getFilterOptions(modelsToFilter, allowedTypes);
     setFilterOptions(options);
     
-    // Set default model selection
+    // Set default model selection using environment configuration
     if (filtered.length > 0) {
-      const defaultModel = filtered.find((model: Model) => model.id === 'llama-3.3-70b');
-      if (defaultModel) {
-        setSelectedModel('llama-3.3-70b');
-      } else {
-        setSelectedModel(filtered[0].id);
+      const defaultModelId = selectDefaultModel(filtered);
+      if (defaultModelId) {
+        setSelectedModel(defaultModelId);
       }
     }
   };

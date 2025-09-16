@@ -5,6 +5,9 @@
 // Default allowed model types if environment variable is not set
 const DEFAULT_ALLOWED_TYPES = ['LLM', 'UNKNOWN'];
 
+// Default model fallback if environment variable is not set
+const DEFAULT_FALLBACK_MODEL = 'llama-3.3-70b';
+
 /**
  * Get the allowed model types from environment variable
  * @returns Array of allowed ModelType strings
@@ -95,6 +98,43 @@ export function getFilterOptions(models: Array<{ModelType?: string}>, allowedTyp
   });
   
   return options;
+}
+
+/**
+ * Get the default model from environment variable
+ * @returns Default model ID string
+ */
+export function getDefaultModel(): string {
+  const envModel = process.env.NEXT_PUBLIC_DEFAULT_MODEL;
+  
+  if (!envModel || envModel.trim() === '') {
+    return DEFAULT_FALLBACK_MODEL;
+  }
+  
+  return envModel.trim();
+}
+
+/**
+ * Select the best default model from a list of available models
+ * @param models Array of models to choose from
+ * @param preferredDefault Optional preferred default model (uses env config if not provided)
+ * @returns Selected model ID or null if no models available
+ */
+export function selectDefaultModel<T extends {id: string}>(models: T[], preferredDefault?: string): string | null {
+  if (models.length === 0) {
+    return null;
+  }
+  
+  const defaultModelId = preferredDefault || getDefaultModel();
+  
+  // Try to find the preferred default model
+  const preferredModel = models.find(model => model.id === defaultModelId);
+  if (preferredModel) {
+    return preferredModel.id;
+  }
+  
+  // Fall back to the first available model
+  return models[0].id;
 }
 
 /**

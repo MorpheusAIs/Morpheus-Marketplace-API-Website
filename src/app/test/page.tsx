@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { API_URLS } from '@/lib/api/config';
 import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
-import { getAllowedModelTypes, filterModelsByType, getFilterOptions, getFilterDescription } from '@/lib/model-filter-utils';
+import { getAllowedModelTypes, filterModelsByType, getFilterOptions, getFilterDescription, selectDefaultModel } from '@/lib/model-filter-utils';
 
 // Type definition for models
 type Model = {
@@ -139,13 +139,11 @@ export default function TestPage() {
     const options = getFilterOptions(modelsToFilter, allowedTypes);
     setFilterOptions(options);
     
-    // Set default model selection
+    // Set default model selection using environment configuration
     if (filtered.length > 0) {
-      const defaultModel = filtered.find((model: Model) => model.id === 'llama-3.3-70b');
-      if (defaultModel) {
-        setSelectedModel('llama-3.3-70b');
-      } else {
-        setSelectedModel(filtered[0].id);
+      const defaultModelId = selectDefaultModel(filtered);
+      if (defaultModelId) {
+        setSelectedModel(defaultModelId);
       }
     }
   };
