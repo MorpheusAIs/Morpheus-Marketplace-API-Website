@@ -13,11 +13,11 @@ export const metadata: Metadata = {
   description: "Documentation and management interface for the Morpheus API Gateway",
   icons: {
     icon: [
-      { url: '/morpheus_green_purple_32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/morpheus_wings_32x32.png', sizes: '32x32', type: 'image/png' },
       { url: '/favicon.ico', sizes: '32x32', type: 'image/png' }
     ],
-    shortcut: '/morpheus_green_purple_32x32.png',
-    apple: '/morpheus_green_purple_32x32.png',
+    shortcut: '/morpheus_wings_32x32.png',
+    apple: '/morpheus_wings_32x32.png',
   },
   manifest: '/site.webmanifest',
 };

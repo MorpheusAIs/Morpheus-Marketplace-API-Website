@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { API_URLS } from '@/lib/api/config';
 import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
+import { getAllowedModelTypes, filterModelsByType, getFilterOptions, getFilterDescription } from '@/lib/model-filter-utils';
 
 // Type definition for models
 type Model = {
@@ -32,6 +33,8 @@ export default function TestPage() {
   const [selectedModel, setSelectedModel] = useState<string>('default');
   const [loadingModels, setLoadingModels] = useState(false);
   const [selectedModelType, setSelectedModelType] = useState<string>('all');
+  const [filterOptions, setFilterOptions] = useState<Array<{value: string, label: string}>>([]);
+  const [allowedTypes] = useState<string[]>(getAllowedModelTypes());
   
   const router = useRouter();
   const { isAuthenticated, isLoading: authLoading } = useCognitoAuth();
@@ -127,21 +130,14 @@ export default function TestPage() {
     }
   };
 
-  // Filter models by type - only show LLM and UNKNOWN types
+  // Filter models by type using environment configuration
   const applyModelTypeFilter = (modelsToFilter: Model[], filterType: string) => {
-    let filtered = modelsToFilter;
-    
-    // Always filter to only LLM and UNKNOWN types as per requirement
-    filtered = modelsToFilter.filter(model => 
-      model.ModelType === 'LLM' || model.ModelType === 'UNKNOWN'
-    );
-    
-    // Apply additional filter if not 'all'
-    if (filterType !== 'all') {
-      filtered = filtered.filter(model => model.ModelType === filterType);
-    }
-    
+    const filtered = filterModelsByType(modelsToFilter, filterType, allowedTypes);
     setFilteredModels(filtered);
+    
+    // Update filter options based on available models
+    const options = getFilterOptions(modelsToFilter, allowedTypes);
+    setFilterOptions(options);
     
     // Set default model selection
     if (filtered.length > 0) {
@@ -328,12 +324,14 @@ export default function TestPage() {
             disabled={loadingModels}
             style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
           >
-            <option value="all">All (LLM & Unknown)</option>
-            <option value="LLM">LLM</option>
-            <option value="UNKNOWN">Unknown</option>
+            {filterOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
           <div className="text-xs text-[var(--platinum)]/70 mt-1">
-            Filter models by type (only LLM and Unknown types are shown)
+            {getFilterDescription(allowedTypes)}
           </div>
         </div>
 
