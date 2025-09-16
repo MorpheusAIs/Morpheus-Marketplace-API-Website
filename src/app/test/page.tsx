@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { API_URLS } from '@/lib/api/config';
 import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
 import { getAllowedModelTypes, filterModelsByType, getFilterOptions, getFilterDescription, selectDefaultModel } from '@/lib/model-filter-utils';
+import AuthModal from '@/components/auth/AuthModal';
+import { CognitoDirectAuth } from '@/lib/auth/cognito-direct-auth';
 
 // Type definition for models
 type Model = {
@@ -36,8 +38,19 @@ export default function TestPage() {
   const [filterOptions, setFilterOptions] = useState<Array<{value: string, label: string}>>([]);
   const [allowedTypes] = useState<string[]>(getAllowedModelTypes());
   
+  // Auth modal state
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  
   const router = useRouter();
   const { isAuthenticated, isLoading: authLoading } = useCognitoAuth();
+
+  // Redirect authenticated users without API key to admin page
+  useEffect(() => {
+    if (!authLoading && isAuthenticated && !fullApiKey) {
+      router.push('/admin');
+      return;
+    }
+  }, [isAuthenticated, authLoading, fullApiKey, router]);
 
   // Load API key from sessionStorage on component mount
   useEffect(() => {
@@ -154,6 +167,16 @@ export default function TestPage() {
     applyModelTypeFilter(models, filterType);
   };
 
+  // Handle authentication success
+  const handleAuthSuccess = (tokens: any, userInfo: any) => {
+    // Store tokens and close modal
+    CognitoDirectAuth.storeTokens(tokens);
+    localStorage.setItem('user_info', JSON.stringify(userInfo));
+    setShowAuthModal(false);
+    // Refresh the page to update authentication state
+    window.location.reload();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -266,16 +289,20 @@ export default function TestPage() {
       
       {/* Authentication Status */}
       {!isAuthenticated ? (
-        <div className="mb-8 p-4 bg-[var(--matrix-green)] border border-[var(--emerald)]/30 rounded-md">
-          <div className="text-[var(--platinum)] mb-2">
-            You need to be authenticated to use the API test interface.
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center p-8 bg-[var(--matrix-green)] border border-[var(--emerald)]/30 rounded-lg shadow-lg max-w-md">
+            <div className="text-[var(--platinum)] mb-4">
+              <h3 className="text-lg font-medium text-[var(--neon-mint)] mb-3">Authentication Required</h3>
+              <p className="mb-2">You need to be authenticated and validate an API key to use the API test interface.</p>
+              <p className="text-sm text-[var(--platinum)]/70">After logging in, you'll be taken to the Admin page to select your API key.</p>
+            </div>
+            <button 
+              onClick={() => setShowAuthModal(true)}
+              className="px-6 py-3 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md hover:bg-[var(--emerald)] transition-colors font-medium"
+            >
+              Login to Continue
+            </button>
           </div>
-          <Link 
-            href="/admin" 
-            className="px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md hover:bg-[var(--emerald)] transition-colors"
-          >
-            Go to Admin to Login & Select API Key
-          </Link>
         </div>
       ) : !fullApiKey ? (
         <div className="mb-8 p-4 bg-[var(--matrix-green)] border border-[var(--emerald)]/30 rounded-md">
@@ -420,6 +447,13 @@ export default function TestPage() {
           </div>
         </div>
       )}
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={handleAuthSuccess}
+      />
     </main>
   );
 } 

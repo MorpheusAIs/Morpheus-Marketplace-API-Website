@@ -36,7 +36,7 @@ export default function RegisterPage() {
             </h2>
             <p className="mt-2 text-center text-sm text-[var(--platinum)]">
               Or{' '}
-              <Link href="/login" className="font-medium text-[var(--platinum)] hover:text-[var(--neon-mint)]">
+              <Link href="/" className="font-medium text-[var(--platinum)] hover:text-[var(--neon-mint)]">
                 sign in to your account
               </Link>
             </p>
