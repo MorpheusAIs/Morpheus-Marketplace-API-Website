@@ -13,6 +13,8 @@ import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
 import { apiGet, apiPost } from '@/lib/api/apiService';
 import { API_URLS } from '@/lib/api/config';
 import { getAllowedModelTypes, filterModelsByType, getFilterOptions, getFilterDescription, selectDefaultModel } from '@/lib/model-filter-utils';
+import AuthModal from '@/components/auth/AuthModal';
+import { CognitoDirectAuth } from '@/lib/auth/cognito-direct-auth';
 
 // Type definitions
 type Message = {
@@ -69,6 +71,9 @@ export default function ChatPage() {
   const [loadingChats, setLoadingChats] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
+  // Auth modal state
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Scroll to bottom of messages
@@ -76,13 +81,7 @@ export default function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      router.push('/');
-      return;
-    }
-  }, [isAuthenticated, authLoading, router]);
+
 
   // Load API key from sessionStorage
   useEffect(() => {
@@ -205,6 +204,16 @@ export default function ChatPage() {
   const handleModelTypeFilterChange = (filterType: string) => {
     setSelectedModelType(filterType);
     applyModelTypeFilter(models, filterType);
+  };
+
+  // Handle authentication success
+  const handleAuthSuccess = (tokens: any, userInfo: any) => {
+    // Store tokens and close modal
+    CognitoDirectAuth.storeTokens(tokens);
+    localStorage.setItem('user_info', JSON.stringify(userInfo));
+    setShowAuthModal(false);
+    // Refresh the page to update authentication state
+    window.location.reload();
   };
 
   // Load chat history from the server (uses API key for consistency with chat completions)
@@ -652,16 +661,38 @@ export default function ChatPage() {
         <div className="flex-1 flex flex-col overflow-hidden">
           <div className="flex-1 overflow-auto p-8">
             <div className="max-w-3xl mx-auto">
-              {/* API Key Status */}
-              {!fullApiKey ? (
-                <div className="mb-6 bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30 text-center">
-                  <h3 className="text-lg font-medium text-[var(--neon-mint)] mb-2">API Key Required</h3>
-                  <p className="text-sm text-[var(--platinum)]/70 mb-3">
-                    Please go to the <Link href="/admin" className="text-[var(--neon-mint)] hover:underline">Admin page</Link> to set up your API key first.
-                  </p>
+              
+              {/* Authentication Status */}
+              {!isAuthenticated ? (
+                <div className="mb-8 p-4 bg-[var(--matrix-green)] border border-[var(--emerald)]/30 rounded-md">
+                  <div className="text-[var(--platinum)] mb-2">
+                    <h3 className="text-lg font-medium text-[var(--neon-mint)] mb-3">Authentication Required</h3>
+                    <p className="mb-2">You need to be authenticated and validate an API key to use the chat interface.</p>
+                    <p className="text-sm text-[var(--platinum)]/70">After logging in, you'll be taken to the Admin page to select your API key.</p>
+                  </div>
+                  <button 
+                    onClick={() => setShowAuthModal(true)}
+                    className="px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md hover:bg-[var(--emerald)] transition-colors"
+                  >
+                    Login to Continue
+                  </button>
                 </div>
-              ) : (
-                <div className="mb-6 bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30">
+              ) : !fullApiKey ? (
+                <div className="mb-8 p-4 bg-[var(--matrix-green)] border border-[var(--emerald)]/30 rounded-md">
+                  <div className="text-[var(--platinum)] mb-2">
+                    No API key selected. Please go to the Admin page to select an API key.
+                  </div>
+                  <Link 
+                    href="/admin" 
+                    className="px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md hover:bg-[var(--emerald)] transition-colors"
+                  >
+                    Go to Admin to Select API Key
+                  </Link>
+                </div>
+              ) : null}
+
+              {/* Chat Interface - Always visible */}
+              <div className="mb-6 bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30">
                   <div className="flex justify-between items-center mb-3">
                     <div>
                       <h3 className="text-lg font-medium text-[var(--neon-mint)]">Ready to Chat</h3>
@@ -723,7 +754,6 @@ export default function ChatPage() {
                     </div>
                   </div>
                 </div>
-              )}
               
               {/* Messages - Always show (uses Cognito JWT for history) */}
               <div className="mb-6 space-y-6">
@@ -858,6 +888,13 @@ export default function ChatPage() {
           </div>
         </div>
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={handleAuthSuccess}
+      />
     </main>
   );
 } 

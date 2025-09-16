@@ -38,10 +38,10 @@ export default function TestPage() {
             </p>
             <div className="mt-6 flex justify-center">
               <Link 
-                href="/login" 
+                href="/" 
                 className="px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] font-medium rounded-md hover:bg-[var(--emerald)] transition-colors"
               >
-                Go to Login
+                Go to Home
               </Link>
             </div>
           </div>
