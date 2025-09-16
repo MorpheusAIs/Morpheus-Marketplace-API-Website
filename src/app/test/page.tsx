@@ -355,7 +355,7 @@ export default function TestPage() {
             ) : (
               filteredModels.map((model) => (
                 <option key={model.id} value={model.id}>
-                  {model.id} {model.ModelType && `(${model.ModelType})`}
+                  {model.id}
                 </option>
               ))
             )}

@@ -85,7 +85,7 @@ export function getFilterOptions(models: Array<{ModelType?: string}>, allowedTyp
   const allowed = allowedTypes || getAllowedModelTypes();
   const availableTypes = getAvailableModelTypes(models, allowed);
   
-  const options = [{ value: 'all', label: `All (${availableTypes.join(' & ')})` }];
+  const options = [{ value: 'all', label: 'All' }];
   
   availableTypes.forEach(type => {
     options.push({

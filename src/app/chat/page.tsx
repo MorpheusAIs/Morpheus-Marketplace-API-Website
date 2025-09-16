@@ -711,7 +711,7 @@ export default function ChatPage() {
                           ) : (
                             filteredModels.map((model) => (
                               <option key={model.id} value={model.id}>
-                                {model.id} {model.ModelType && `(${model.ModelType})`}
+                                {model.id}
                               </option>
                             ))
                           )}
