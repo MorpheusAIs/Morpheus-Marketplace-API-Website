@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { CognitoAuthProvider } from '@/lib/auth/CognitoAuthContext';
-import { Analytics } from "@vercel/analytics/next";
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google';
 import { GTMProvider } from '@/components/providers/GTMProvider';
 import "./globals.css";
@@ -49,7 +48,6 @@ export default function RootLayout({
             {children}
           </GTMProvider>
         </CognitoAuthProvider>
-        <Analytics />
         {gaId && <GoogleAnalytics gaId={gaId} />}
       </body>
     </html>
