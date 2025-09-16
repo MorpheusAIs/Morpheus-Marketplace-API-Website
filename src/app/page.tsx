@@ -10,7 +10,7 @@ import AuthModal from '@/components/auth/AuthModal';
 import { CognitoDirectAuth } from '@/lib/auth/cognito-direct-auth';
 
 export default function Home() {
-  const { logout, isAuthenticated } = useCognitoAuth();
+  const { isAuthenticated } = useCognitoAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   
   // Use build version from generated file
@@ -18,8 +18,10 @@ export default function Home() {
 
   const handleLoginLogout = () => {
     if (isAuthenticated) {
-      // If authenticated, logout and clear credentials
-      logout();
+      // Use simple sign out that just clears tokens and stays on home page
+      CognitoDirectAuth.signOut();
+      // Force a page refresh to update the authentication state
+      window.location.reload();
     } else {
       // Open the beautiful direct auth modal instead of redirect
       setShowAuthModal(true);
