@@ -713,6 +713,11 @@ export default function ChatPage() {
                             ))
                           )}
                         </select>
+                        <div className="text-xs text-[var(--platinum)]/70 mt-1">
+                          {loadingModels ? 'Fetching available models...' : 
+                           filteredModels.length === 0 ? 'No models found matching filter' : 
+                           `${filteredModels.length} model${filteredModels.length !== 1 ? 's' : ''} available`}
+                        </div>
                       </div>
                     </div>
                   </div>

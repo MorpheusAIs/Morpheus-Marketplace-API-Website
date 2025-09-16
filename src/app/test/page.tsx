@@ -311,56 +311,58 @@ export default function TestPage() {
           </div>
         )}
         
-        {/* Model Type Filter */}
-        <div className="mb-4">
-          <label htmlFor="modelTypeFilter" className="block text-sm font-medium mb-1 text-[var(--platinum)]">
-            Model Type Filter
-          </label>
-          <select
-            id="modelTypeFilter"
-            value={selectedModelType}
-            onChange={(e) => handleModelTypeFilterChange(e.target.value)}
-            className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70 focus:ring-0 focus:border-[var(--emerald)]"
-            disabled={loadingModels}
-            style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
-          >
-            {filterOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Model Selection Dropdown */}
-        <div className="mb-4">
-          <label htmlFor="modelSelect" className="block text-sm font-medium mb-1 text-[var(--platinum)]">
-            Model
-          </label>
-          <select
-            id="modelSelect"
-            value={selectedModel}
-            onChange={(e) => setSelectedModel(e.target.value)}
-            className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70 focus:ring-0 focus:border-[var(--emerald)]"
-            disabled={loadingModels}
-            style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
-          >
-            {loadingModels ? (
-              <option value="default">Loading models...</option>
-            ) : filteredModels.length === 0 ? (
-              <option value="default">No models available</option>
-            ) : (
-              filteredModels.map((model) => (
-                <option key={model.id} value={model.id}>
-                  {model.id}
-                </option>
-              ))
-            )}
-          </select>
-          <div className="text-xs text-[var(--platinum)]/70 mt-1">
-            {loadingModels ? 'Fetching available models...' : 
-             filteredModels.length === 0 ? 'No models found matching filter' : 
-             `${filteredModels.length} model${filteredModels.length !== 1 ? 's' : ''} available`}
+        {/* Model Selection Widget */}
+        <div className="mb-4 bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30">
+          <div className="flex items-center space-x-4">
+            <div>
+              <label htmlFor="modelTypeFilter" className="block text-xs font-medium mb-1 text-[var(--platinum)]">
+                Model Type
+              </label>
+              <select
+                id="modelTypeFilter"
+                value={selectedModelType}
+                onChange={(e) => handleModelTypeFilterChange(e.target.value)}
+                className="p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] focus:ring-0 focus:border-[var(--emerald)]"
+                disabled={loadingModels}
+                style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
+              >
+                {filterOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="modelSelect" className="block text-xs font-medium mb-1 text-[var(--platinum)]">
+                Model
+              </label>
+              <select
+                id="modelSelect"
+                value={selectedModel}
+                onChange={(e) => setSelectedModel(e.target.value)}
+                className="p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] focus:ring-0 focus:border-[var(--emerald)]"
+                disabled={loadingModels}
+                style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
+              >
+                {loadingModels ? (
+                  <option value="default">Loading models...</option>
+                ) : filteredModels.length === 0 ? (
+                  <option value="default">No models available</option>
+                ) : (
+                  filteredModels.map((model) => (
+                    <option key={model.id} value={model.id}>
+                      {model.id}
+                    </option>
+                  ))
+                )}
+              </select>
+              <div className="text-xs text-[var(--platinum)]/70 mt-1">
+                {loadingModels ? 'Fetching available models...' : 
+                 filteredModels.length === 0 ? 'No models found matching filter' : 
+                 `${filteredModels.length} model${filteredModels.length !== 1 ? 's' : ''} available`}
+              </div>
+            </div>
           </div>
         </div>
         
