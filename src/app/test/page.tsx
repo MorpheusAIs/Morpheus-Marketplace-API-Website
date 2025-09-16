@@ -12,6 +12,7 @@ type Model = {
   blockchainId?: string;
   created?: number;
   tags?: Array<any>;
+  ModelType?: string;
 };
 
 export default function TestPage() {
@@ -27,8 +28,10 @@ export default function TestPage() {
   
   // Model state
   const [models, setModels] = useState<Model[]>([]);
+  const [filteredModels, setFilteredModels] = useState<Model[]>([]);
   const [selectedModel, setSelectedModel] = useState<string>('default');
   const [loadingModels, setLoadingModels] = useState(false);
+  const [selectedModelType, setSelectedModelType] = useState<string>('all');
   
   const router = useRouter();
   const { isAuthenticated, isLoading: authLoading } = useCognitoAuth();
@@ -79,46 +82,82 @@ export default function TestPage() {
         const formattedModels = data.data.map((model: any) => ({
           id: model.id,
           blockchainId: model.blockchainId,
-          created: model.created
+          created: model.created,
+          ModelType: model.ModelType || model.modelType || 'UNKNOWN'
         }));
         
         // Sort models alphabetically by ID
         const sortedModels = formattedModels.sort((a: Model, b: Model) => a.id.localeCompare(b.id));
         setModels(sortedModels);
         
-        // Set llama-3.3-70b as default if available, otherwise use the first model
-        const defaultModel = sortedModels.find((model: Model) => model.id === 'llama-3.3-70b');
-        if (defaultModel) {
-          setSelectedModel('llama-3.3-70b');
-        } else if (sortedModels.length > 0) {
-          setSelectedModel(sortedModels[0].id);
-        }
+        // Apply initial filter (LLM and UNKNOWN only)
+        applyModelTypeFilter(sortedModels, 'all');
+        
       } else if (Array.isArray(data)) {
         console.log(`Retrieved ${data.length} models from direct array`);
         
+        const formattedModels = data.map((model: any) => ({
+          id: model.id,
+          blockchainId: model.blockchainId,
+          created: model.created,
+          ModelType: model.ModelType || model.modelType || 'UNKNOWN'
+        }));
+        
         // Sort models alphabetically by ID
-        const sortedModels = data.sort((a: Model, b: Model) => a.id.localeCompare(b.id));
+        const sortedModels = formattedModels.sort((a: Model, b: Model) => a.id.localeCompare(b.id));
         setModels(sortedModels);
         
-        // Set llama-3.3-70b as default if available, otherwise use the first model
-        const defaultModel = sortedModels.find((model: Model) => model.id === 'llama-3.3-70b');
-        if (defaultModel) {
-          setSelectedModel('llama-3.3-70b');
-        } else if (sortedModels.length > 0) {
-          setSelectedModel(sortedModels[0].id);
-        }
+        // Apply initial filter (LLM and UNKNOWN only)
+        applyModelTypeFilter(sortedModels, 'all');
       } else {
         console.error('Unexpected API response format:', data);
         // Set a fallback model
-        setModels([{ id: 'default' }]);
+        const fallbackModels = [{ id: 'default', ModelType: 'LLM' }];
+        setModels(fallbackModels);
+        setFilteredModels(fallbackModels);
       }
     } catch (error) {
       console.error('Error fetching models:', error);
       // Set a fallback model
-      setModels([{ id: 'default' }]);
+      const fallbackModels = [{ id: 'default', ModelType: 'LLM' }];
+      setModels(fallbackModels);
+      setFilteredModels(fallbackModels);
     } finally {
       setLoadingModels(false);
     }
+  };
+
+  // Filter models by type - only show LLM and UNKNOWN types
+  const applyModelTypeFilter = (modelsToFilter: Model[], filterType: string) => {
+    let filtered = modelsToFilter;
+    
+    // Always filter to only LLM and UNKNOWN types as per requirement
+    filtered = modelsToFilter.filter(model => 
+      model.ModelType === 'LLM' || model.ModelType === 'UNKNOWN'
+    );
+    
+    // Apply additional filter if not 'all'
+    if (filterType !== 'all') {
+      filtered = filtered.filter(model => model.ModelType === filterType);
+    }
+    
+    setFilteredModels(filtered);
+    
+    // Set default model selection
+    if (filtered.length > 0) {
+      const defaultModel = filtered.find((model: Model) => model.id === 'llama-3.3-70b');
+      if (defaultModel) {
+        setSelectedModel('llama-3.3-70b');
+      } else {
+        setSelectedModel(filtered[0].id);
+      }
+    }
+  };
+
+  // Handle model type filter change
+  const handleModelTypeFilterChange = (filterType: string) => {
+    setSelectedModelType(filterType);
+    applyModelTypeFilter(models, filterType);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -276,6 +315,28 @@ export default function TestPage() {
           </div>
         )}
         
+        {/* Model Type Filter */}
+        <div className="mb-4">
+          <label htmlFor="modelTypeFilter" className="block text-sm font-medium mb-1 text-[var(--platinum)]">
+            Model Type Filter
+          </label>
+          <select
+            id="modelTypeFilter"
+            value={selectedModelType}
+            onChange={(e) => handleModelTypeFilterChange(e.target.value)}
+            className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70 focus:ring-0 focus:border-[var(--emerald)]"
+            disabled={loadingModels}
+            style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
+          >
+            <option value="all">All (LLM & Unknown)</option>
+            <option value="LLM">LLM</option>
+            <option value="UNKNOWN">Unknown</option>
+          </select>
+          <div className="text-xs text-[var(--platinum)]/70 mt-1">
+            Filter models by type (only LLM and Unknown types are shown)
+          </div>
+        </div>
+
         {/* Model Selection Dropdown */}
         <div className="mb-4">
           <label htmlFor="modelSelect" className="block text-sm font-medium mb-1 text-[var(--platinum)]">
@@ -291,20 +352,20 @@ export default function TestPage() {
           >
             {loadingModels ? (
               <option value="default">Loading models...</option>
-            ) : models.length === 0 ? (
-              <option value="default">Default</option>
+            ) : filteredModels.length === 0 ? (
+              <option value="default">No models available</option>
             ) : (
-              models.map((model) => (
+              filteredModels.map((model) => (
                 <option key={model.id} value={model.id}>
-                  {model.id}
+                  {model.id} {model.ModelType && `(${model.ModelType})`}
                 </option>
               ))
             )}
           </select>
           <div className="text-xs text-[var(--platinum)]/70 mt-1">
             {loadingModels ? 'Fetching available models...' : 
-             models.length === 0 ? 'No models found, using default' : 
-             `${models.length} model${models.length !== 1 ? 's' : ''} available`}
+             filteredModels.length === 0 ? 'No models found matching filter' : 
+             `${filteredModels.length} model${filteredModels.length !== 1 ? 's' : ''} available`}
           </div>
         </div>
         
