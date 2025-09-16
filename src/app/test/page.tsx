@@ -44,13 +44,6 @@ export default function TestPage() {
   const router = useRouter();
   const { isAuthenticated, isLoading: authLoading } = useCognitoAuth();
 
-  // Redirect authenticated users without API key to admin page
-  useEffect(() => {
-    if (!authLoading && isAuthenticated && !fullApiKey) {
-      router.push('/admin');
-      return;
-    }
-  }, [isAuthenticated, authLoading, fullApiKey, router]);
 
   // Load API key from sessionStorage on component mount
   useEffect(() => {
@@ -289,20 +282,18 @@ export default function TestPage() {
       
       {/* Authentication Status */}
       {!isAuthenticated ? (
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center p-8 bg-[var(--matrix-green)] border border-[var(--emerald)]/30 rounded-lg shadow-lg max-w-md">
-            <div className="text-[var(--platinum)] mb-4">
-              <h3 className="text-lg font-medium text-[var(--neon-mint)] mb-3">Authentication Required</h3>
-              <p className="mb-2">You need to be authenticated and validate an API key to use the API test interface.</p>
-              <p className="text-sm text-[var(--platinum)]/70">After logging in, you'll be taken to the Admin page to select your API key.</p>
-            </div>
-            <button 
-              onClick={() => setShowAuthModal(true)}
-              className="px-6 py-3 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md hover:bg-[var(--emerald)] transition-colors font-medium"
-            >
-              Login to Continue
-            </button>
+        <div className="mb-8 p-4 bg-[var(--matrix-green)] border border-[var(--emerald)]/30 rounded-md">
+          <div className="text-[var(--platinum)] mb-2">
+            <h3 className="text-lg font-medium text-[var(--neon-mint)] mb-3">Authentication Required</h3>
+            <p className="mb-2">You need to be authenticated and validate an API key to use the API test interface.</p>
+            <p className="text-sm text-[var(--platinum)]/70">After logging in, you'll be taken to the Admin page to select your API key.</p>
           </div>
+          <button 
+            onClick={() => setShowAuthModal(true)}
+            className="px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md hover:bg-[var(--emerald)] transition-colors"
+          >
+            Login to Continue
+          </button>
         </div>
       ) : !fullApiKey ? (
         <div className="mb-8 p-4 bg-[var(--matrix-green)] border border-[var(--emerald)]/30 rounded-md">

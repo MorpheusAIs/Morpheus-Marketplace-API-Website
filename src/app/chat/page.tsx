@@ -81,13 +81,6 @@ export default function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Redirect authenticated users without API key to admin page
-  useEffect(() => {
-    if (!authLoading && isAuthenticated && !fullApiKey) {
-      router.push('/admin');
-      return;
-    }
-  }, [isAuthenticated, authLoading, fullApiKey, router]);
 
 
   // Load API key from sessionStorage
@@ -668,32 +661,38 @@ export default function ChatPage() {
         <div className="flex-1 flex flex-col overflow-hidden">
           <div className="flex-1 overflow-auto p-8">
             <div className="max-w-3xl mx-auto">
+              
               {/* Authentication Status */}
               {!isAuthenticated ? (
-                <div className="flex items-center justify-center min-h-[60vh]">
-                  <div className="text-center p-8 bg-[var(--matrix-green)] border border-[var(--emerald)]/30 rounded-lg shadow-lg max-w-md">
-                    <div className="text-[var(--platinum)] mb-4">
-                      <h3 className="text-lg font-medium text-[var(--neon-mint)] mb-3">Authentication Required</h3>
-                      <p className="mb-2">You need to be authenticated and validate an API key to use the chat interface.</p>
-                      <p className="text-sm text-[var(--platinum)]/70">After logging in, you'll be taken to the Admin page to select your API key.</p>
-                    </div>
-                    <button 
-                      onClick={() => setShowAuthModal(true)}
-                      className="px-6 py-3 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md hover:bg-[var(--emerald)] transition-colors font-medium"
-                    >
-                      Login to Continue
-                    </button>
+                <div className="mb-8 p-4 bg-[var(--matrix-green)] border border-[var(--emerald)]/30 rounded-md">
+                  <div className="text-[var(--platinum)] mb-2">
+                    <h3 className="text-lg font-medium text-[var(--neon-mint)] mb-3">Authentication Required</h3>
+                    <p className="mb-2">You need to be authenticated and validate an API key to use the chat interface.</p>
+                    <p className="text-sm text-[var(--platinum)]/70">After logging in, you'll be taken to the Admin page to select your API key.</p>
                   </div>
+                  <button 
+                    onClick={() => setShowAuthModal(true)}
+                    className="px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md hover:bg-[var(--emerald)] transition-colors"
+                  >
+                    Login to Continue
+                  </button>
                 </div>
               ) : !fullApiKey ? (
-                <div className="mb-6 bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30 text-center">
-                  <h3 className="text-lg font-medium text-[var(--neon-mint)] mb-2">API Key Required</h3>
-                  <p className="text-sm text-[var(--platinum)]/70 mb-3">
-                    Please go to the <Link href="/admin" className="text-[var(--neon-mint)] hover:underline">Admin page</Link> to set up your API key first.
-                  </p>
+                <div className="mb-8 p-4 bg-[var(--matrix-green)] border border-[var(--emerald)]/30 rounded-md">
+                  <div className="text-[var(--platinum)] mb-2">
+                    No API key selected. Please go to the Admin page to select an API key.
+                  </div>
+                  <Link 
+                    href="/admin" 
+                    className="px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md hover:bg-[var(--emerald)] transition-colors"
+                  >
+                    Go to Admin to Select API Key
+                  </Link>
                 </div>
-              ) : (
-                <div className="mb-6 bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30">
+              ) : null}
+
+              {/* Chat Interface - Always visible */}
+              <div className="mb-6 bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30">
                   <div className="flex justify-between items-center mb-3">
                     <div>
                       <h3 className="text-lg font-medium text-[var(--neon-mint)]">Ready to Chat</h3>
@@ -755,7 +754,6 @@ export default function ChatPage() {
                     </div>
                   </div>
                 </div>
-              )}
               
               {/* Messages - Always show (uses Cognito JWT for history) */}
               <div className="mb-6 space-y-6">
