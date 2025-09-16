@@ -688,9 +688,6 @@ export default function ChatPage() {
                             </option>
                           ))}
                         </select>
-                        <div className="text-xs text-[var(--platinum)]/70 mt-1">
-                          {getFilterDescription(allowedTypes)}
-                        </div>
                       </div>
                       <div>
                         <label htmlFor="modelSelect" className="block text-xs font-medium mb-1 text-[var(--platinum)]">

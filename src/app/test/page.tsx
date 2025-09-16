@@ -330,9 +330,6 @@ export default function TestPage() {
               </option>
             ))}
           </select>
-          <div className="text-xs text-[var(--platinum)]/70 mt-1">
-            {getFilterDescription(allowedTypes)}
-          </div>
         </div>
 
         {/* Model Selection Dropdown */}
