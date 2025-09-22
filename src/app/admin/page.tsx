@@ -135,9 +135,9 @@ export default function AdminPage() {
     setAutomationSettings(null); // Clear previous settings
     setError(''); // Clear any errors
     
-    // Don't automatically open verification modal for default key
-    // Just show a friendly message
-    setSuccessMessage(`Your ${isDefault ? 'default' : 'first'} API key (${keyName}) is ready. Click "Select" to verify and enable Chat functionality.`);
+    // For default key, automatically open verification modal but with friendly messaging
+    setShowKeyInput(true);
+    setSuccessMessage(`Welcome! Your ${isDefault ? 'default' : 'first'} API key (${keyName}) has been pre-selected. Please verify it to enable Chat and Test functionality.`);
   };
 
   const fetchAutomationSettings = async () => {
