@@ -19,6 +19,7 @@ interface ApiKey {
   name: string;
   created_at: string;
   is_active: boolean;
+  is_default: boolean;
 }
 
 interface CognitoAuthContextType {
@@ -26,6 +27,7 @@ interface CognitoAuthContextType {
   accessToken: string | null;
   idToken: string | null;
   apiKeys: ApiKey[];
+  defaultApiKey: ApiKey | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: () => void;
@@ -42,6 +44,7 @@ export function CognitoAuthProvider({ children }: { children: React.ReactNode })
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [idToken, setIdToken] = useState<string | null>(null);
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
+  const [defaultApiKey, setDefaultApiKey] = useState<ApiKey | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Check for stored tokens and initialize auth state
@@ -86,9 +89,52 @@ export function CognitoAuthProvider({ children }: { children: React.ReactNode })
         // Filter to only show active API keys
         const activeKeys = response.data.filter(key => key.is_active);
         setApiKeys(activeKeys);
+        
+        // Auto-select first API key if no key is already selected
+        await autoSelectFirstApiKey(token, activeKeys);
       }
     } catch (error) {
       console.error('Error fetching API keys:', error);
+    }
+  };
+
+  const autoSelectFirstApiKey = async (token: string, userApiKeys?: ApiKey[]) => {
+    try {
+      // Check if we already have a valid API key selected
+      const storedApiKey = sessionStorage.getItem('verified_api_key');
+      const storedTimestamp = sessionStorage.getItem('verified_api_key_timestamp');
+      
+      if (storedApiKey && storedTimestamp) {
+        const keyAge = Date.now() - parseInt(storedTimestamp);
+        const twentyFourHours = 24 * 60 * 60 * 1000;
+        
+        // If we have a valid stored key, don't auto-select
+        if (keyAge < twentyFourHours) {
+          return;
+        }
+      }
+
+      // Get the default API key from the server (respects user preference or falls back to first)
+      const defaultKeyResponse = await apiGet<ApiKey>(API_URLS.defaultKey(), token);
+      
+      if (defaultKeyResponse.data) {
+        const defaultKey = defaultKeyResponse.data;
+        setDefaultApiKey(defaultKey);
+        
+        // Store the selected API key prefix for the admin page
+        localStorage.setItem('selected_api_key_prefix', defaultKey.key_prefix);
+        
+        console.log(`Auto-selected default API key: ${defaultKey.key_prefix}... (${defaultKey.name})`);
+        
+        // Note: We don't store the full API key in session storage here
+        // The user will still need to validate it in the admin page for security
+        // But the selection is pre-made to streamline the process
+      } else {
+        // No API keys found - this is a first-time user
+        console.log('No API keys found - user needs to create their first API key');
+      }
+    } catch (error) {
+      console.error('Error auto-selecting first API key:', error);
     }
   };
 
@@ -105,6 +151,7 @@ export function CognitoAuthProvider({ children }: { children: React.ReactNode })
     setAccessToken(null);
     setIdToken(null);
     setApiKeys([]);
+    setDefaultApiKey(null);
     
     // Clear API key storage
     sessionStorage.removeItem('verified_api_key');
@@ -154,6 +201,7 @@ export function CognitoAuthProvider({ children }: { children: React.ReactNode })
     accessToken,
     idToken,
     apiKeys,
+    defaultApiKey,
     isAuthenticated: !!user && !!accessToken,
     isLoading,
     login,

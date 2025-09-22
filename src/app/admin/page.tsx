@@ -14,6 +14,7 @@ interface ApiKey {
   name: string;
   created_at: string;
   is_active: boolean;
+  is_default: boolean;
 }
 
 interface ApiKeyResponse {
@@ -31,7 +32,7 @@ interface AutomationSettings {
 }
 
 export default function AdminPage() {
-  const { accessToken, isAuthenticated, apiKeys, refreshApiKeys, isLoading: authLoading } = useCognitoAuth();
+  const { accessToken, isAuthenticated, apiKeys, defaultApiKey, refreshApiKeys, isLoading: authLoading } = useCognitoAuth();
   const router = useRouter();
   const { trackApiKey } = useGTM();
   const [automationSettings, setAutomationSettings] = useState<AutomationSettings | null>(null);
@@ -72,6 +73,7 @@ export default function AdminPage() {
             setFullApiKey(storedFullKey);
             // Automatically fetch automation settings if we have a valid key
             fetchAutomationSettings();
+            return;
           } else {
             // Clear expired keys
             sessionStorage.removeItem('verified_api_key');
@@ -80,11 +82,21 @@ export default function AdminPage() {
             localStorage.removeItem('selected_api_key_prefix');
           }
         }
+
+        // If no valid stored key, check for auto-selected default key
+        if (defaultApiKey && !selectedApiKeyPrefix) {
+          setSelectedApiKeyPrefix(defaultApiKey.key_prefix);
+          setShowKeyInput(true);
+          setSuccessMessage(`Welcome! Your ${defaultApiKey.is_default ? 'default' : 'first'} API key (${defaultApiKey.name}) has been pre-selected. Please verify your full API key to continue.`);
+        } else if (!defaultApiKey && apiKeys.length === 0) {
+          // First-time user with no API keys
+          setSuccessMessage('Welcome! Create your first API key below to get started with Chat and Test functionality.');
+        }
       } catch (error) {
         console.error('Error restoring API key:', error);
       }
     }
-  }, [isAuthenticated, authLoading, router]);
+  }, [isAuthenticated, authLoading, router, defaultApiKey, selectedApiKeyPrefix]);
 
   useEffect(() => {
     if (automationSettings) {
@@ -281,6 +293,31 @@ export default function AdminPage() {
   const cancelDelete = () => {
     setShowDeleteModal(false);
     setKeyToDelete(null);
+  };
+
+  const handleSetDefaultKey = async (keyId: number, keyName: string) => {
+    if (!accessToken) {
+      setError('No access token available');
+      return;
+    }
+
+    try {
+      console.log('Setting default API key:', keyId);
+      const response = await apiPut(API_URLS.setDefaultKey(keyId), {}, accessToken);
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      // Refresh the API keys list to update the UI
+      await refreshApiKeys();
+      
+      setSuccessMessage(`"${keyName}" is now your default API key`);
+      
+    } catch (err) {
+      setError(`Failed to set default API key: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      console.error('Error setting default API key:', err);
+    }
   };
 
   const updateAutomationSettings = async () => {
@@ -494,6 +531,16 @@ export default function AdminPage() {
             {/* Existing API Keys */}
             <div>
               <h3 className="text-lg font-medium text-[var(--platinum)] mb-3">Your API Keys</h3>
+              {defaultApiKey && (
+                <div className="mb-4 p-3 bg-[var(--neon-mint)]/10 border border-[var(--neon-mint)]/30 rounded-md">
+                  <p className="text-sm text-[var(--neon-mint)]">
+                    ⭐ <strong>{defaultApiKey.name}</strong> is your default API key and has been auto-selected for quick access to Chat and Test features.
+                  </p>
+                  <p className="text-xs text-[var(--neon-mint)]/70 mt-1">
+                    You can change your default key using the checkboxes below.
+                  </p>
+                </div>
+              )}
               {authLoading ? (
                 <p className="text-[var(--platinum)]/70">Loading API keys...</p>
               ) : apiKeys.length > 0 ? (
@@ -501,12 +548,35 @@ export default function AdminPage() {
                   {apiKeys.map((key) => (
                     <li key={key.id} className="p-4 bg-[var(--midnight)] border border-[var(--neon-mint)]/30 rounded-md">
                       <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                        <div>
-                          <p className="font-medium text-[var(--platinum)]">{key.name}</p>
-                          <p className="text-sm text-[var(--platinum)]/70">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <p className="font-medium text-[var(--platinum)]">{key.name}</p>
+                            {key.is_default && (
+                              <span className="px-2 py-1 text-xs bg-[var(--neon-mint)]/20 text-[var(--neon-mint)] rounded-full border border-[var(--neon-mint)]/30">
+                                Default ⭐
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-[var(--platinum)]/70 mb-2">
                             <span className="font-mono">{key.key_prefix}...</span> • 
                             Created {new Date(key.created_at).toLocaleDateString()}
                           </p>
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              id={`default-${key.id}`}
+                              checked={key.is_default}
+                              onChange={() => {
+                                if (!key.is_default) {
+                                  handleSetDefaultKey(key.id, key.name);
+                                }
+                              }}
+                              className="h-4 w-4 text-[var(--neon-mint)] rounded border-[var(--neon-mint)]/30 focus:ring-0 focus:ring-offset-0"
+                            />
+                            <label htmlFor={`default-${key.id}`} className="ml-2 text-sm text-[var(--platinum)]/70">
+                              Set as default for quick access
+                            </label>
+                          </div>
                         </div>
                         <div className="mt-2 md:mt-0 flex flex-wrap gap-2">
                           <button
@@ -517,7 +587,14 @@ export default function AdminPage() {
                                 : 'bg-[var(--eclipse)] text-[var(--platinum)] hover:bg-[var(--emerald)]/30'
                             } transition-colors`}
                           >
-                            {selectedApiKeyPrefix === key.key_prefix ? 'Selected' : 'Select'}
+                            {selectedApiKeyPrefix === key.key_prefix ? (
+                              <>
+                                Selected
+                                {defaultApiKey?.key_prefix === key.key_prefix && (
+                                  <span className="ml-1 text-xs">⭐</span>
+                                )}
+                              </>
+                            ) : 'Select'}
                           </button>
                           <button
                             onClick={() => showDeleteConfirmation(key.id, key.name, key.key_prefix)}
