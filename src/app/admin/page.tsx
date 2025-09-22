@@ -84,10 +84,9 @@ export default function AdminPage() {
         }
 
         // If no valid stored key, check for auto-selected default key
-        if (defaultApiKey && !selectedApiKeyPrefix) {
-          setSelectedApiKeyPrefix(defaultApiKey.key_prefix);
-          setShowKeyInput(true);
-          setSuccessMessage(`Welcome! Your ${defaultApiKey.is_default ? 'default' : 'first'} API key (${defaultApiKey.name}) has been pre-selected. Please verify your full API key to continue.`);
+        if (defaultApiKey && !selectedApiKeyPrefix && !fullApiKey) {
+          // Use the new function that doesn't auto-trigger verification modal
+          selectDefaultApiKey(defaultApiKey.key_prefix, defaultApiKey.name, defaultApiKey.is_default);
         } else if (!defaultApiKey && apiKeys.length === 0) {
           // First-time user with no API keys
           setSuccessMessage('Welcome! Create your first API key below to get started with Chat and Test functionality.');
@@ -129,6 +128,16 @@ export default function AdminPage() {
     // Immediately open the verification modal
     setShowKeyInput(true);
     setSuccessMessage(`Selected ${keyPrefix} - please verify your full API key`);
+  };
+
+  const selectDefaultApiKey = async (keyPrefix: string, keyName: string, isDefault: boolean) => {
+    setSelectedApiKeyPrefix(keyPrefix);
+    setAutomationSettings(null); // Clear previous settings
+    setError(''); // Clear any errors
+    
+    // Don't automatically open verification modal for default key
+    // Just show a friendly message
+    setSuccessMessage(`Your ${isDefault ? 'default' : 'first'} API key (${keyName}) is ready. Click "Select" to verify and enable Chat functionality.`);
   };
 
   const fetchAutomationSettings = async () => {
