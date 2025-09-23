@@ -54,6 +54,18 @@ export default function TestPage() {
       if (storedFullApiKey && storedApiKeyPrefix) {
         setFullApiKey(storedFullApiKey);
         setSelectedApiKeyPrefix(storedApiKeyPrefix);
+      } else {
+        // Check if there's a selected but unverified API key
+        const selectedPrefix = localStorage.getItem('selected_api_key_prefix');
+        if (selectedPrefix) {
+          // User has a selected API key but hasn't verified it yet
+          console.log('Found selected but unverified API key, redirecting to Admin for verification');
+          // Store return URL so we can redirect back after verification
+          sessionStorage.setItem('return_to_after_verification', '/test');
+          // Redirect immediately to admin for verification
+          window.location.href = '/admin';
+          return;
+        }
       }
     } catch (error) {
       console.error('Error accessing sessionStorage:', error);

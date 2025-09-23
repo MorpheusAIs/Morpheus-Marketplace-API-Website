@@ -114,7 +114,39 @@ export function CognitoAuthProvider({ children }: { children: React.ReactNode })
         }
       }
 
-      // Get the default API key from the server (respects user preference or falls back to first)
+      // First try to get the decrypted default key for seamless experience
+      const decryptedResponse = await fetch(API_URLS.defaultKeyDecrypted(), {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (decryptedResponse.ok) {
+        const decryptedData = await decryptedResponse.json();
+        if (decryptedData && decryptedData.full_key && !decryptedData.error) {
+          // Store the decrypted key immediately for seamless Chat/Test access
+          sessionStorage.setItem('verified_api_key', decryptedData.full_key);
+          sessionStorage.setItem('verified_api_key_prefix', decryptedData.key_prefix);
+          sessionStorage.setItem('verified_api_key_timestamp', Date.now().toString());
+          localStorage.setItem('selected_api_key_prefix', decryptedData.key_prefix);
+          
+          // Set the default key metadata
+          setDefaultApiKey({
+            id: decryptedData.id,
+            key_prefix: decryptedData.key_prefix,
+            name: decryptedData.name,
+            created_at: decryptedData.created_at,
+            is_active: true,
+            is_default: decryptedData.is_default
+          });
+          
+          console.log('🔐 Auto-selected and decrypted default API key:', decryptedData.key_prefix);
+          return;
+        }
+      }
+
+      // Fallback to regular default key endpoint if decryption fails
       const defaultKeyResponse = await apiGet<ApiKey>(API_URLS.defaultKey(), token);
       
       if (defaultKeyResponse.data) {
@@ -124,7 +156,7 @@ export function CognitoAuthProvider({ children }: { children: React.ReactNode })
         // Store the selected API key prefix for the admin page
         localStorage.setItem('selected_api_key_prefix', defaultKey.key_prefix);
         
-        console.log(`Auto-selected default API key: ${defaultKey.key_prefix}... (${defaultKey.name})`);
+        console.log(`Auto-selected default API key (needs verification): ${defaultKey.key_prefix}... (${defaultKey.name})`);
         
         // Note: We don't store the full API key in session storage here
         // The user will still need to validate it in the admin page for security

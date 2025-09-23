@@ -83,10 +83,20 @@ export default function AdminPage() {
           }
         }
 
+        // Check if user is coming from Chat/Test for verification
+        const returnTo = sessionStorage.getItem('return_to_after_verification');
+        const comingFromChatOrTest = returnTo === '/chat' || returnTo === '/test';
+        
         // If no valid stored key, check for auto-selected default key
         if (defaultApiKey && !selectedApiKeyPrefix && !fullApiKey) {
           // Use the new function that doesn't auto-trigger verification modal
           selectDefaultApiKey(defaultApiKey.key_prefix, defaultApiKey.name, defaultApiKey.is_default);
+          
+          // If coming from Chat/Test, automatically open verification modal
+          if (comingFromChatOrTest) {
+            setShowKeyInput(true);
+            setSuccessMessage(`Please verify your ${defaultApiKey.is_default ? 'default' : 'first'} API key to continue to ${returnTo === '/chat' ? 'Chat' : 'Test'}.`);
+          }
         } else if (!defaultApiKey && apiKeys.length === 0) {
           // First-time user with no API keys
           setSuccessMessage('Welcome! Create your first API key below to get started with Chat and Test functionality.');
@@ -135,9 +145,9 @@ export default function AdminPage() {
     setAutomationSettings(null); // Clear previous settings
     setError(''); // Clear any errors
     
-    // For default key, automatically open verification modal but with friendly messaging
-    setShowKeyInput(true);
-    setSuccessMessage(`Welcome! Your ${isDefault ? 'default' : 'first'} API key (${keyName}) has been pre-selected. Please verify it to enable Chat and Test functionality.`);
+    // Don't automatically open verification modal for default key
+    // Just show a friendly message
+    setSuccessMessage(`Your ${isDefault ? 'default' : 'first'} API key (${keyName}) is ready. Click "Select" to verify and enable Chat functionality.`);
   };
 
   const fetchAutomationSettings = async () => {
@@ -416,6 +426,18 @@ export default function AdminPage() {
         
         // Also store in localStorage for longer persistence (but clear on browser close)
         localStorage.setItem('selected_api_key_prefix', selectedApiKeyPrefix);
+        
+        // Check if user should be redirected back to where they came from
+        const returnTo = sessionStorage.getItem('return_to_after_verification');
+        if (returnTo) {
+          sessionStorage.removeItem('return_to_after_verification');
+          setSuccessMessage(`✅ API key verified! Redirecting you back to ${returnTo === '/chat' ? 'Chat' : 'Test'}...`);
+          setTimeout(() => {
+            window.location.href = returnTo;
+          }, 1500); // Give user time to see success message
+        } else {
+          setSuccessMessage('✅ API key verified successfully! You can now use Chat and Test features.');
+        }
       } else {
         console.log('No automation settings data received');
         setError('No automation settings data received');
