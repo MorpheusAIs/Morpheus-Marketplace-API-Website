@@ -96,7 +96,12 @@ export default function ChatPage() {
       const selectedPrefix = localStorage.getItem('selected_api_key_prefix');
       if (selectedPrefix) {
         // User has a selected API key but hasn't verified it yet
-        console.log('Found selected but unverified API key, user needs to verify in Admin');
+        console.log('Found selected but unverified API key, redirecting to Admin for verification');
+        // Store return URL so we can redirect back after verification
+        sessionStorage.setItem('return_to_after_verification', '/chat');
+        // Redirect immediately to admin for verification
+        window.location.href = '/admin';
+        return;
       }
     }
   }, []);

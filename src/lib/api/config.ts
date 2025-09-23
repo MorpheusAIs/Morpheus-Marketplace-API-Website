@@ -60,6 +60,7 @@ export const API_URLS = {
   keys: () => buildApiUrl(API_CONFIG.ENDPOINTS.AUTH.KEYS),
   firstKey: () => buildApiUrl(`${API_CONFIG.ENDPOINTS.AUTH.KEYS}/first`),
   defaultKey: () => buildApiUrl(`${API_CONFIG.ENDPOINTS.AUTH.KEYS}/default`),
+  defaultKeyDecrypted: () => buildApiUrl(`${API_CONFIG.ENDPOINTS.AUTH.KEYS}/default/decrypted`),
   setDefaultKey: (keyId: number) => buildApiUrl(`${API_CONFIG.ENDPOINTS.AUTH.KEYS}/${keyId}/default`),
   deleteKey: (keyId: number) => buildApiUrl(`${API_CONFIG.ENDPOINTS.AUTH.KEYS}/${keyId}`),
   privateKey: () => buildApiUrl(API_CONFIG.ENDPOINTS.AUTH.PRIVATE_KEY),
