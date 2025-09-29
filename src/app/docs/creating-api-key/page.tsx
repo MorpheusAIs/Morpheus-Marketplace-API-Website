@@ -56,7 +56,7 @@ export default function CreatingAPIKey() {
           <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`curl -X 'POST' \\
-  'https://api.dev.mor.org/api/v1/auth/register' \\
+  '${DOC_URLS.baseAPI()}/auth/register' \\
   -H 'accept: application/json' \\
   -H 'Content-Type: application/json' \\
   -d '{
@@ -102,7 +102,7 @@ export default function CreatingAPIKey() {
           <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`curl -X 'POST' \\
-  'https://api.dev.mor.org/api/v1/auth/login' \\
+  '${DOC_URLS.baseAPI()}/auth/login' \\
   -H 'accept: application/json' \\
   -H 'Content-Type: application/json' \\
   -d '{
@@ -152,7 +152,7 @@ export default function CreatingAPIKey() {
           <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`curl -X 'POST' \\
-  'https://api.dev.mor.org/api/v1/auth/keys' \\
+  '${DOC_URLS.baseAPI()}/auth/keys' \\
   -H 'accept: application/json' \\
   -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDc2OTYwODQsInN1YiI6IjEyIiwidHlwZSI6ImFjY2VzcyJ9.fuDiUyhW-vX9_ixPx0DpZ9WrX6GJdFAyjjUqhqq4ld0' \\
   -H 'Content-Type: application/json' \\
@@ -199,7 +199,7 @@ export default function CreatingAPIKey() {
           <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`curl -X 'PUT' \\
-  'https://api.dev.mor.org/api/v1/automation/settings' \\
+  '${DOC_URLS.baseAPI()}/automation/settings' \\
   -H 'accept: application/json' \\
   -H 'Authorization: Bearer sk-2ardOd.8c2d111e430398e0ccaae07343ce163d9720cf2bc9231438c972e1f4de87136c' \\
   -H 'Content-Type: application/json' \\
@@ -237,7 +237,7 @@ export default function CreatingAPIKey() {
           </p>
           <div className="bg-[var(--eclipse)] border-l-4 border-[var(--emerald)]/30 p-4 mb-4">
             <p className="text-[var(--platinum)] font-medium">
-              <strong>Base URL:</strong> https://api.dev.mor.org/api/v1
+              <strong>Base URL:</strong> {DOC_URLS.baseAPI()}
             </p>
             <p className="text-[var(--platinum)] font-medium">
               <strong>API Key:</strong> [The key you generated above]

@@ -57,7 +57,7 @@ export default function ViewingModels() {
           <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`curl -X 'GET' \\
-  'https://api.dev.mor.org/api/v1/models/' \\
+  '${DOC_URLS.baseAPI()}/models/' \\
   -H 'accept: application/json' \\
   -H 'Authorization: Bearer sk-2ardOd.8c2d111e430398e0ccaae07343ce163d9720cf2bc9231438c972e1f4de87136c'`}
             </pre>
@@ -110,7 +110,7 @@ export default function ViewingModels() {
           <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`curl -X 'GET' \\
-  'https://api.dev.mor.org/api/v1/models/allmodels' \\
+  '${DOC_URLS.baseAPI()}/models/allmodels' \\
   -H 'accept: application/json' \\
   -H 'Authorization: Bearer sk-2ardOd.8c2d111e430398e0ccaae07343ce163d9720cf2bc9231438c972e1f4de87136c'`}
             </pre>
@@ -149,7 +149,7 @@ export default function ViewingModels() {
           <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`curl -X 'POST' \\
-  'https://api.dev.mor.org/api/v1/chat/completions' \\
+  '${DOC_URLS.baseAPI()}/chat/completions' \\
   -H 'accept: application/json' \\
   -H 'Authorization: sk-MDRT7b.90f9d2c131be151bf407455617ff1a62148d2c6f30c73feda4bc87f0ad0ea9a6' \\
   -H 'Content-Type: application/json' \\
@@ -209,7 +209,7 @@ export default function ViewingModels() {
           </p>
           <div className="bg-[var(--eclipse)] border-l-4 border-[var(--emerald)]/30 p-4 mb-4">
             <p className="text-[var(--platinum)] font-medium">
-              <strong>Base URL:</strong> https://api.dev.mor.org/api/v1
+              <strong>Base URL:</strong> {DOC_URLS.baseAPI()}
             </p>
             <p className="text-[var(--platinum)] font-medium">
               <strong>API Key:</strong> [Your API key]

@@ -40,7 +40,7 @@ const [error, setError] = useState('');
 ## 3. API Endpoints
 
 ```javascript
-const API_BASE = 'https://api.dev.mor.org'; // Update for your environment
+const API_BASE = 'https://api.mor.org'; // Update for your environment
 
 // Sign Up
 POST /auth/signup

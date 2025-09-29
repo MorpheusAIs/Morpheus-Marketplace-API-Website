@@ -3,6 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { DOC_URLS } from '@/lib/api/config';
 import YouTubeEmbed from '../../components/YouTubeEmbed';
 
 export default function IntegrationBraveLeo() {
@@ -104,7 +105,7 @@ export default function IntegrationBraveLeo() {
             <ul className="list-disc list-inside space-y-2 text-lg mb-4 ml-4">
               <li><strong>Label:</strong> MorpheusAI</li>
               <li><strong>Model request name:</strong> Choose model from Morpheus Marketplace</li>
-              <li><strong>Server endpoint:</strong> https://api.dev.mor.org/api/v1/chat/completions</li>
+              <li><strong>Server endpoint:</strong> {DOC_URLS.baseAPI()}/chat/completions</li>
               <li><strong>Context size:</strong> Customize or leave as 4000</li>
               <li><strong>API Key:</strong> Morpheus API Key</li>
               <li><strong>System Prompt:</strong> Customize or leave as default</li>
