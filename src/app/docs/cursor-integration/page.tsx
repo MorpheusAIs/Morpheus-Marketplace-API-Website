@@ -3,6 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { DOC_URLS } from '@/lib/api/config';
 import YouTubeEmbed from '../../components/YouTubeEmbed';
 
 export default function CursorIntegration() {
@@ -122,7 +123,7 @@ export default function CursorIntegration() {
               <strong>OpenAI API Key:</strong> Use your Morpheus API Key
             </p>
             <p className="text-lg">
-              <strong>Override OpenAI Base URL:</strong> https://api.dev.mor.org/api/v1
+              <strong>Override OpenAI Base URL:</strong> {DOC_URLS.baseAPI()}
             </p>
           </div>
           <div className="relative h-80 w-full border-2 border-[var(--emerald)]/30 rounded-lg overflow-hidden mb-4 bg-[var(--eclipse)]">

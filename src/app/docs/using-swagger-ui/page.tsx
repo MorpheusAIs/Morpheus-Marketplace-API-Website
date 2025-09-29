@@ -28,10 +28,10 @@ export default function UsingSwaggerUI() {
       
       <div className="bg-[var(--eclipse)] border-l-4 border-[var(--emerald)]/30 p-4 mb-6">
         <p className="text-[var(--platinum)] font-medium">
-          <strong>API Gateway base URL:</strong> https://api.dev.mor.org/api/v1
+          <strong>API Gateway base URL:</strong> {DOC_URLS.baseAPI()}
         </p>
         <p className="text-[var(--platinum)] font-medium">
-          <strong>API Gateway "Swagger UI":</strong> https://api.dev.mor.org/docs
+          <strong>API Gateway "Swagger UI":</strong> {DOC_URLS.swaggerUI()}
         </p>
       </div>
       
@@ -93,7 +93,7 @@ export default function UsingSwaggerUI() {
           <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`curl -X 'POST' \\
-  'https://api.dev.mor.org/api/v1/auth/register' \\
+  '${DOC_URLS.baseAPI()}/auth/register' \\
   -H 'accept: application/json' \\
   -H 'Content-Type: application/json' \\
   -d '{
@@ -137,7 +137,7 @@ export default function UsingSwaggerUI() {
           <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`curl -X 'POST' \\
-  'https://api.dev.mor.org/api/v1/auth/login' \\
+  '${DOC_URLS.baseAPI()}/auth/login' \\
   -H 'accept: application/json' \\
   -H 'Content-Type: application/json' \\
   -d '{
@@ -196,7 +196,7 @@ export default function UsingSwaggerUI() {
           <div className="bg-[var(--eclipse)] text-[var(--platinum)] p-4 rounded-lg mb-4 overflow-auto">
             <pre className="text-sm whitespace-pre-wrap">
 {`curl -X 'POST' \\
-  'https://api.dev.mor.org/api/v1/auth/keys' \\
+  '${DOC_URLS.baseAPI()}/auth/keys' \\
   -H 'accept: application/json' \\
   -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDYwNDc2NTMsInN1YiI6IjYiLCJ0eXBlIjoiYWNjZXNzIn0.uG0yuuBseMYyaFbEFjr7boRgWr7wPdFt8laMLMyuZJU' \\
   -H 'Content-Type: application/json' \\
@@ -249,8 +249,8 @@ export default function UsingSwaggerUI() {
           Remember to use the following settings with an OpenAI API Compatible integration:
         </p>
         <ul className="mt-2 ml-6 list-disc space-y-1 text-[var(--platinum)]">
-          <li><strong>API Gateway "Swagger UI":</strong> https://api.dev.mor.org/docs</li>
-          <li><strong>API Gateway base URL:</strong> https://api.dev.mor.org/api/v1</li>
+          <li><strong>API Gateway "Swagger UI":</strong> {DOC_URLS.swaggerUI()}</li>
+          <li><strong>API Gateway base URL:</strong> {DOC_URLS.baseAPI()}</li>
           <li><strong>API_KEY:</strong> [Identified in step 5]</li>
         </ul>
       </div>

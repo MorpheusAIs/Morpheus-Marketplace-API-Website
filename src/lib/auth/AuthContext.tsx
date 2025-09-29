@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { apiPost, apiGet } from '@/lib/api/apiService';
+import { API_URLS } from '@/lib/api/config';
 
 interface User {
   id: number;
@@ -47,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string) => {
     try {
       console.log('Login attempt with:', { email });
-      const response = await apiPost<LoginResponse>('https://api.dev.mor.org/api/v1/auth/login', { email, password });
+      const response = await apiPost<LoginResponse>(API_URLS.login(), { email, password });
       
       if (response.error) {
         throw new Error(response.error);
@@ -73,7 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const register = async (email: string, name: string, password: string) => {
     try {
       console.log('Registration attempt with:', { email, name });
-      const response = await apiPost<User>('https://api.dev.mor.org/api/v1/auth/register', { 
+      const response = await apiPost<User>(API_URLS.register(), { 
         email, 
         name, 
         password, 

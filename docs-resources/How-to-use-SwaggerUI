@@ -10,14 +10,14 @@ You should consider this API gateway configuration in 3 steps:
 2. Config:  Choose Model, Set Automation or Create Session
 3. Chat: Sent prompts to chat/completions
 
-API Gateway base URL: https://api.dev.mor.org/api/v1
+API Gateway base URL: https://api.mor.org/api/v1
 
-API Gateway “Swagger UI”: https://api.dev.mor.org/docs
+API Gateway “Swagger UI”: https://api.mor.org/docs
 
 
 Steps:
 
-1. Go to https://api.dev.mor.org/docs to access the swagger UI. This is the home where you will be configuring all of your settings. 
+1. Go to https://api.mor.org/docs to access the swagger UI. This is the home where you will be configuring all of your settings. 
 
 ![image.png](attachment:7877c58c-601e-4647-a3e3-828196db8683:image.png)
 
@@ -27,7 +27,7 @@ Steps:
 
 ```jsx
 curl -X 'POST' \
-  'https://api.dev.mor.org/api/v1/auth/register' \
+  'https://api.mor.org/api/v1/auth/register' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -55,7 +55,7 @@ Your response will be similar to this:
 
 ```jsx
 curl -X 'POST' \
-  'https://api.dev.mor.org/api/v1/auth/login' \
+  'https://api.mor.org/api/v1/auth/login' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -84,7 +84,7 @@ Your response will be similar to this:
 
 ```jsx
 curl -X 'POST' \
-  'https://api.dev.mor.org/api/v1/auth/keys' \
+  'https://api.mor.org/api/v1/auth/keys' \
   -H 'accept: application/json' \
   -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDYwNDc2NTMsInN1YiI6IjYiLCJ0eXBlIjoiYWNjZXNzIn0.uG0yuuBseMYyaFbEFjr7boRgWr7wPdFt8laMLMyuZJU' \
   -H 'Content-Type: application/json' \
@@ -109,7 +109,7 @@ Your response will be similar to this:
 
 ```jsx
 curl -X 'GET' \
-  'https://api.dev.mor.org/api/v1/models/' \
+  'https://api.mor.org/api/v1/models/' \
   -H 'accept: application/json' \
   -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDYwNDc2NTMsInN1YiI6IjYiLCJ0eXBlIjoiYWNjZXNzIn0.uG0yuuBseMYyaFbEFjr7boRgWr7wPdFt8laMLMyuZJU'
 ```
@@ -175,7 +175,7 @@ Your response will be similar to this:
 
 ```jsx
 curl -X 'PUT' \
-  'https://api.dev.mor.org/api/v1/automation/settings' \
+  'https://api.mor.org/api/v1/automation/settings' \
   -H 'accept: application/json' \
   -H 'Authorization: Bearer sk-WlM8yQ.46cd2cd37987ad4bb02050bd30e783d52088dd4326202c2f6fce0a53e62c9ec5' \
   -H 'Content-Type: application/json' \
@@ -203,7 +203,7 @@ Your response will be similar to this:
 
 ```jsx
 curl -X 'POST' \
-  'https://api.dev.mor.org/api/v1/chat/completions' \
+  'https://api.mor.org/api/v1/chat/completions' \
   -H 'accept: application/json' \
   -H 'Authorization: sk-WlM8yQ.46cd2cd37987ad4bb02050bd30e783d52088dd4326202c2f6fce0a53e62c9ec5' \
   -H 'Content-Type: application/json' \
@@ -273,8 +273,8 @@ Thats it, you made your first chat request and received a response! Congratulati
 
 We look forward to seeing the amazing integrations that you plug into via the Morpheus API. Remember to use the following settings with an OpenAI API Compatible integration:
 
-API Gateway “Swagger UI”: https://api.dev.mor.org/docs
+API Gateway “Swagger UI”: https://api.mor.org/docs
 
-API Gateway base URL: https://api.dev.mor.org/api/v1
+API Gateway base URL: https://api.mor.org/api/v1
 
 API_KEY: [Identified above in step 5]
