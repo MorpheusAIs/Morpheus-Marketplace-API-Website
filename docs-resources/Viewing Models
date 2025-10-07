@@ -2,7 +2,7 @@ Morpheus API Gateway - How to Explore the available Models
 
 The purpose of this document is to provide instructions for how to view the available active models within the Morpheus Compute Marketplace via the "Swagger UI". We will be launching a "playground" and improved front-facing UI to more easily interact with the Morpheus API Gateway in a user friendly fashion [coming soon].
 
-First go to api.dev.mor.org/docs
+First go to api.mor.org/docs
 
 [homepage.png]
 
@@ -11,7 +11,7 @@ Then go down to the models /api/v1/models endpoint. This is how you view the ava
 [models.png]
 
 curl -X 'GET' \
-  'https://api.dev.mor.org/api/v1/models/' \
+  'https://api.mor.org/api/v1/models/' \
   -H 'accept: application/json' \
   -H 'Authorization: Bearer sk-2ardOd.8c2d111e430398e0ccaae07343ce163d9720cf2bc9231438c972e1f4de87136c'
 
@@ -40,7 +40,7 @@ The /api/v1/models/allmodels endpoint is also available for purposes of identify
 [allmodels.png]
 
 curl -X 'GET' \
-  'https://api.dev.mor.org/api/v1/models/allmodels' \
+  'https://api.mor.org/api/v1/models/allmodels' \
   -H 'accept: application/json' \
   -H 'Authorization: Bearer sk-2ardOd.8c2d111e430398e0ccaae07343ce163d9720cf2bc9231438c972e1f4de87136c'
 
@@ -55,7 +55,7 @@ When calling a chat/completion request, you can simply use the ID (name) or the 
 [chat.png]
 
 curl -X 'POST' \
-  'https://api.dev.mor.org/api/v1/chat/completions' \
+  'https://api.mor.org/api/v1/chat/completions' \
   -H 'accept: application/json' \
   -H 'Authorization: sk-MDRT7b.90f9d2c131be151bf407455617ff1a62148d2c6f30c73feda4bc87f0ad0ea9a6' \
   -H 'Content-Type: application/json' \
@@ -99,5 +99,5 @@ curl -X 'POST' \
 
 Now you can begin using the Morpheus Compute Node through the API Gateway! For integrations, use the following information:
 
-Base URL: https://api.dev.mor.org/api/v1
+Base URL: https://api.mor.org/api/v1
 API Key: [Identified above]

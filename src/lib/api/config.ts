@@ -2,7 +2,7 @@
 
 // API Configuration
 export const API_CONFIG = {
-  BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.dev.mor.org',
+  BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.mor.org',
   VERSION: '/api/v1',
   ENDPOINTS: {
     // Auth endpoints
@@ -58,6 +58,10 @@ export const API_URLS = {
   register: () => buildApiUrl(API_CONFIG.ENDPOINTS.AUTH.REGISTER),
   login: () => buildApiUrl(API_CONFIG.ENDPOINTS.AUTH.LOGIN),
   keys: () => buildApiUrl(API_CONFIG.ENDPOINTS.AUTH.KEYS),
+  firstKey: () => buildApiUrl(`${API_CONFIG.ENDPOINTS.AUTH.KEYS}/first`),
+  defaultKey: () => buildApiUrl(`${API_CONFIG.ENDPOINTS.AUTH.KEYS}/default`),
+  defaultKeyDecrypted: () => buildApiUrl(`${API_CONFIG.ENDPOINTS.AUTH.KEYS}/default/decrypted`),
+  setDefaultKey: (keyId: number) => buildApiUrl(`${API_CONFIG.ENDPOINTS.AUTH.KEYS}/${keyId}/default`),
   deleteKey: (keyId: number) => buildApiUrl(`${API_CONFIG.ENDPOINTS.AUTH.KEYS}/${keyId}`),
   privateKey: () => buildApiUrl(API_CONFIG.ENDPOINTS.AUTH.PRIVATE_KEY),
   delegation: () => buildApiUrl(API_CONFIG.ENDPOINTS.AUTH.DELEGATION),

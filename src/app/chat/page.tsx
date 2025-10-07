@@ -91,6 +91,18 @@ export default function ChatPage() {
     if (storedApiKey && storedPrefix) {
       setFullApiKey(storedApiKey);
       setApiKeyPrefix(storedPrefix);
+    } else {
+      // Check if there's a selected but unverified API key
+      const selectedPrefix = localStorage.getItem('selected_api_key_prefix');
+      if (selectedPrefix) {
+        // User has a selected API key but hasn't verified it yet
+        console.log('Found selected but unverified API key, redirecting to Admin for verification');
+        // Store return URL so we can redirect back after verification
+        sessionStorage.setItem('return_to_after_verification', '/chat');
+        // Redirect immediately to admin for verification
+        window.location.href = '/admin';
+        return;
+      }
     }
   }, []);
 
@@ -680,13 +692,19 @@ export default function ChatPage() {
               ) : !fullApiKey ? (
                 <div className="mb-8 p-4 bg-[var(--matrix-green)] border border-[var(--emerald)]/30 rounded-md">
                   <div className="text-[var(--platinum)] mb-2">
-                    No API key selected. Please go to the Admin page to select an API key.
+                    {localStorage.getItem('selected_api_key_prefix') 
+                      ? 'API key selected but not verified. Please go to the Admin page to verify your API key.'
+                      : 'No API key selected. Please go to the Admin page to select an API key.'
+                    }
                   </div>
                   <Link 
                     href="/admin" 
                     className="px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md hover:bg-[var(--emerald)] transition-colors"
                   >
-                    Go to Admin to Select API Key
+                    {localStorage.getItem('selected_api_key_prefix')
+                      ? 'Go to Admin to Verify API Key'
+                      : 'Go to Admin to Select API Key'
+                    }
                   </Link>
                 </div>
               ) : null}
