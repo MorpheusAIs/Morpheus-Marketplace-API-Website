@@ -81,6 +81,13 @@ export default function AdminPage() {
             sessionStorage.removeItem('verified_api_key_timestamp');
             localStorage.removeItem('selected_api_key_prefix');
           }
+        } else if (storedPrefix && !storedFullKey) {
+          // LEGACY CASE: User has a stored prefix but no full key (needs verification)
+          // Restore the prefix selection so they can verify it
+          setSelectedApiKeyPrefix(storedPrefix);
+          console.log('Legacy API key prefix restored - user needs to verify:', storedPrefix);
+          // Don't auto-open modal here - let them click Select when ready
+          return;
         }
 
         // Check if user is coming from Chat/Test for verification
@@ -105,7 +112,7 @@ export default function AdminPage() {
         console.error('Error restoring API key:', error);
       }
     }
-  }, [isAuthenticated, authLoading, router, defaultApiKey, selectedApiKeyPrefix]);
+  }, [isAuthenticated, authLoading, router, defaultApiKey]);
 
   useEffect(() => {
     if (automationSettings) {
@@ -388,11 +395,22 @@ export default function AdminPage() {
       // Normalize the input by trimming whitespace
       const normalizedInput = keyInputValue.trim();
       
-      // Check if it starts with the required prefix
-      if (!normalizedInput.startsWith(selectedApiKeyPrefix)) {
+      // Check if it starts with the required prefix (case-insensitive for legacy support)
+      if (!normalizedInput.toLowerCase().startsWith(selectedApiKeyPrefix.toLowerCase())) {
         setError(`The key must start with ${selectedApiKeyPrefix}`);
+        console.error('Prefix mismatch:', { 
+          expected: selectedApiKeyPrefix, 
+          received: normalizedInput.substring(0, selectedApiKeyPrefix.length),
+          fullInput: normalizedInput.substring(0, 20) + '...'
+        });
         return;
       }
+      
+      // Log for debugging
+      console.log('Prefix validation passed:', {
+        prefix: selectedApiKeyPrefix,
+        keyStart: normalizedInput.substring(0, selectedApiKeyPrefix.length)
+      });
     }
     
     // Set the API key and immediately use it directly
@@ -401,11 +419,21 @@ export default function AdminPage() {
     
     // Immediately fetch with the key value instead of using state
     try {
-      console.log('Fetching automation settings with API key');
+      console.log('Fetching automation settings with API key:', {
+        keyPrefix: apiKey.substring(0, 10) + '...',
+        keyLength: apiKey.length,
+        endpoint: API_URLS.automationSettings()
+      });
       const response = await apiGet<AutomationSettings>(
         API_URLS.automationSettings(), 
         apiKey
       );
+
+      console.log('API Response:', { 
+        hasError: !!response.error, 
+        hasData: !!response.data,
+        error: response.error 
+      });
 
       if (response.error) {
         throw new Error(response.error);
@@ -565,7 +593,7 @@ export default function AdminPage() {
               {defaultApiKey && (
                 <div className="mb-4 p-3 bg-[var(--neon-mint)]/10 border border-[var(--neon-mint)]/30 rounded-md">
                   <p className="text-sm text-[var(--neon-mint)]">
-                    ⭐ <strong>{defaultApiKey.name}</strong> is your default API key and has been auto-selected for quick access to Chat and Test features.
+                    <strong>{defaultApiKey.name}</strong> is your default API key and has been auto-selected for quick access to Chat and Test features.
                   </p>
                   <p className="text-xs text-[var(--neon-mint)]/70 mt-1">
                     You can change your default key using the checkboxes below.
@@ -584,7 +612,7 @@ export default function AdminPage() {
                             <p className="font-medium text-[var(--platinum)]">{key.name}</p>
                             {key.is_default && (
                               <span className="px-2 py-1 text-xs bg-[var(--neon-mint)]/20 text-[var(--neon-mint)] rounded-full border border-[var(--neon-mint)]/30">
-                                Default ⭐
+                                Default
                               </span>
                             )}
                           </div>
@@ -618,14 +646,7 @@ export default function AdminPage() {
                                 : 'bg-[var(--eclipse)] text-[var(--platinum)] hover:bg-[var(--emerald)]/30'
                             } transition-colors`}
                           >
-                            {selectedApiKeyPrefix === key.key_prefix ? (
-                              <>
-                                Selected
-                                {defaultApiKey?.key_prefix === key.key_prefix && (
-                                  <span className="ml-1 text-xs">⭐</span>
-                                )}
-                              </>
-                            ) : 'Select'}
+                            {selectedApiKeyPrefix === key.key_prefix ? 'Selected' : 'Select'}
                           </button>
                           <button
                             onClick={() => showDeleteConfirmation(key.id, key.name, key.key_prefix)}
