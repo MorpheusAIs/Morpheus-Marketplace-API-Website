@@ -395,11 +395,22 @@ export default function AdminPage() {
       // Normalize the input by trimming whitespace
       const normalizedInput = keyInputValue.trim();
       
-      // Check if it starts with the required prefix
-      if (!normalizedInput.startsWith(selectedApiKeyPrefix)) {
+      // Check if it starts with the required prefix (case-insensitive for legacy support)
+      if (!normalizedInput.toLowerCase().startsWith(selectedApiKeyPrefix.toLowerCase())) {
         setError(`The key must start with ${selectedApiKeyPrefix}`);
+        console.error('Prefix mismatch:', { 
+          expected: selectedApiKeyPrefix, 
+          received: normalizedInput.substring(0, selectedApiKeyPrefix.length),
+          fullInput: normalizedInput.substring(0, 20) + '...'
+        });
         return;
       }
+      
+      // Log for debugging
+      console.log('Prefix validation passed:', {
+        prefix: selectedApiKeyPrefix,
+        keyStart: normalizedInput.substring(0, selectedApiKeyPrefix.length)
+      });
     }
     
     // Set the API key and immediately use it directly
@@ -408,11 +419,21 @@ export default function AdminPage() {
     
     // Immediately fetch with the key value instead of using state
     try {
-      console.log('Fetching automation settings with API key');
+      console.log('Fetching automation settings with API key:', {
+        keyPrefix: apiKey.substring(0, 10) + '...',
+        keyLength: apiKey.length,
+        endpoint: API_URLS.automationSettings()
+      });
       const response = await apiGet<AutomationSettings>(
         API_URLS.automationSettings(), 
         apiKey
       );
+
+      console.log('API Response:', { 
+        hasError: !!response.error, 
+        hasData: !!response.data,
+        error: response.error 
+      });
 
       if (response.error) {
         throw new Error(response.error);
