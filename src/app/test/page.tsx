@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { API_URLS } from '@/lib/api/config';
 import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
+import { useNotification } from '@/lib/NotificationContext';
 import { getAllowedModelTypes, filterModelsByType, getFilterOptions, getFilterDescription, selectDefaultModel } from '@/lib/model-filter-utils';
 import AuthModal from '@/components/auth/AuthModal';
 import { CognitoDirectAuth } from '@/lib/auth/cognito-direct-auth';
@@ -43,6 +44,7 @@ export default function TestPage() {
   
   const router = useRouter();
   const { isAuthenticated, isLoading: authLoading } = useCognitoAuth();
+  const { success, error, warning } = useNotification();
 
 
   // Load API key from sessionStorage on component mount
@@ -137,12 +139,21 @@ export default function TestPage() {
         setModels(fallbackModels);
         setFilteredModels(fallbackModels);
       }
-    } catch (error) {
-      console.error('Error fetching models:', error);
+    } catch (err) {
+      console.error('Error fetching models:', err);
       // Set a fallback model
       const fallbackModels = [{ id: 'default', ModelType: 'LLM' }];
       setModels(fallbackModels);
       setFilteredModels(fallbackModels);
+      
+      // Show error notification for model loading failure
+      error(
+        'Model Loading Failed',
+        'Failed to load available models. Using default model.',
+        {
+          duration: 6000
+        }
+      );
     } finally {
       setLoadingModels(false);
     }
@@ -224,15 +235,41 @@ export default function TestPage() {
       if (res.status === 401 || res.status === 403) {
         setAuthError(true);
         setResponse('Authentication error: Please provide a valid API key or log in to get one.');
+        
+        // Show auth error notification
+        warning(
+          'Authentication Required',
+          'Please verify your API key to continue testing.',
+          {
+            actionLabel: 'Go to Admin',
+            actionUrl: '/admin',
+            duration: 10000
+          }
+        );
       } else if (data.choices && data.choices.length > 0 && data.choices[0].message) {
         setResponse(data.choices[0].message.content);
+        
+        // Show success notification for successful test
+        success(
+          'Test Complete',
+          'API call completed successfully!'
+        );
       } else {
         setResponse('No content found in the response');
       }
-    } catch (error) {
-      console.error('Error:', error);
+    } catch (err) {
+      console.error('Error:', err);
       setServerResponse(JSON.stringify({ error: 'An error occurred while processing your request' }, null, 2));
       setResponse('An error occurred while processing your request.');
+      
+      // Show error notification
+      error(
+        'Test Failed',
+        'Failed to complete the API test. Please check your connection and try again.',
+        {
+          duration: 8000
+        }
+      );
     } finally {
       setIsLoading(false);
     }

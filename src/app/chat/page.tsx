@@ -10,6 +10,7 @@ import remarkGfm from 'remark-gfm';
 import 'highlight.js/styles/github-dark.css';
 import './markdown.css';
 import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
+import { useNotification } from '@/lib/NotificationContext';
 import { apiGet, apiPost } from '@/lib/api/apiService';
 import { API_URLS } from '@/lib/api/config';
 import { getAllowedModelTypes, filterModelsByType, getFilterOptions, getFilterDescription, selectDefaultModel } from '@/lib/model-filter-utils';
@@ -43,6 +44,7 @@ type Model = {
 export default function ChatPage() {
   // Cognito authentication
   const { accessToken, isAuthenticated, apiKeys, isLoading: authLoading } = useCognitoAuth();
+  const { error, warning } = useNotification();
   const router = useRouter();
   
   // API Key state (retrieved from sessionStorage)
@@ -431,6 +433,17 @@ export default function ChatPage() {
           role: 'assistant',
           content: 'Authentication error: Please provide a valid API key or log in to get one.'
         }]);
+        
+        // Show auth error notification
+        warning(
+          'Authentication Required',
+          'Please verify your API key to continue chatting.',
+          {
+            actionLabel: 'Go to Admin',
+            actionUrl: '/admin',
+            duration: 10000
+          }
+        );
       } else if (data.choices && data.choices.length > 0 && data.choices[0].message) {
         const assistantResponse = data.choices[0].message.content;
         
@@ -514,15 +527,24 @@ export default function ChatPage() {
           content: 'No content found in the response'
         }]);
       }
-    } catch (error) {
+    } catch (err) {
       // Remove loading message
       setMessages(prev => prev.filter(msg => msg.id !== loadingMessageId));
       
-      console.error('Error:', error);
+      console.error('Error:', err);
       setMessages(prev => [...prev, {
         role: 'assistant',
         content: 'An error occurred while processing your request.'
       }]);
+      
+      // Show error notification
+      error(
+        'Message Failed',
+        'Failed to send your message. Please check your connection and try again.',
+        {
+          duration: 8000
+        }
+      );
     } finally {
       setIsLoading(false);
     }
