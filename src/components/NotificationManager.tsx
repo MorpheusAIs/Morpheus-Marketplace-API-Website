@@ -1,15 +1,15 @@
 'use client';
 
 import React from 'react';
-import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
+import { useNotification } from '@/lib/NotificationContext';
 import NotificationBanner from './NotificationBanner';
 
 /**
- * NotificationManager component that displays notifications from the auth context.
- * This component is separate from NotificationBanner to allow it to access the auth context.
+ * NotificationManager component that displays notifications globally.
+ * This component is separate from NotificationBanner to allow it to access the notification context.
  */
 export default function NotificationManager() {
-  const { notification, dismissNotification } = useCognitoAuth();
+  const { notification, dismissNotification } = useNotification();
 
   return (
     <NotificationBanner 
