@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { CognitoAuth } from './cognito-auth';
 import { API_URLS } from '@/lib/api/config';
 import { apiGet } from '@/lib/api/apiService';
+import { useNotification } from '@/lib/NotificationContext';
 
 interface CognitoUser {
   sub: string;
@@ -46,6 +47,9 @@ export function CognitoAuthProvider({ children }: { children: React.ReactNode })
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [defaultApiKey, setDefaultApiKey] = useState<ApiKey | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Access the global notification system
+  const { success, error, warning, info } = useNotification();
 
   // Check for stored tokens and initialize auth state
   useEffect(() => {
@@ -130,6 +134,17 @@ export function CognitoAuthProvider({ children }: { children: React.ReactNode })
           console.warn('⚠️ Default API key auto-decryption failed:', decryptedData.error_code || decryptedData.error);
           console.log('User will need to manually select and verify their API key in the Admin page');
           
+          // Show user-friendly notification using the global notification system
+          warning(
+            'API Key Verification Required',
+            'Your API key needs to be verified before you can use Chat or Test. Please go to the Admin page and click "Select" on your preferred API key.',
+            {
+              actionLabel: 'Go to Admin',
+              actionUrl: '/admin',
+              duration: 10000,
+            }
+          );
+          
           // Don't store anything - let the user manually select/verify
           // This prevents the redirect loop where chat/test pages keep sending them back to admin
           return;
@@ -153,6 +168,13 @@ export function CognitoAuthProvider({ children }: { children: React.ReactNode })
           });
           
           console.log('🔐 Auto-selected and decrypted default API key:', decryptedData.key_prefix);
+          
+          // Show success notification using the global notification system
+          success(
+            'API Key Ready',
+            `Your default API key (${decryptedData.key_prefix}...) has been automatically verified. You can now use Chat and Test!`
+          );
+          
           return;
         }
       }
@@ -168,15 +190,48 @@ export function CognitoAuthProvider({ children }: { children: React.ReactNode })
         console.log(`ℹ️ Default API key found but not auto-decrypted: ${defaultKey.key_prefix}... (${defaultKey.name})`);
         console.log('User can manually verify it by clicking "Select" in the Admin page');
         
+        // Show informational notification using the global notification system
+        info(
+          'API Key Available',
+          'An API key is available but needs verification. Visit the Admin page to verify it and enable Chat/Test features.',
+          {
+            actionLabel: 'Go to Admin',
+            actionUrl: '/admin',
+            duration: 8000,
+          }
+        );
+        
         // IMPORTANT: Do NOT store the prefix in localStorage here
         // This prevents the redirect loop where chat/test pages detect an unverified key
         // and keep redirecting back to admin
       } else {
         // No API keys found - this is a first-time user
         console.log('No API keys found - user needs to create their first API key');
+        
+        // Show welcome notification for first-time users using the global notification system
+        info(
+          'Welcome!',
+          'To get started with Chat and Test, please create your first API key in the Admin page.',
+          {
+            actionLabel: 'Create API Key',
+            actionUrl: '/admin',
+            duration: 10000,
+          }
+        );
       }
-    } catch (error) {
-      console.error('Error auto-selecting first API key:', error);
+    } catch (err) {
+      console.error('Error auto-selecting first API key:', err);
+      
+      // Show error notification using the global notification system
+      error(
+        'API Key Setup Error',
+        'There was an issue setting up your API key. Please visit the Admin page to manually select one.',
+        {
+          actionLabel: 'Go to Admin',
+          actionUrl: '/admin',
+          duration: 10000,
+        }
+      );
     }
   };
 
