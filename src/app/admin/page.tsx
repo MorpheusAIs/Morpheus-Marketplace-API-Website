@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
+import { useNotification } from '@/lib/NotificationContext';
 import { useRouter } from 'next/navigation';
 import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api/apiService';
 import { useGTM } from '@/components/providers/GTMProvider';
@@ -33,6 +34,7 @@ interface AutomationSettings {
 
 export default function AdminPage() {
   const { accessToken, isAuthenticated, apiKeys, defaultApiKey, refreshApiKeys, isLoading: authLoading } = useCognitoAuth();
+  const { success, error: showError, warning } = useNotification();
   const router = useRouter();
   const { trackApiKey } = useGTM();
   const [automationSettings, setAutomationSettings] = useState<AutomationSettings | null>(null);
@@ -242,10 +244,22 @@ export default function AdminPage() {
             setLocalIsEnabled(automationResponse.data.is_enabled);
             setHasUnsavedChanges(false);
             setSuccessMessage('API key created successfully with automation enabled (24 hour sessions)');
+            
+            // Show success notification
+            success(
+              'API Key Created',
+              `Your new API key "${newKeyName}" has been created successfully. Make sure to copy it now as it won't be shown again.`
+            );
           }
         } catch (automationErr) {
           console.warn('Error setting automation settings:', automationErr);
           setSuccessMessage('API key created successfully, but automation settings could not be set automatically. You can set them manually.');
+          
+          // Show warning notification for partial success
+          warning(
+            'API Key Created',
+            `Your API key "${newKeyName}" was created, but automation settings could not be set automatically. You can configure them manually.`
+          );
         }
         
         // Refresh the API keys list but wait a moment to avoid race conditions
@@ -256,6 +270,15 @@ export default function AdminPage() {
     } catch (err) {
       setError('Failed to create API key');
       console.error('Error creating API key:', err);
+      
+      // Show error notification
+      showError(
+        'Failed to Create API Key',
+        'There was an error creating your API key. Please try again or contact support if the problem persists.',
+        {
+          duration: 8000
+        }
+      );
     }
   };
 
@@ -307,12 +330,27 @@ export default function AdminPage() {
       setSuccessMessage(`API key "${keyToDelete.name}" deleted successfully`);
       trackApiKey('deleted', keyToDelete.name);
       
+      // Show success notification
+      success(
+        'API Key Deleted',
+        `The API key "${keyToDelete.name}" has been permanently deleted.`
+      );
+      
       // Close modal and reset state
       setShowDeleteModal(false);
       setKeyToDelete(null);
     } catch (err) {
       setError(`Failed to delete API key: ${err instanceof Error ? err.message : 'Unknown error'}`);
       console.error('Error deleting API key:', err);
+      
+      // Show error notification
+      showError(
+        'Deletion Failed',
+        'Failed to delete the API key. Please try again.',
+        {
+          duration: 8000
+        }
+      );
     }
   };
 
@@ -376,10 +414,22 @@ export default function AdminPage() {
         setAutomationSettings(response.data);
         setHasUnsavedChanges(false);
         setSuccessMessage('Automation settings updated successfully');
+        
+        // Show success notification
+        success(
+          'Settings Saved',
+          'Your automation settings have been updated successfully.'
+        );
       }
     } catch (err) {
       setError('Failed to update automation settings');
       console.error('Error updating automation settings:', err);
+      
+      // Show error notification
+      showError(
+        'Save Failed',
+        'Failed to save your automation settings. Please check your connection and try again.'
+      );
     }
   };
 
@@ -524,7 +574,7 @@ export default function AdminPage() {
           </p>
           {error && (
             <div className="mt-4 p-3 bg-red-900/50 border border-red-700 text-red-100 rounded-md">
-              {error}
+              {error as string}
             </div>
           )}
           {successMessage && (
