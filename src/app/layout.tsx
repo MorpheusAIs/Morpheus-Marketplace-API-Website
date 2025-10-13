@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { CognitoAuthProvider } from '@/lib/auth/CognitoAuthContext';
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google';
 import { GTMProvider } from '@/components/providers/GTMProvider';
+import NotificationManager from '@/components/NotificationManager';
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -42,6 +43,7 @@ export default function RootLayout({
         )}
         <CognitoAuthProvider>
           <GTMProvider>
+            <NotificationManager />
             {children}
           </GTMProvider>
         </CognitoAuthProvider>

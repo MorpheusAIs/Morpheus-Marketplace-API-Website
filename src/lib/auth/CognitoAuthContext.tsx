@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { CognitoAuth } from './cognito-auth';
 import { API_URLS } from '@/lib/api/config';
 import { apiGet } from '@/lib/api/apiService';
+import type { Notification } from '@/components/NotificationBanner';
 
 interface CognitoUser {
   sub: string;
@@ -30,11 +31,13 @@ interface CognitoAuthContextType {
   defaultApiKey: ApiKey | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  notification: Notification | null;
   login: () => void;
   signup: () => void;
   logout: () => void;
   handleAuthCallback: (code: string, state: string) => Promise<void>;
   refreshApiKeys: () => Promise<void>;
+  dismissNotification: (id: string) => void;
 }
 
 const CognitoAuthContext = createContext<CognitoAuthContextType | undefined>(undefined);
@@ -46,6 +49,7 @@ export function CognitoAuthProvider({ children }: { children: React.ReactNode })
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [defaultApiKey, setDefaultApiKey] = useState<ApiKey | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [notification, setNotification] = useState<Notification | null>(null);
 
   // Check for stored tokens and initialize auth state
   useEffect(() => {
@@ -98,6 +102,18 @@ export function CognitoAuthProvider({ children }: { children: React.ReactNode })
     }
   };
 
+  const showNotification = (notification: Omit<Notification, 'id'>) => {
+    const id = `notification-${Date.now()}`;
+    setNotification({
+      id,
+      ...notification,
+    });
+  };
+
+  const dismissNotification = (id: string) => {
+    setNotification(null);
+  };
+
   const autoSelectFirstApiKey = async (token: string, userApiKeys?: ApiKey[]) => {
     try {
       // Check if we already have a valid API key selected
@@ -130,6 +146,16 @@ export function CognitoAuthProvider({ children }: { children: React.ReactNode })
           console.warn('⚠️ Default API key auto-decryption failed:', decryptedData.error_code || decryptedData.error);
           console.log('User will need to manually select and verify their API key in the Admin page');
           
+          // Show user-friendly notification
+          showNotification({
+            type: 'warning',
+            title: 'API Key Verification Required',
+            message: 'Your API key needs to be verified before you can use Chat or Test. Please go to the Admin page and click "Select" on your preferred API key.',
+            actionLabel: 'Go to Admin',
+            actionUrl: '/admin',
+            duration: 10000, // 10 seconds for important message
+          });
+          
           // Don't store anything - let the user manually select/verify
           // This prevents the redirect loop where chat/test pages keep sending them back to admin
           return;
@@ -153,6 +179,15 @@ export function CognitoAuthProvider({ children }: { children: React.ReactNode })
           });
           
           console.log('🔐 Auto-selected and decrypted default API key:', decryptedData.key_prefix);
+          
+          // Show success notification
+          showNotification({
+            type: 'success',
+            title: 'API Key Ready',
+            message: `Your default API key (${decryptedData.key_prefix}...) has been automatically verified. You can now use Chat and Test!`,
+            duration: 5000,
+          });
+          
           return;
         }
       }
@@ -168,15 +203,45 @@ export function CognitoAuthProvider({ children }: { children: React.ReactNode })
         console.log(`ℹ️ Default API key found but not auto-decrypted: ${defaultKey.key_prefix}... (${defaultKey.name})`);
         console.log('User can manually verify it by clicking "Select" in the Admin page');
         
+        // Show informational notification
+        showNotification({
+          type: 'info',
+          title: 'API Key Available',
+          message: 'An API key is available but needs verification. Visit the Admin page to verify it and enable Chat/Test features.',
+          actionLabel: 'Go to Admin',
+          actionUrl: '/admin',
+          duration: 8000,
+        });
+        
         // IMPORTANT: Do NOT store the prefix in localStorage here
         // This prevents the redirect loop where chat/test pages detect an unverified key
         // and keep redirecting back to admin
       } else {
         // No API keys found - this is a first-time user
         console.log('No API keys found - user needs to create their first API key');
+        
+        // Show welcome notification for first-time users
+        showNotification({
+          type: 'info',
+          title: 'Welcome!',
+          message: 'To get started with Chat and Test, please create your first API key in the Admin page.',
+          actionLabel: 'Create API Key',
+          actionUrl: '/admin',
+          duration: 10000,
+        });
       }
     } catch (error) {
       console.error('Error auto-selecting first API key:', error);
+      
+      // Show error notification
+      showNotification({
+        type: 'error',
+        title: 'API Key Setup Error',
+        message: 'There was an issue setting up your API key. Please visit the Admin page to manually select one.',
+        actionLabel: 'Go to Admin',
+        actionUrl: '/admin',
+        duration: 10000,
+      });
     }
   };
 
@@ -246,11 +311,13 @@ export function CognitoAuthProvider({ children }: { children: React.ReactNode })
     defaultApiKey,
     isAuthenticated: !!user && !!accessToken,
     isLoading,
+    notification,
     login,
     signup,
     logout,
     handleAuthCallback,
     refreshApiKeys,
+    dismissNotification,
   };
 
   return (
