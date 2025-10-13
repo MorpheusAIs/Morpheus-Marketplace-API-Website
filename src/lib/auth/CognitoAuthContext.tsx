@@ -124,7 +124,18 @@ export function CognitoAuthProvider({ children }: { children: React.ReactNode })
 
       if (decryptedResponse.ok) {
         const decryptedData = await decryptedResponse.json();
-        if (decryptedData && decryptedData.full_key && !decryptedData.error) {
+        
+        // Check if the response contains an error (even with 200 OK status)
+        if (decryptedData.error || decryptedData.error_code) {
+          console.warn('⚠️ Default API key auto-decryption failed:', decryptedData.error_code || decryptedData.error);
+          console.log('User will need to manually select and verify their API key in the Admin page');
+          
+          // Don't store anything - let the user manually select/verify
+          // This prevents the redirect loop where chat/test pages keep sending them back to admin
+          return;
+        }
+        
+        if (decryptedData && decryptedData.full_key) {
           // Store the decrypted key immediately for seamless Chat/Test access
           sessionStorage.setItem('verified_api_key', decryptedData.full_key);
           sessionStorage.setItem('verified_api_key_prefix', decryptedData.key_prefix);
@@ -146,21 +157,20 @@ export function CognitoAuthProvider({ children }: { children: React.ReactNode })
         }
       }
 
-      // Fallback to regular default key endpoint if decryption fails
+      // If we reach here, decryption failed or no default key exists
+      // Fetch the default key metadata (without full key) just to show in UI
       const defaultKeyResponse = await apiGet<ApiKey>(API_URLS.defaultKey(), token);
       
       if (defaultKeyResponse.data) {
         const defaultKey = defaultKeyResponse.data;
         setDefaultApiKey(defaultKey);
         
-        // Store the selected API key prefix for the admin page
-        localStorage.setItem('selected_api_key_prefix', defaultKey.key_prefix);
+        console.log(`ℹ️ Default API key found but not auto-decrypted: ${defaultKey.key_prefix}... (${defaultKey.name})`);
+        console.log('User can manually verify it by clicking "Select" in the Admin page');
         
-        console.log(`Auto-selected default API key (needs verification): ${defaultKey.key_prefix}... (${defaultKey.name})`);
-        
-        // Note: We don't store the full API key in session storage here
-        // The user will still need to validate it in the admin page for security
-        // But the selection is pre-made to streamline the process
+        // IMPORTANT: Do NOT store the prefix in localStorage here
+        // This prevents the redirect loop where chat/test pages detect an unverified key
+        // and keep redirecting back to admin
       } else {
         // No API keys found - this is a first-time user
         console.log('No API keys found - user needs to create their first API key');
