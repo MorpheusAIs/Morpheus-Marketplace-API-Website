@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api/apiService';
 import { useGTM } from '@/components/providers/GTMProvider';
 import { API_URLS } from '@/lib/api/config';
+import { CognitoDirectAuth } from '@/lib/auth/cognito-direct-auth';
 import Link from 'next/link';
 
 interface ApiKey {
@@ -549,19 +550,37 @@ export default function AdminPage() {
         <div className="text-xl font-bold text-[var(--neon-mint)]">
           Morpheus API Gateway
         </div>
-        <div className="flex gap-4">
-          <Link href="/chat" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
+        <div className="flex gap-2 md:gap-4 flex-wrap">
+          <Link href="/chat" className="px-3 md:px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors text-sm md:text-base">
             Chat
           </Link>
-          <Link href="/test" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
+          <Link href="/test" className="px-3 md:px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors text-sm md:text-base">
             Test
           </Link>
-          <Link href="/docs" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
+          <Link href="/docs" className="px-3 md:px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors text-sm md:text-base">
             Docs
           </Link>
-          <Link href="/" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
+          <Link href="/admin" className="px-3 md:px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md font-semibold text-sm md:text-base">
+            Admin
+          </Link>
+          <Link href="/" className="px-3 md:px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors text-sm md:text-base">
             Home
           </Link>
+          {isAuthenticated ? (
+            <button
+              onClick={() => {
+                CognitoDirectAuth.signOut();
+                window.location.href = '/';
+              }}
+              className="px-3 md:px-4 py-2 bg-red-900 hover:bg-red-800 text-white rounded-md transition-colors text-sm md:text-base"
+            >
+              Logout
+            </button>
+          ) : (
+            <Link href="/login-direct" className="px-3 md:px-4 py-2 bg-green-900 hover:bg-green-800 text-white rounded-md transition-colors text-sm md:text-base">
+              Login
+            </Link>
+          )}
         </div>
       </div>
 
