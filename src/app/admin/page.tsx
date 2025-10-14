@@ -110,6 +110,15 @@ export default function AdminPage() {
         } else if (!defaultApiKey && apiKeys.length === 0) {
           // First-time user with no API keys
           setSuccessMessage('Welcome! Create your first API key below to get started with Chat and Test functionality.');
+          
+          // Show prominent warning notification for new users
+          warning(
+            'API Key Required',
+            'Please click "Create API Key" below before trying Test or Chat.',
+            {
+              duration: 10000 // Show for 10 seconds
+            }
+          );
         }
       } catch (error) {
         console.error('Error restoring API key:', error);
