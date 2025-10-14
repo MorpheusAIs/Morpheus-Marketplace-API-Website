@@ -52,6 +52,7 @@ export default function AdminPage() {
   const [keyInputValue, setKeyInputValue] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [keyToDelete, setKeyToDelete] = useState<{id: number, name: string, prefix: string} | null>(null);
+  const hasShownNewUserWarning = React.useRef(false);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -107,10 +108,9 @@ export default function AdminPage() {
             setShowKeyInput(true);
             setSuccessMessage(`Please verify your ${defaultApiKey.is_default ? 'default' : 'first'} API key to continue to ${returnTo === '/chat' ? 'Chat' : 'Test'}.`);
           }
-        } else if (!defaultApiKey && apiKeys.length === 0) {
-          // First-time user with no API keys
-          setSuccessMessage('Welcome! Create your first API key below to get started with Chat and Test functionality.');
-          
+        } else if (!authLoading && !defaultApiKey && apiKeys.length === 0 && !hasShownNewUserWarning.current) {
+          // First-time user with no API keys (only show once after data has loaded)
+          hasShownNewUserWarning.current = true;
           // Show prominent warning notification for new users
           warning(
             'API Key Required',
@@ -124,7 +124,7 @@ export default function AdminPage() {
         console.error('Error restoring API key:', error);
       }
     }
-  }, [isAuthenticated, authLoading, router, defaultApiKey]);
+  }, [isAuthenticated, authLoading, router, defaultApiKey, apiKeys]);
 
   useEffect(() => {
     if (automationSettings) {
