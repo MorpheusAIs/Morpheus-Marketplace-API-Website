@@ -107,10 +107,8 @@ export default function AdminPage() {
             setShowKeyInput(true);
             setSuccessMessage(`Please verify your ${defaultApiKey.is_default ? 'default' : 'first'} API key to continue to ${returnTo === '/chat' ? 'Chat' : 'Test'}.`);
           }
-        } else if (!defaultApiKey && apiKeys.length === 0) {
-          // First-time user with no API keys
-          setSuccessMessage('Welcome! Create your first API key below to get started with Chat and Test functionality.');
-          
+        } else if (!authLoading && !defaultApiKey && apiKeys.length === 0) {
+          // First-time user with no API keys (only show after data has loaded)
           // Show prominent warning notification for new users
           warning(
             'API Key Required',
