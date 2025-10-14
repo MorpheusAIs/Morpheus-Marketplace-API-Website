@@ -2,10 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useCognitoAuth } from '@/lib/auth/CognitoAuthContext';
+import { useNotification } from '@/lib/NotificationContext';
 import { useRouter } from 'next/navigation';
 import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api/apiService';
 import { useGTM } from '@/components/providers/GTMProvider';
 import { API_URLS } from '@/lib/api/config';
+import { CognitoDirectAuth } from '@/lib/auth/cognito-direct-auth';
 import Link from 'next/link';
 
 interface ApiKey {
@@ -33,6 +35,7 @@ interface AutomationSettings {
 
 export default function AdminPage() {
   const { accessToken, isAuthenticated, apiKeys, defaultApiKey, refreshApiKeys, isLoading: authLoading } = useCognitoAuth();
+  const { success, error: showError, warning } = useNotification();
   const router = useRouter();
   const { trackApiKey } = useGTM();
   const [automationSettings, setAutomationSettings] = useState<AutomationSettings | null>(null);
@@ -49,6 +52,7 @@ export default function AdminPage() {
   const [keyInputValue, setKeyInputValue] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [keyToDelete, setKeyToDelete] = useState<{id: number, name: string, prefix: string} | null>(null);
+  const hasShownNewUserWarning = React.useRef(false);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -104,15 +108,23 @@ export default function AdminPage() {
             setShowKeyInput(true);
             setSuccessMessage(`Please verify your ${defaultApiKey.is_default ? 'default' : 'first'} API key to continue to ${returnTo === '/chat' ? 'Chat' : 'Test'}.`);
           }
-        } else if (!defaultApiKey && apiKeys.length === 0) {
-          // First-time user with no API keys
-          setSuccessMessage('Welcome! Create your first API key below to get started with Chat and Test functionality.');
+        } else if (!authLoading && !defaultApiKey && apiKeys.length === 0 && !hasShownNewUserWarning.current) {
+          // First-time user with no API keys (only show once after data has loaded)
+          hasShownNewUserWarning.current = true;
+          // Show prominent warning notification for new users
+          warning(
+            'API Key Required',
+            'Please click "Create API Key" below before trying Test or Chat.',
+            {
+              duration: 10000 // Show for 10 seconds
+            }
+          );
         }
       } catch (error) {
         console.error('Error restoring API key:', error);
       }
     }
-  }, [isAuthenticated, authLoading, router, defaultApiKey]);
+  }, [isAuthenticated, authLoading, router, defaultApiKey, apiKeys]);
 
   useEffect(() => {
     if (automationSettings) {
@@ -242,10 +254,22 @@ export default function AdminPage() {
             setLocalIsEnabled(automationResponse.data.is_enabled);
             setHasUnsavedChanges(false);
             setSuccessMessage('API key created successfully with automation enabled (24 hour sessions)');
+            
+            // Show success notification
+            success(
+              'API Key Created',
+              `Your new API key "${newKeyName}" has been created successfully. Make sure to copy it now as it won't be shown again.`
+            );
           }
         } catch (automationErr) {
           console.warn('Error setting automation settings:', automationErr);
           setSuccessMessage('API key created successfully, but automation settings could not be set automatically. You can set them manually.');
+          
+          // Show warning notification for partial success
+          warning(
+            'API Key Created',
+            `Your API key "${newKeyName}" was created, but automation settings could not be set automatically. You can configure them manually.`
+          );
         }
         
         // Refresh the API keys list but wait a moment to avoid race conditions
@@ -256,6 +280,15 @@ export default function AdminPage() {
     } catch (err) {
       setError('Failed to create API key');
       console.error('Error creating API key:', err);
+      
+      // Show error notification
+      showError(
+        'Failed to Create API Key',
+        'There was an error creating your API key. Please try again or contact support if the problem persists.',
+        {
+          duration: 8000
+        }
+      );
     }
   };
 
@@ -307,12 +340,27 @@ export default function AdminPage() {
       setSuccessMessage(`API key "${keyToDelete.name}" deleted successfully`);
       trackApiKey('deleted', keyToDelete.name);
       
+      // Show success notification
+      success(
+        'API Key Deleted',
+        `The API key "${keyToDelete.name}" has been permanently deleted.`
+      );
+      
       // Close modal and reset state
       setShowDeleteModal(false);
       setKeyToDelete(null);
     } catch (err) {
       setError(`Failed to delete API key: ${err instanceof Error ? err.message : 'Unknown error'}`);
       console.error('Error deleting API key:', err);
+      
+      // Show error notification
+      showError(
+        'Deletion Failed',
+        'Failed to delete the API key. Please try again.',
+        {
+          duration: 8000
+        }
+      );
     }
   };
 
@@ -376,10 +424,22 @@ export default function AdminPage() {
         setAutomationSettings(response.data);
         setHasUnsavedChanges(false);
         setSuccessMessage('Automation settings updated successfully');
+        
+        // Show success notification
+        success(
+          'Settings Saved',
+          'Your automation settings have been updated successfully.'
+        );
       }
     } catch (err) {
       setError('Failed to update automation settings');
       console.error('Error updating automation settings:', err);
+      
+      // Show error notification
+      showError(
+        'Save Failed',
+        'Failed to save your automation settings. Please check your connection and try again.'
+      );
     }
   };
 
@@ -499,19 +559,37 @@ export default function AdminPage() {
         <div className="text-xl font-bold text-[var(--neon-mint)]">
           Morpheus API Gateway
         </div>
-        <div className="flex gap-4">
-          <Link href="/chat" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
+        <div className="flex gap-2 md:gap-4 flex-wrap">
+          <Link href="/chat" className="px-3 md:px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors text-sm md:text-base">
             Chat
           </Link>
-          <Link href="/test" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
+          <Link href="/test" className="px-3 md:px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors text-sm md:text-base">
             Test
           </Link>
-          <Link href="/docs" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
+          <Link href="/docs" className="px-3 md:px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors text-sm md:text-base">
             Docs
           </Link>
-          <Link href="/" className="px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors">
+          <Link href="/admin" className="px-3 md:px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md font-semibold text-sm md:text-base">
+            Admin
+          </Link>
+          <Link href="/" className="px-3 md:px-4 py-2 bg-[var(--eclipse)] hover:bg-[var(--neon-mint)] text-[var(--platinum)] hover:text-[var(--matrix-green)] rounded-md transition-colors text-sm md:text-base">
             Home
           </Link>
+          {isAuthenticated ? (
+            <button
+              onClick={() => {
+                CognitoDirectAuth.signOut();
+                window.location.href = '/';
+              }}
+              className="px-3 md:px-4 py-2 bg-red-900 hover:bg-red-800 text-white rounded-md transition-colors text-sm md:text-base"
+            >
+              Logout
+            </button>
+          ) : (
+            <Link href="/login-direct" className="px-3 md:px-4 py-2 bg-green-900 hover:bg-green-800 text-white rounded-md transition-colors text-sm md:text-base">
+              Login
+            </Link>
+          )}
         </div>
       </div>
 
@@ -524,7 +602,7 @@ export default function AdminPage() {
           </p>
           {error && (
             <div className="mt-4 p-3 bg-red-900/50 border border-red-700 text-red-100 rounded-md">
-              {error}
+              {error as string}
             </div>
           )}
           {successMessage && (
