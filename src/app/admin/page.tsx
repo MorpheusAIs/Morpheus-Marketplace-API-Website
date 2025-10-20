@@ -9,6 +9,7 @@ import { useGTM } from '@/components/providers/GTMProvider';
 import { API_URLS } from '@/lib/api/config';
 import { CognitoDirectAuth } from '@/lib/auth/cognito-direct-auth';
 import Link from 'next/link';
+import AuthModal from '@/components/auth/AuthModal';
 
 interface ApiKey {
   id: number;
@@ -53,10 +54,12 @@ export default function AdminPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [keyToDelete, setKeyToDelete] = useState<{id: number, name: string, prefix: string} | null>(null);
   const hasShownNewUserWarning = React.useRef(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
+    // Don't redirect if not authenticated - just let the user see the login banner
     if (!authLoading && !isAuthenticated) {
-      router.push('/login');
+      // User is not authenticated, the banner will prompt them to log in
       return;
     }
     
@@ -167,6 +170,16 @@ export default function AdminPage() {
     // Don't automatically open verification modal for default key
     // Just show a friendly message
     setSuccessMessage(`Your ${isDefault ? 'default' : 'first'} API key (${keyName}) is ready. Click "Select" to verify and enable Chat functionality.`);
+  };
+
+  // Handle authentication success
+  const handleAuthSuccess = (tokens: any, userInfo: any) => {
+    // Store tokens and close modal
+    CognitoDirectAuth.storeTokens(tokens);
+    localStorage.setItem('user_info', JSON.stringify(userInfo));
+    setShowAuthModal(false);
+    // Refresh the page to update authentication state
+    window.location.reload();
   };
 
   const fetchAutomationSettings = async () => {
@@ -600,6 +613,24 @@ export default function AdminPage() {
           <p className="text-[var(--platinum)]/80">
             Manage your API keys and automation settings
           </p>
+          
+          {/* Authentication Required Banner */}
+          {!isAuthenticated && !authLoading && (
+            <div className="mt-4 p-4 bg-[var(--matrix-green)] border border-[var(--emerald)]/30 rounded-md">
+              <div className="text-[var(--platinum)] mb-3">
+                <h3 className="text-lg font-medium text-[var(--neon-mint)] mb-2">Authentication Required</h3>
+                <p className="mb-2">You need to be authenticated to manage your API keys and automation settings.</p>
+                <p className="text-sm text-[var(--platinum)]/70">After logging in, you can create and manage your API keys for use with Chat and Test features.</p>
+              </div>
+              <button 
+                onClick={() => setShowAuthModal(true)}
+                className="px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md hover:bg-[var(--emerald)] transition-colors font-medium"
+              >
+                Login to Continue
+              </button>
+            </div>
+          )}
+          
           {error && (
             <div className="mt-4 p-3 bg-red-900/50 border border-red-700 text-red-100 rounded-md">
               {error as string}
@@ -612,7 +643,8 @@ export default function AdminPage() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {isAuthenticated && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* API Keys Section */}
           <div className="border border-[var(--emerald)]/30 rounded-lg p-6 bg-[var(--midnight)]">
             <h2 className="text-xl font-bold text-[var(--neon-mint)] mb-4">API Keys</h2>
@@ -902,6 +934,7 @@ export default function AdminPage() {
             )}
           </div>
         </div>
+        )}
       </div>
       </div>
 
@@ -952,6 +985,13 @@ export default function AdminPage() {
           </div>
         </div>
       )}
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={handleAuthSuccess}
+      />
     </>
   );
 } 
