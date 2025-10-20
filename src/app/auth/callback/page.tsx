@@ -86,10 +86,10 @@ function AuthCallbackContent() {
           </p>
           <div className="space-y-4">
             <button
-              onClick={() => router.push('/login')}
+              onClick={() => router.push('/admin')}
               className="w-full px-4 py-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md hover:bg-[var(--emerald)] transition-colors"
             >
-              Try Again
+              Go to Admin & Try Again
             </button>
             <button
               onClick={() => router.push('/')}
