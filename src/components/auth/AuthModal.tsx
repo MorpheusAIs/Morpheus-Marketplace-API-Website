@@ -9,7 +9,7 @@ interface AuthModalProps {
   onSuccess: (tokens: any, userInfo: any) => void;
 }
 
-type AuthMode = 'signin' | 'signup' | 'confirm' | 'forgot';
+type AuthMode = 'signin' | 'signup' | 'confirm' | 'forgot' | 'reset';
 
 export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
   const [mode, setMode] = useState<AuthMode>('signin');
@@ -17,12 +17,33 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [confirmationCode, setConfirmationCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
   // Prevent SSR issues
   if (typeof window === 'undefined') return null;
   if (!isOpen) return null;
+
+  // Password validation function to match Cognito password policy
+  const validatePassword = (password: string): string | null => {
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters long';
+    }
+    if (!/[A-Z]/.test(password)) {
+      return 'Password must contain at least one uppercase letter';
+    }
+    if (!/[a-z]/.test(password)) {
+      return 'Password must contain at least one lowercase letter';
+    }
+    if (!/[0-9]/.test(password)) {
+      return 'Password must contain at least one number';
+    }
+    if (!/[^A-Za-z0-9]/.test(password)) {
+      return 'Password must contain at least one special character';
+    }
+    return null;
+  };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +71,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
     e.preventDefault();
     setIsLoading(true);
     setError('');
+
+    // Validate password
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      setError(passwordError);
+      setIsLoading(false);
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
@@ -111,9 +140,53 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
       const result = await CognitoDirectAuth.forgotPassword(email);
       
       if (result.success) {
-        setError('Password reset code sent to your email.');
+        setMode('reset');
+        setError(''); // Clear any previous errors
       } else {
         setError(result.error || 'Failed to send reset code');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleConfirmPasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    // Validate password
+    const passwordError = validatePassword(newPassword);
+    if (passwordError) {
+      setError(passwordError);
+      setIsLoading(false);
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const result = await CognitoDirectAuth.confirmForgotPassword(email, confirmationCode, newPassword);
+      
+      if (result.success) {
+        // After successful password reset, automatically sign in with new password
+        const signInResult = await CognitoDirectAuth.signIn(email, newPassword);
+        if (signInResult.success && signInResult.tokens && signInResult.userInfo) {
+          onSuccess(signInResult.tokens, signInResult.userInfo);
+          onClose();
+          resetForm();
+        } else {
+          setMode('signin');
+          setError('Password reset successful! Please sign in with your new password.');
+        }
+      } else {
+        setError(result.error || 'Failed to reset password');
       }
     } catch (err) {
       setError('Network error. Please try again.');
@@ -127,6 +200,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
     setPassword('');
     setConfirmPassword('');
     setConfirmationCode('');
+    setNewPassword('');
     setError('');
     setMode('signin');
   };
@@ -154,6 +228,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
             {mode === 'signup' && 'Create your account'}
             {mode === 'confirm' && 'Confirm your email'}
             {mode === 'forgot' && 'Reset your password'}
+            {mode === 'reset' && 'Enter reset code and new password'}
           </h2>
 
           {/* Close button */}
@@ -258,7 +333,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
                   minLength={8}
                   className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
 
-                  placeholder="Password (min 8 characters)"
+                  placeholder="Min 8 chars, upper/lower/number/symbol"
               />
             </div>
 
@@ -366,6 +441,79 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
             </button>
 
             <div className="text-center text-white text-sm">
+              <button
+                type="button"
+                  onClick={() => setMode('signin')}
+                  className="text-blue-400 hover:text-blue-300 underline"
+                >
+                  Back to sign in
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Password Reset Confirmation Form */}
+        {mode === 'reset' && (
+          <form onSubmit={handleConfirmPasswordReset} className="space-y-4">
+            <div className="text-white text-sm mb-4">
+                We've sent a password reset code to <strong>{email}</strong>. Enter it below with your new password.
+            </div>
+              
+            <div>
+              <label className="block text-white text-sm mb-1">Reset Code</label>
+              <input
+                  type="text"
+                  value={confirmationCode}
+                  onChange={(e) => setConfirmationCode(e.target.value)}
+                  required
+                  className="w-full p-3 bg-gray-100 border-0 rounded font-semibold text-center text-lg tracking-widest focus:outline-none focus:ring-0 focus:bg-white"
+                  placeholder="123456"
+                  maxLength={6}
+              />
+            </div>
+
+            <div>
+              <label className="block text-white text-sm mb-1">New Password</label>
+              <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                  minLength={8}
+                  className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
+                  placeholder="Min 8 chars, upper/lower/number/symbol"
+              />
+            </div>
+
+            <div>
+              <label className="block text-white text-sm mb-1">Confirm New Password</label>
+              <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  className="w-full p-3 bg-gray-100 border-0 rounded font-semibold focus:outline-none focus:ring-0 focus:bg-white"
+                  placeholder="Confirm New Password"
+              />
+            </div>
+
+            <button
+              type="submit"
+                disabled={isLoading}
+                className="w-full bg-[#106F48] hover:bg-[#0e5a3c] text-white p-3 rounded font-medium transition-colors disabled:opacity-50"
+              >
+                {isLoading ? 'Resetting password...' : 'Reset Password'}
+            </button>
+
+            <div className="text-center text-white text-sm">
+              <button
+                type="button"
+                  onClick={() => setMode('forgot')}
+                  className="text-blue-400 hover:text-blue-300 underline"
+                >
+                  Resend reset code
+              </button>
+              {' | '}
               <button
                 type="button"
                   onClick={() => setMode('signin')}

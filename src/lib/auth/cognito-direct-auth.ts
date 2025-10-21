@@ -275,6 +275,48 @@ export class CognitoDirectAuth {
     }
   }
 
+  /**
+   * Confirm forgot password with code and new password - NO REDIRECTS!
+   */
+  static async confirmForgotPassword(email: string, confirmationCode: string, newPassword: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const url = `https://cognito-idp.${COGNITO_CONFIG.region}.amazonaws.com/`;
+      
+      const payload = {
+        ClientId: COGNITO_CONFIG.clientId,
+        Username: email,
+        ConfirmationCode: confirmationCode,
+        Password: newPassword
+      };
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'X-Amz-Target': 'AWSCognitoIdentityProviderService.ConfirmForgotPassword',
+          'Content-Type': 'application/x-amz-json-1.1',
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return {
+          success: false,
+          error: data.message || data.__type || 'Failed to reset password'
+        };
+      }
+
+      return { success: true };
+
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Network error'
+      };
+    }
+  }
+
 
 
   /**
