@@ -14,7 +14,6 @@ This is a [Next.js](https://nextjs.org) project that provides documentation and 
 ## Environment Setup
 
 Create a `.env` file in the root directory with the following variables:
-
 ```env
 # Database
 DATABASE_URL="your_postgresql_connection_string"
