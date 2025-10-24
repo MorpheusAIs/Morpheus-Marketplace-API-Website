@@ -71,7 +71,7 @@ export default function ChatPage() {
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loadingChats, setLoadingChats] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   // Auth modal state
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -569,10 +569,10 @@ export default function ChatPage() {
         <div className="flex items-center">
           <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="mr-3 p-1 rounded-md hover:bg-[var(--eclipse)] text-[var(--platinum)] transition-colors flex items-center justify-center"
-            aria-label="Toggle sidebar"
+            className="mr-3 p-2 rounded-md hover:bg-[var(--eclipse)] text-[var(--platinum)] transition-colors flex items-center justify-center w-8 h-8"
+            aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
           >
-            <span className="text-2xl font-bold leading-none">☰</span>
+            <span className="text-2xl font-bold leading-none">{isSidebarOpen ? '‹' : '›'}</span>
           </button>
           <div className="text-xl font-bold text-[var(--neon-mint)]">
             Morpheus API Gateway
@@ -751,13 +751,13 @@ export default function ChatPage() {
 
               {/* Chat Interface - Always visible */}
               <div className="mb-6 bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30">
-                  <div className="flex justify-between items-center mb-3">
+                  <div className="flex flex-col gap-4">
                     <div>
                       <h3 className="text-lg font-medium text-[var(--neon-mint)]">Ready to Chat</h3>
                       <p className="text-sm text-[var(--platinum)]/70">Using API key: {apiKeyPrefix}...</p>
                     </div>
-                    <div className="flex items-start space-x-4">
-                      <div>
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-start gap-4">
+                      <div className="flex-1 min-w-0">
                         <label htmlFor="modelTypeFilter" className="block text-xs font-medium mb-1 text-[var(--platinum)]">
                           Model Type
                         </label>
@@ -765,7 +765,7 @@ export default function ChatPage() {
                           id="modelTypeFilter"
                           value={selectedModelType}
                           onChange={(e) => handleModelTypeFilterChange(e.target.value)}
-                          className="p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] focus:ring-0 focus:border-[var(--emerald)]"
+                          className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] focus:ring-0 focus:border-[var(--emerald)]"
                           disabled={loadingModels}
                           style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
                         >
@@ -779,7 +779,7 @@ export default function ChatPage() {
                           &nbsp;
                         </div>
                       </div>
-                      <div>
+                      <div className="flex-1 min-w-0">
                         <label htmlFor="modelSelect" className="block text-xs font-medium mb-1 text-[var(--platinum)]">
                           Model
                         </label>
@@ -787,7 +787,7 @@ export default function ChatPage() {
                           id="modelSelect"
                           value={selectedModel}
                           onChange={(e) => setSelectedModel(e.target.value)}
-                          className="p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] focus:ring-0 focus:border-[var(--emerald)]"
+                          className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] focus:ring-0 focus:border-[var(--emerald)]"
                           disabled={loadingModels}
                           style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
                         >
