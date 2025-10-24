@@ -71,7 +71,7 @@ export default function ChatPage() {
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loadingChats, setLoadingChats] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   // Auth modal state
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -569,10 +569,10 @@ export default function ChatPage() {
         <div className="flex items-center">
           <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="mr-3 p-1 rounded-md hover:bg-[var(--eclipse)] text-[var(--platinum)] transition-colors flex items-center justify-center"
-            aria-label="Toggle sidebar"
+            className="mr-3 p-2 rounded-md hover:bg-[var(--eclipse)] text-[var(--platinum)] transition-colors flex items-center justify-center w-8 h-8"
+            aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
           >
-            <span className="text-2xl font-bold leading-none">☰</span>
+            <span className="text-2xl font-bold leading-none">{isSidebarOpen ? '‹' : '›'}</span>
           </button>
           <div className="text-xl font-bold text-[var(--neon-mint)]">
             Morpheus API Gateway
@@ -613,7 +613,7 @@ export default function ChatPage() {
       </div>
       
       {/* Add padding to account for fixed header */}
-      <div className="flex flex-1 overflow-hidden pt-16">
+      <div className="flex flex-1 overflow-hidden pt-36 md:pt-16">
         {/* Overlay for mobile when sidebar is open */}
         {isSidebarOpen && (
           <div 
@@ -623,7 +623,7 @@ export default function ChatPage() {
         )}
         
         {/* Adjust sidebar top position to account for fixed header */}
-        <div className={`${isSidebarOpen ? 'w-64' : 'w-0'} bg-[var(--matrix-green)] border-r border-[var(--emerald)]/30 flex-shrink-0 transition-all duration-300 overflow-hidden fixed md:static inset-y-0 left-0 z-30 top-16`}>
+        <div className={`${isSidebarOpen ? 'w-64' : 'w-0'} bg-[var(--matrix-green)] border-r border-[var(--emerald)]/30 flex-shrink-0 transition-all duration-300 overflow-hidden fixed md:static inset-y-0 left-0 z-30 top-36 md:top-16`}>
           <div className="h-full flex flex-col">
             <div className="p-4 border-b border-[var(--emerald)]/30 flex justify-between items-center">
               <h2 className="text-xl font-bold text-[var(--neon-mint)]">Chats</h2>
@@ -751,13 +751,13 @@ export default function ChatPage() {
 
               {/* Chat Interface - Always visible */}
               <div className="mb-6 bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30">
-                  <div className="flex justify-between items-center mb-3">
+                  <div className="flex flex-col gap-4">
                     <div>
                       <h3 className="text-lg font-medium text-[var(--neon-mint)]">Ready to Chat</h3>
                       <p className="text-sm text-[var(--platinum)]/70">Using API key: {apiKeyPrefix}...</p>
                     </div>
-                    <div className="flex items-start space-x-4">
-                      <div>
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-start gap-4">
+                      <div className="flex-1 min-w-0">
                         <label htmlFor="modelTypeFilter" className="block text-xs font-medium mb-1 text-[var(--platinum)]">
                           Model Type
                         </label>
@@ -765,7 +765,7 @@ export default function ChatPage() {
                           id="modelTypeFilter"
                           value={selectedModelType}
                           onChange={(e) => handleModelTypeFilterChange(e.target.value)}
-                          className="p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] focus:ring-0 focus:border-[var(--emerald)]"
+                          className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] focus:ring-0 focus:border-[var(--emerald)]"
                           disabled={loadingModels}
                           style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
                         >
@@ -779,7 +779,7 @@ export default function ChatPage() {
                           &nbsp;
                         </div>
                       </div>
-                      <div>
+                      <div className="flex-1 min-w-0">
                         <label htmlFor="modelSelect" className="block text-xs font-medium mb-1 text-[var(--platinum)]">
                           Model
                         </label>
@@ -787,7 +787,7 @@ export default function ChatPage() {
                           id="modelSelect"
                           value={selectedModel}
                           onChange={(e) => setSelectedModel(e.target.value)}
-                          className="p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] focus:ring-0 focus:border-[var(--emerald)]"
+                          className="w-full p-2 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] focus:ring-0 focus:border-[var(--emerald)]"
                           disabled={loadingModels}
                           style={{color: 'var(--platinum)', caretColor: 'var(--platinum)'}}
                         >
@@ -915,14 +915,14 @@ export default function ChatPage() {
               
               {/* Input form - only show when API key is available */}
               {fullApiKey && (
-                <form onSubmit={handleSubmit} className="bg-[var(--midnight)] p-4 rounded-lg shadow-md border border-[var(--emerald)]/30 sticky bottom-4">
+                <form onSubmit={handleSubmit} className="bg-[var(--midnight)] p-3 md:p-4 rounded-lg shadow-md border border-[var(--emerald)]/30 sticky bottom-4">
                 <div className="flex flex-col">
-                  <div className="flex items-start">
+                  <div className="flex items-start gap-2">
                     <textarea
                       value={userPrompt}
                       onChange={(e) => setUserPrompt(e.target.value)}
                       onKeyDown={handleKeyDown}
-                      className="flex-1 p-3 border border-[var(--neon-mint)]/30 rounded-l-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70 focus:ring-0 focus:border-[var(--emerald)]"
+                      className="flex-1 p-2 md:p-3 border border-[var(--neon-mint)]/30 rounded-md text-[var(--platinum)] bg-[var(--matrix-green)] placeholder-[var(--platinum)]/70 focus:ring-0 focus:border-[var(--emerald)] text-sm md:text-base"
                       placeholder="Type your message... (Enter to send)"
                       rows={2}
                       disabled={isLoading}
@@ -931,7 +931,7 @@ export default function ChatPage() {
                     <button
                       type="submit"
                       disabled={isLoading || !userPrompt.trim()}
-                      className="px-4 py-3 mr-2 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-r-md hover:bg-[var(--emerald)] disabled:bg-[var(--eclipse)] disabled:text-[var(--platinum)]/50 transition-colors"
+                      className="px-3 md:px-4 py-2 md:py-3 bg-[var(--neon-mint)] text-[var(--matrix-green)] rounded-md hover:bg-[var(--emerald)] disabled:bg-[var(--eclipse)] disabled:text-[var(--platinum)]/50 transition-colors whitespace-nowrap text-sm md:text-base font-medium"
                     >
                       {isLoading ? '...' : 'Send'}
                     </button>
