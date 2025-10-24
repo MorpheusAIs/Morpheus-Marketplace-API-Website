@@ -183,13 +183,13 @@ export default function AdminPage() {
   };
 
   const fetchAutomationSettings = async () => {
-    if (!fullApiKey) return;
+    if (!accessToken) return;
     
     try {
-      console.log('Fetching automation settings with API key');
+      console.log('Fetching automation settings with JWT token');
       const response = await apiGet<AutomationSettings>(
         API_URLS.automationSettings(), 
-        fullApiKey
+        accessToken
       );
 
       if (response.error) {
@@ -253,7 +253,7 @@ export default function AdminPage() {
               is_enabled: true,
               session_duration: 86400, // 24 hours in seconds
             },
-            fullKey
+            accessToken || ''
           );
 
           if (automationResponse.error) {
@@ -408,8 +408,8 @@ export default function AdminPage() {
   };
 
   const updateAutomationSettings = async () => {
-    if (!fullApiKey) {
-      setError('No API key provided. Please enter your full API key to update settings.');
+    if (!accessToken) {
+      setError('Authentication required. Please log in to update settings.');
       return;
     }
 
@@ -419,14 +419,14 @@ export default function AdminPage() {
     }
     
     try {
-      console.log('Updating automation settings with API key:', { isEnabled: localIsEnabled, duration: localSessionDuration });
+      console.log('Updating automation settings with JWT token:', { isEnabled: localIsEnabled, duration: localSessionDuration });
       const response = await apiPut<AutomationSettings>(
         API_URLS.automationSettings(),
         {
           is_enabled: localIsEnabled,
           session_duration: localSessionDuration,
         },
-        fullApiKey
+        accessToken
       );
 
       if (response.error) {
@@ -490,16 +490,14 @@ export default function AdminPage() {
     const apiKey = keyInputValue.trim();
     setFullApiKey(apiKey);
     
-    // Immediately fetch with the key value instead of using state
+    // Immediately fetch with the JWT token instead of using API key
     try {
-      console.log('Fetching automation settings with API key:', {
-        keyPrefix: apiKey.substring(0, 10) + '...',
-        keyLength: apiKey.length,
+      console.log('Fetching automation settings with JWT token:', {
         endpoint: API_URLS.automationSettings()
       });
       const response = await apiGet<AutomationSettings>(
         API_URLS.automationSettings(), 
-        apiKey
+        accessToken || ''
       );
 
       console.log('API Response:', { 
