@@ -54,9 +54,9 @@ export default function NotFound() {
             <Link href="/test" className="text-purple-400 hover:text-purple-300 underline">
               Test
             </Link>
-            <Link href="/docs" className="text-purple-400 hover:text-purple-300 underline">
+            <a href="https://apidocs.mor.org" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300 underline">
               Documentation
-            </Link>
+            </a>
           </div>
         </div>
       </div>
